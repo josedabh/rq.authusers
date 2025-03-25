@@ -9,7 +9,7 @@ public class UserMapper {
 	/** The password encoder. */
 //	protected static PasswordEncoder passwordEncoder;
 	
-	public static User mapRegisterUser(Register register) {
+	public static User mapRegisterUser(Register register, Rol rol) {
 		User user = new User();
 		user.setEmail(register.getEmail());
 //		user.setPassword(passwordEncoder.encode(register.getPassword()));
@@ -17,7 +17,7 @@ public class UserMapper {
 		user.setName(register.getName());
 		user.setLastname(register.getLastname());
 		user.setUsername(register.getUsername());
-		user.setRol(Rol.NORMAL);
+		user.setRol(rol);
 		return user;
 	}
 
