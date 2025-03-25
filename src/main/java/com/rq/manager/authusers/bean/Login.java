@@ -9,6 +9,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * The Class Login.
+ */
 @Setter
 @Getter
 @NoArgsConstructor
@@ -16,12 +19,11 @@ import lombok.Setter;
 @NotBlank
 public class Login {
 
-	/** The email. */
-	@Size(max = 100)
-	@Email
-	@Schema(description = "the email", example = "example@example.com")
-	private String email;
+    @Size(max = 100, message = "El identificador no puede exceder los 100 caracteres")
+    @Schema(description = "El identificador: email, teléfono o nombre de usuario", example = "usuario@example.com")
+    private String identifier;
 	
+	/** The password. */
 	@Size(min = 8, max = 50)
 	@Schema(description = "the password", example = "pepito1234")
 	private String password;

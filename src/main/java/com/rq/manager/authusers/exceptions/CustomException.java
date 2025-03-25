@@ -7,4 +7,12 @@ public class CustomException extends RuntimeException {
 	public CustomException(String errorKey) {
         super(errorKey);
     }
+	
+	public CustomException(Throwable cause) {
+		super(cause);
+	}
+	
+	public CustomException(String errorKey, Throwable cause) {
+		super(errorKey, cause);
+	}
 }

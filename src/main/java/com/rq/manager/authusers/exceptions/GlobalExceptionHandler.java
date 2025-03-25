@@ -25,31 +25,9 @@ public class GlobalExceptionHandler {
 	}
 
 	/**
-	 * Handle null pointer exception.
-	 *
-	 * @param ex the ex
-	 * @return the response entity
-	 */
-	@ExceptionHandler(NullPointerException.class)
-	public ResponseEntity<ErrorResponse> handleNullPointerException(NullPointerException ex) {
-		return buildErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
-	}
-
-	/**
-	 * Handle illegal argument exception.
-	 *
-	 * @param ex the ex
-	 * @return the response entity
-	 */
-	@ExceptionHandler(IllegalArgumentException.class)
-	public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
-		return buildErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
-	}
-
-	/**
 	 * Handle custom exception.
-	 *
-	 * @param ex the ex
+	 * This method there is it write HttpStatus
+	 * @param ex the exception
 	 * @return the response entity
 	 */
 	@ExceptionHandler(CustomException.class)
