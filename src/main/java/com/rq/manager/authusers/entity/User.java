@@ -21,6 +21,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Table(name = "USER")
+//Mejorar la clase de rol en base de datos
 public class User {
 
 	@Id

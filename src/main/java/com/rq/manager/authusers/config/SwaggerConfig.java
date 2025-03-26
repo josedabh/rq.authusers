@@ -5,6 +5,8 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.servers.Server;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,6 +17,9 @@ import java.util.List;
  */
 @Configuration
 public class SwaggerConfig {
+	
+	@Value(value = "${server.port}")
+	private String port;
 
     /**
      * Custom open API.
@@ -35,9 +40,9 @@ public class SwaggerConfig {
                 )
                 .externalDocs(new ExternalDocumentation()
                         .description("Documentación completa")
-                        .url("https://localhost:8080/index.html"))
+                        .url("https://localhost:" + port + "/index.html"))
                 .servers(List.of(
-                        new Server().url("http://localhost:8081")
+                        new Server().url("http://localhost:"+ port)
                         .description("Servidor Local")));
     }
 }
