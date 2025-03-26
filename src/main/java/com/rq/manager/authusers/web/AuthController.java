@@ -6,19 +6,20 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rq.manager.authusers.bean.Login;
 import com.rq.manager.authusers.bean.Register;
+import com.rq.manager.authusers.bean.UserResponse;
 import com.rq.manager.authusers.entity.User;
 import com.rq.manager.authusers.service.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
@@ -26,9 +27,13 @@ import lombok.AllArgsConstructor;
  * The Class AuthController.
  */
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/user/auth")
 @AllArgsConstructor
-@Tag(name = "AuthController", description = "Controlador que maneja los usuarios")
+@Tag(name = "AuthController", 
+description = "Controlador donde se genera un token")
+@ApiResponses(value = {
+		@ApiResponse(responseCode = "400", description = "BAD REQUEST")
+})
 public class AuthController {
 
 	/** The auth service. */
@@ -42,16 +47,10 @@ public class AuthController {
 	 */
 	@Operation(summary = "Registrar un nuevo usuario", description = "Registra un usuario con rol NORMAL.")
     @ApiResponse(responseCode = "201", description = "Usuario registrado exitosamente",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class)))
-    @ApiResponse(responseCode = "400", description = "Error en la solicitud")
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class)))
 	@PostMapping("/register")
-	public ResponseEntity<?> registerUser(@Valid @RequestBody Register register) {
-		try {
-			User user = authService.registerUser(register);
-			return ResponseEntity.status(HttpStatus.CREATED).body(user);
-		} catch (IllegalArgumentException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-		}
+	public UserResponse registerUser(@Valid @RequestBody Register register) {
+		return authService.registerUser(register);
 	}
 	
 	/**
@@ -71,17 +70,14 @@ public class AuthController {
 	 * @param login the login
 	 * @return the response entity
 	 */
-	@Operation(summary = "Logear al usuario", description = "Logear al usuario para que entre al sistema")
-    @ApiResponse(responseCode = "201", description = "Usuario logueado",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class)))
-    @ApiResponse(responseCode = "400", description = "Error en la solicitud")
 	@PostMapping("/login")
-	public ResponseEntity<?> loginUser (@Valid @RequestBody Login login){
-		try {
-			User user = authService.authenticateUser(login);
-			return ResponseEntity.status(HttpStatus.CREATED).body(user);
-		} catch (RuntimeException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-		}
-	}
+    public ResponseEntity<?> login(@Valid @RequestBody Login login) {
+        try {
+            User user = authService.authenticateUser(login);
+            return ResponseEntity.ok(user);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        }
+    }
+	
 }

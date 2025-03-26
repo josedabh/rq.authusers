@@ -47,6 +47,10 @@ public class User {
 			unique = true, nullable = false)
 	private String username;
 	
+	@Column(name = "NUM_PHONE",length = 9,
+			unique = true)
+	private String numPhone;
+	
 	@Enumerated(EnumType.STRING)
 	private Rol rol;
 }

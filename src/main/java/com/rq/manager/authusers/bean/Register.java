@@ -41,4 +41,8 @@ public class Register {
 	@Schema(description = "the username", example = "exampleperez")
 	private String username;
 	
+	@Size(min = 6, max = 6)
+	@Schema(description = "the number phone", example = "612345678")
+	private String numPhone;
+	
 }
