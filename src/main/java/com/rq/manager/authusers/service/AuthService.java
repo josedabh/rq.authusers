@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.rq.manager.authusers.bean.Login;
 import com.rq.manager.authusers.bean.Register;
+import com.rq.manager.authusers.bean.UserResponse;
 import com.rq.manager.authusers.entity.Rol;
 import com.rq.manager.authusers.entity.User;
 import com.rq.manager.authusers.exceptions.CustomException;
@@ -31,7 +32,7 @@ public class AuthService {
 	 * @param register The value of the new user
 	 * @return the new user
 	 */
-	public User registerUser(Register register) {
+	public UserResponse registerUser(Register register) {
 		if (userRepository.existsByEmail(register.getEmail())) {
 			throw new CustomException(ErrorConstants.NULL_USER);
 		}
@@ -39,9 +40,9 @@ public class AuthService {
 		if (userRepository.existsByUsername(register.getUsername())) {
 			throw new CustomException(ErrorConstants.NULL_USER);
 		}
-		User user = UserMapper.mapRegisterUser(register, Rol.NORMAL);
+		User user = UserMapper.mapRegisterEntity(register, Rol.NORMAL);
 		userRepository.save(user);
-		return user;
+		return UserMapper.mapEntityUserResponse(user);
 	}
 	
 	/**
@@ -51,24 +52,17 @@ public class AuthService {
 	 * @return the user
 	 */
 	public User authenticateUser(Login login) {
-	    return userRepository.findUser(login.getEmail(), login.getPassword())
-	            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+	    return userRepository.findByUsernameOrEmailOrNumPhoneAndPassword(
+	                    login.getIdentifier(), 
+	                    login.getIdentifier(), 
+	                    login.getIdentifier(), 
+	                    login.getPassword()
+	            )
+	            .orElseThrow(() -> new CustomException(ErrorConstants.ERROR_CREDENTIALS));
 	}
-	
-	//Este metodo se va modificar para solo los admins cree otros admins
-	//esto se va averiguar cuando sepa spring security
-	public User createAdmin(Register register) {
-		if (userRepository.existsByEmail(register.getEmail())) {
-			throw new IllegalArgumentException();
-		}
 
-		if (userRepository.existsByUsername(register.getUsername())) {
-			throw new IllegalArgumentException();
-		}
-		User user = UserMapper.mapRegisterUser(register, Rol.ADMIN);
-		userRepository.save(user);
-		return user;
-	}
+	
+	
 	
 	//cONTROLAR EL TIEMPOO QUE TENDRA DE PREMIUM 
 	//O SI NO NO TIENE SENTIDO EL METODO
