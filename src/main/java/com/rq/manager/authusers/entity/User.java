@@ -9,7 +9,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,9 +32,8 @@ public class User {
 			unique = true, nullable = false)
 	private String email;
 	
-	@Column(name = "PASSWORD", length = 50,
+	@Column(name = "PASSWORD", length = 200,
 			nullable = false)
-	@Size(min = 8, max = 50)
 	private String password;
 	
 	@Column(name = "NAME", length = 80)

@@ -2,6 +2,10 @@ package com.rq.manager.authusers.service;
 
 import java.util.UUID;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.rq.manager.authusers.bean.Login;
@@ -11,6 +15,7 @@ import com.rq.manager.authusers.entity.Rol;
 import com.rq.manager.authusers.entity.User;
 import com.rq.manager.authusers.exceptions.CustomException;
 import com.rq.manager.authusers.exceptions.ErrorConstants;
+import com.rq.manager.authusers.jwt.JwtUtil;
 import com.rq.manager.authusers.mapper.UserMapper;
 import com.rq.manager.authusers.repository.UserRepository;
 
@@ -24,7 +29,13 @@ import lombok.AllArgsConstructor;
 public class AuthService {
 
 	/** The user repository. */
-	private final UserRepository userRepository;
+	private UserRepository userRepository;
+	
+	/** The jwt util. */
+	private JwtUtil jwtUtil;
+	
+	/** The authentication manager builder. */
+	private AuthenticationManagerBuilder authenticationManagerBuilder;
 	
 	/**
 	 * Register user.
@@ -51,14 +62,18 @@ public class AuthService {
 	 * @param login the credentials for open
 	 * @return the user
 	 */
-	public User authenticateUser(Login login) {
-	    return userRepository.findByUsernameOrEmailOrNumPhoneAndPassword(
-	                    login.getIdentifier(), 
-	                    login.getIdentifier(), 
-	                    login.getIdentifier(), 
-	                    login.getPassword()
-	            )
-	            .orElseThrow(() -> new CustomException(ErrorConstants.ERROR_CREDENTIALS));
+	public String authenticateUser(Login login) {
+		User user = userRepository.findByUsernameOrEmailOrNumPhoneAndPassword(
+                login.getIdentifier(), 
+                login.getIdentifier(), 
+                login.getIdentifier(), 
+                login.getPassword()
+        )
+        .orElseThrow(() -> new CustomException(ErrorConstants.ERROR_CREDENTIALS));
+		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
+		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+	    return jwtUtil.generarToken(authentication);
 	}
 
 	

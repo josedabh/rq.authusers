@@ -1,7 +1,5 @@
 package com.rq.manager.authusers.web;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.rq.manager.authusers.bean.Login;
 import com.rq.manager.authusers.bean.Register;
 import com.rq.manager.authusers.bean.UserResponse;
-import com.rq.manager.authusers.entity.User;
 import com.rq.manager.authusers.service.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,7 +29,8 @@ import lombok.AllArgsConstructor;
 @Tag(name = "AuthController", 
 description = "Controlador donde se genera un token")
 @ApiResponses(value = {
-		@ApiResponse(responseCode = "400", description = "BAD REQUEST")
+		@ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+		@ApiResponse(responseCode = "401", description = "UNAUTHORIZED")
 })
 public class AuthController {
 
@@ -71,13 +69,8 @@ public class AuthController {
 	 * @return the response entity
 	 */
 	@PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody Login login) {
-        try {
-            User user = authService.authenticateUser(login);
-            return ResponseEntity.ok(user);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        }
+    public String login(@Valid @RequestBody Login login) {
+        return authService.authenticateUser(login);
     }
 	
 }

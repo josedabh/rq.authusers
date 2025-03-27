@@ -13,14 +13,17 @@ import com.rq.manager.authusers.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
 
+/**
+ * The Class AdminService.
+ */
 @Service
 @AllArgsConstructor
 public class AdminService {
 
+	/** The user repository. */
 	private UserRepository userRepository;
 
 	// Este metodo se va modificar para solo los admins cree otros admins
-	// esto se va averiguar cuando sepa spring security
 	public User createAdmin(Register register) {
 		if (userRepository.existsByEmail(register.getEmail()) ||
 				userRepository.existsByUsername(register.getUsername())) {
