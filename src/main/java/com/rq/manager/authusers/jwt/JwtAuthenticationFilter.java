@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.rq.manager.authusers.constants.Constants;
 import com.rq.manager.authusers.service.UserService;
 
 import jakarta.servlet.FilterChain;
@@ -43,12 +44,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		final String authorizationHeader = request.getHeader("Authorization");
+		final String authorizationHeader = request.getHeader(Constants.AUTHORIZATION);
 		
 		String userName = null;
 		String jwt = null;
 		
-		if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+		if(authorizationHeader != null && authorizationHeader.startsWith(Constants.BEARER)) {
 			jwt = authorizationHeader.substring(7);
 			userName = jwtUtil.extractUserName(jwt);
 		}

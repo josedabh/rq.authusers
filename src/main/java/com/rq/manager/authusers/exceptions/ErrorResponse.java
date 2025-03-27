@@ -10,6 +10,9 @@ import lombok.Data;
 @AllArgsConstructor
 public class ErrorResponse {
 	
+	/** The app name. */
+	private String appName;
+	
 	/** The message. */
 	private String message;
 	

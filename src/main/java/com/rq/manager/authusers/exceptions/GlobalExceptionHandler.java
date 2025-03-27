@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
  * The Class GlobalExceptionHandler.
- * No se puede sobrescribir excepcions que ya existen
+ * No se pueden sobrescribir excepcions que ya existen
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -43,8 +43,10 @@ public class GlobalExceptionHandler {
 	 * @return the response entity
 	 */
 	private ResponseEntity<ErrorResponse> buildErrorResponse(String errorKey, HttpStatus status) {
-		ErrorResponse errorResponse = new ErrorResponse(errorMessageService.getErrorMessage(errorKey),
-				errorMessageService.getErrorDescription(errorKey), errorMessageService.getInternalCode(errorKey),
+		ErrorResponse errorResponse = new ErrorResponse(errorMessageService.getErrorAppName(),
+				errorMessageService.getErrorMessage(errorKey),
+				errorMessageService.getErrorDescription(errorKey),
+				errorMessageService.getInternalCode(errorKey),
 				status.value());
 		return new ResponseEntity<>(errorResponse, status);
 	}

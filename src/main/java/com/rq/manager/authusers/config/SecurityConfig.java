@@ -17,6 +17,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.rq.manager.authusers.constants.Constants;
 import com.rq.manager.authusers.jwt.JwtAuthenticationFilter;
 import com.rq.manager.authusers.jwt.JwtEntryPoint;
 
@@ -33,9 +34,6 @@ public class SecurityConfig {
 	@Value("${server.port}")
 	private String port;
 	
-	/** The string of the request mapping. */
-	private final String AuthController = "/api/user/auth";
-
 	/**
 	 * Filter chain.
 	 *
@@ -48,8 +46,8 @@ public class SecurityConfig {
 		http.csrf(AbstractHttpConfigurer::disable)
 				.cors(Customizer.withDefaults())
 				.authorizeHttpRequests(auth -> 
-				auth.requestMatchers(AuthController + "/login" , AuthController + "/register",
-						"/swagger-ui/**", "/v3/api-docs/**")
+				auth.requestMatchers(Constants.REQUEST_LOGIN , Constants.REQUEST_REGISTER,
+						Constants.SWAGGER_UI, Constants.API_DOCS)
 						.permitAll()
 						.anyRequest().authenticated())
 				.httpBasic(Customizer.withDefaults())
@@ -99,7 +97,7 @@ public class SecurityConfig {
 
 		configuration.setAllowedOrigins(List.of("http://localhost:4200"));
 		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-		configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+		configuration.setAllowedHeaders(List.of(Constants.AUTHORIZATION, Constants.CONTENT_TYPE));
 		configuration.setAllowCredentials(true);
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
