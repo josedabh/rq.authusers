@@ -84,7 +84,9 @@ public class AdminService {
 				.collect(Collectors.toList());
 	}
 	
-	public ChallengeResponse updateChallenge() {
+	public ChallengeResponse updateChallenge(int id, ChallengeRequest request) {
+		Challenge challenge = challengeRepository.findById(id).orElseThrow(null);
+		
 		return null;
 	}
 	
