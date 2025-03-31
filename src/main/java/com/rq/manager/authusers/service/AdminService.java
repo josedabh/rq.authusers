@@ -86,8 +86,9 @@ public class AdminService {
 	
 	public ChallengeResponse updateChallenge(int id, ChallengeRequest request) {
 		Challenge challenge = challengeRepository.findById(id).orElseThrow(null);
-		
-		return null;
+		challenge = AdminMapper.mapChallengeRToEntity(request);
+		challengeRepository.save(challenge);
+		return AdminMapper.mapChallengeEntityToResponse(challenge);
 	}
 	
 	/**
