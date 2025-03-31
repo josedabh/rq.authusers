@@ -4,6 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.rq.manager.authusers.entity.Challenge;
 
+/**
+ * The Interface ChallengeRepository.
+ */
 public interface ChallengeRepository extends JpaRepository<Challenge, Integer> {
 
 }

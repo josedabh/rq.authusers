@@ -34,7 +34,7 @@ public interface UserRepository extends JpaRepository<User, UUID>{
 	 * Find by username.
 	 *
 	 * @param username the username
-	 * @return the optional
+	 * @return the optional the user
 	 */
 	Optional<User> findByUsername(String username);
 	
@@ -42,7 +42,7 @@ public interface UserRepository extends JpaRepository<User, UUID>{
 	 * Find by identifier.
 	 *
 	 * @param identifier the identifier
-	 * @return the optional
+	 * @return the optional user
 	 */
 	@Query(value = "SELECT * FROM user u WHERE u.username = :identifier OR "
 			+ "u.email = :identifier OR u.num_phone = :identifier",

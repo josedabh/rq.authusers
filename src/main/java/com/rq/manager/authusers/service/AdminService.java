@@ -1,9 +1,12 @@
 package com.rq.manager.authusers.service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.rq.manager.authusers.bean.ChallengeRequest;
 import com.rq.manager.authusers.bean.ChallengeResponse;
@@ -12,9 +15,11 @@ import com.rq.manager.authusers.bean.UserResponse;
 import com.rq.manager.authusers.entity.Challenge;
 import com.rq.manager.authusers.entity.Rol;
 import com.rq.manager.authusers.entity.User;
+import com.rq.manager.authusers.entity.UserChallenge;
 import com.rq.manager.authusers.mapper.AdminMapper;
 import com.rq.manager.authusers.mapper.UserMapper;
 import com.rq.manager.authusers.repository.ChallengeRepository;
+import com.rq.manager.authusers.repository.UserChallengeRepository;
 import com.rq.manager.authusers.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
@@ -31,6 +36,8 @@ public class AdminService {
 	
 	/** The challenge repository. */
 	private ChallengeRepository challengeRepository;
+	
+	private UserChallengeRepository userChallengeRepository;
 
 	/**
 	 * Creates the admin.
@@ -99,5 +106,40 @@ public class AdminService {
 	 */
 	public void deleteChallenge(int id) {
 		challengeRepository.deleteById(id);
+	}
+	
+	@Transactional
+	public String joinChallenge(UUID userId, int challengeId) {
+		// Obtener el usuario
+		Optional<User> userOpt = userRepository.findById(userId);
+		if (userOpt.isEmpty()) {
+			return "Usuario no encontrado";
+		}
+
+		// Obtener el reto
+		Optional<Challenge> challengeOpt = challengeRepository.findById(challengeId);
+		if (challengeOpt.isEmpty()) {
+			return "Reto no encontrado";
+		}
+
+		User user = userOpt.get();
+		Challenge challenge = challengeOpt.get();
+
+		// Verificar si el usuario ya está unido al reto
+		Optional<UserChallenge> ucOpt = userChallengeRepository.findByUserAndChallenge(user, challenge);
+		if (ucOpt.isPresent()) {
+			return "El usuario ya está unido a este reto";
+		}
+
+		// Crear el registro de unión
+		UserChallenge userChallenge = new UserChallenge();
+		userChallenge.setUser(user);
+		userChallenge.setChallenge(challenge);
+		// completedAt se deja nulo hasta que el reto se complete
+		userChallenge.setEarnedPoints(0);
+
+		userChallengeRepository.save(userChallenge);
+
+		return "Inscripción al reto exitosa";
 	}
 }
