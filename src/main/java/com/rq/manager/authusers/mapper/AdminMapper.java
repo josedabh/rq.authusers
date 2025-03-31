@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.rq.manager.authusers.bean.ChallengeRequest;
 import com.rq.manager.authusers.bean.ChallengeResponse;
+import com.rq.manager.authusers.bean.ChallengeSummary;
 import com.rq.manager.authusers.entity.Challenge;
 
 /**
@@ -46,6 +47,11 @@ public class AdminMapper {
 				.title(entity.getTitle()).description(entity.getDescription())
 				.difficulty(entity.getDifficulty()).duration(entity.getDuration())
 				.points(entity.getPoints()).build();
+	}
+
+	public static ChallengeSummary mapChallengeEToSummary(Challenge ch) {
+		return ChallengeSummary.builder()
+				.title(ch.getTitle()).id(ch.getId()).build();
 	}
 
 }

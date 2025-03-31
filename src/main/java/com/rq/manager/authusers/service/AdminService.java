@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.rq.manager.authusers.bean.ChallengeRequest;
 import com.rq.manager.authusers.bean.ChallengeResponse;
+import com.rq.manager.authusers.bean.ChallengeSummary;
 import com.rq.manager.authusers.bean.Register;
 import com.rq.manager.authusers.bean.UserResponse;
 import com.rq.manager.authusers.entity.Challenge;
@@ -37,6 +38,7 @@ public class AdminService {
 	/** The challenge repository. */
 	private ChallengeRepository challengeRepository;
 	
+	/** The user challenge repository. */
 	private UserChallengeRepository userChallengeRepository;
 
 	/**
@@ -91,6 +93,13 @@ public class AdminService {
 				.collect(Collectors.toList());
 	}
 	
+	/**
+	 * Update challenge.
+	 *
+	 * @param id the id
+	 * @param request the challenge request
+	 * @return the challenge response
+	 */
 	public ChallengeResponse updateChallenge(int id, ChallengeRequest request) {
 		Challenge challenge = challengeRepository.findById(id).orElseThrow(null);
 		challenge = AdminMapper.mapChallengeRToEntity(request);
@@ -108,6 +117,25 @@ public class AdminService {
 		challengeRepository.deleteById(id);
 	}
 	
+	/**
+	 * Search challenge.
+	 *
+	 * @param title the title challenge
+	 * @return the list challenge searched
+	 */
+	public List<ChallengeSummary> searchChallenge(String title) {
+		List<ChallengeSummary> searchedChallenges = challengeRepository.findByTitle(title)
+				.stream().map(ch -> AdminMapper.mapChallengeEToSummary(ch)).toList();
+		return searchedChallenges;
+	}
+	
+	/**
+	 * Join challenge.
+	 *modificar
+	 * @param userId the user id
+	 * @param challengeId the challenge id
+	 * @return the string
+	 */
 	@Transactional
 	public String joinChallenge(UUID userId, int challengeId) {
 		// Obtener el usuario

@@ -9,10 +9,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rq.manager.authusers.bean.ChallengeRequest;
 import com.rq.manager.authusers.bean.ChallengeResponse;
+import com.rq.manager.authusers.bean.ChallengeSummary;
 import com.rq.manager.authusers.bean.UserResponse;
 import com.rq.manager.authusers.service.AdminService;
 
@@ -47,23 +49,51 @@ public class AdminController {
 		return adminService.getListUsers();
 	}
 	
+	/**
+	 * List challenges.
+	 *
+	 * @return the list
+	 */
 	@GetMapping("/list-challenges")
 	public List<UserResponse> listChallenges() {
 		return adminService.getListUsers();
 	}
 	
+	/**
+	 * Creates the challenge.
+	 *
+	 * @param challengeRequest the challenge request
+	 * @return the challenge response
+	 */
 	@PostMapping("/create-challenge")
 	public ChallengeResponse createChallenge(@RequestBody ChallengeRequest challengeRequest) {
 		return adminService.createChallenge(challengeRequest);
 	}
 	
+	/**
+	 * Delete challenge.
+	 *
+	 * @param id the id
+	 */
 	@DeleteMapping("/delete-challenge/{id}")
 	public void deleteChallenge(@PathVariable int id) {
 		adminService.deleteChallenge(id);
 	}
 	
+	/**
+	 * Update challenge.
+	 *
+	 * @param id the id
+	 * @param challengeRequest the challenge request
+	 * @return the challenge response
+	 */
 	@PutMapping("/update-challenge/{id}")
 	public ChallengeResponse updateChallenge(@PathVariable int id, @RequestBody ChallengeRequest challengeRequest) {
 		return adminService.updateChallenge(id, challengeRequest);
+	}
+	
+	@GetMapping("/search-challenge")
+	public List<ChallengeSummary> searchChallenges(@RequestParam(defaultValue = "", required = true) String title) {
+		return adminService.searchChallenge(title);
 	}
 }
