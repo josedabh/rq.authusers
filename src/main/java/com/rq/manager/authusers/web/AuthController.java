@@ -41,7 +41,7 @@ public class AuthController {
 	 * Register user.
 	 *
 	 * @param register the register
-	 * @return the response entity
+	 * @return the user response
 	 */
 	@Operation(summary = "Registrar un nuevo usuario", description = "Registra un usuario con rol NORMAL.")
     @ApiResponse(responseCode = "201", description = "Usuario registrado exitosamente",
@@ -61,12 +61,12 @@ public class AuthController {
 		return "Hola";
 	}
 	
+	
 	/**
-	 * Modificar este controller cuando sepa como hacerlo bien
-	 * Login user.
+	 * Login the user.
 	 *
 	 * @param login the login
-	 * @return the response entity
+	 * @return the token
 	 */
 	@PostMapping("/login")
     public String login(@Valid @RequestBody Login login) {

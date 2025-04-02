@@ -32,6 +32,9 @@ public class Challenge {
 	@Column(name = "DIFFICULTY", nullable = false)
 	private String difficulty;
 	
+	//Cambiar a fecha principio y fecha final
+	// Luego ver si el usuario puede ver el retos una semana antes
+	// O un evento donde sea instantaneo
 	@Column(name = "DURATION", nullable = false)
 	private LocalDateTime duration;
 	
