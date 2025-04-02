@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: authusers
+  profiles:
+    active: dev
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: true
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /index.html
+
+logging:
+  level:
+    root: INFO
