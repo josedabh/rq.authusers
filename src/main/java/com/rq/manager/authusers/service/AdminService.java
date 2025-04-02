@@ -42,11 +42,14 @@ public class AdminService {
 
 	/**
 	 * Gets the list users.
-	 *
+	 * Cambiar esto para no ver la contraseña y otras informacion
+	 * Solo ver nombre, username , rol y los historiales de los retos y recompensas
 	 * @return the list users
 	 */
 	public List<UserResponse> getListUsers() {
-		return userRepository.findAll().stream().map(u -> UserMapper.mapEntityUserResponse(u)).toList();
+		return userRepository.findAll().stream()
+				.map(u -> UserMapper.mapEntityUserResponse(u))
+				.toList();
 	}
 
 }
