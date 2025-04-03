@@ -43,7 +43,7 @@ public class JwtUtil {
 		return Jwts.builder()
 				.setSubject(mainUser.getUsername())
 				.setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 horas
+				.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 180))
 				.signWith(key)
 				.compact();
 	}

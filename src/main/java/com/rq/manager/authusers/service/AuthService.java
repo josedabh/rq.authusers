@@ -1,7 +1,5 @@
 package com.rq.manager.authusers.service;
 
-import java.util.UUID;
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -80,21 +78,4 @@ public class AuthService {
 	    return jwtUtil.generarToken(authentication);
 	}
 
-	
-	
-	
-	//cONTROLAR EL TIEMPOO QUE TENDRA DE PREMIUM 
-	/**
-	 * Pay premium.
-	 *
-	 * @param id the id
-	 * @return the user
-	 */
-	//O SI NO NO TIENE SENTIDO EL METODO
-	public User payPremium(UUID id) {
-		User user = userRepository.findById(id)
-				.orElseThrow(() -> new NullPointerException());
-		user.setRol(Rol.PREMIUM);
-		return user;
-	}
 }

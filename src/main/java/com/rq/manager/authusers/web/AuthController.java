@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.rq.manager.authusers.bean.Login;
 import com.rq.manager.authusers.bean.Register;
 import com.rq.manager.authusers.bean.UserResponse;
+import com.rq.manager.authusers.constants.Constants;
 import com.rq.manager.authusers.service.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,8 +30,8 @@ import lombok.AllArgsConstructor;
 @Tag(name = "AuthController", 
 description = "Controlador donde se genera un token")
 @ApiResponses(value = {
-		@ApiResponse(responseCode = "400", description = "BAD REQUEST"),
-		@ApiResponse(responseCode = "401", description = "UNAUTHORIZED")
+		@ApiResponse(responseCode = "400", description = Constants.BAD_REQUEST),
+		@ApiResponse(responseCode = "401", description = Constants.BAD_REQUEST)
 })
 public class AuthController {
 
@@ -45,7 +46,7 @@ public class AuthController {
 	 */
 	@Operation(summary = "Registrar un nuevo usuario", description = "Registra un usuario con rol NORMAL.")
     @ApiResponse(responseCode = "201", description = "Usuario registrado exitosamente",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class)))
+            content = @Content(mediaType = Constants.MEDIA_TYPE, schema = @Schema(implementation = UserResponse.class)))
 	@PostMapping("/register")
 	public UserResponse registerUser(@Valid @RequestBody Register register) {
 		return authService.registerUser(register);
