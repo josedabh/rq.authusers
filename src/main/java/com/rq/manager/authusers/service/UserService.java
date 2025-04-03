@@ -15,7 +15,7 @@ import com.rq.manager.authusers.repository.UserRepository;
 import lombok.NoArgsConstructor;
 
 /**
- * The Class UserService.
+ * The Class UserService that manage the tokens.
  */
 @Service
 @NoArgsConstructor

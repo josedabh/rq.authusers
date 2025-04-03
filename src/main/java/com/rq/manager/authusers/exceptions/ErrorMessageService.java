@@ -19,8 +19,12 @@ public class ErrorMessageService {
      */
     public ErrorMessageService() {
         messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasename("error");
-        messageSource.setDefaultEncoding("UTF-8");
+        messageSource.setBasename(ErrorConstants.ERROR_NAME);
+        messageSource.setDefaultEncoding(ErrorConstants.UTF_8);
+    }
+    
+    public String getErrorAppName() {
+    	return messageSource.getMessage(ErrorConstants.APP_NAME, null, Locale.getDefault());
     }
 
     /**
@@ -30,7 +34,7 @@ public class ErrorMessageService {
      * @return the error message
      */
     public String getErrorMessage(String errorKey) {
-        return messageSource.getMessage(errorKey + ".message", null, Locale.getDefault());
+        return messageSource.getMessage(errorKey + ErrorConstants.MESSAGE, null, Locale.getDefault());
     }
 
     /**
@@ -40,7 +44,7 @@ public class ErrorMessageService {
      * @return the error description
      */
     public String getErrorDescription(String errorKey) {
-        return messageSource.getMessage(errorKey + ".description", null, Locale.getDefault());
+        return messageSource.getMessage(errorKey + ErrorConstants.DESCRIPTION, null, Locale.getDefault());
     }
 
     /**
@@ -50,6 +54,6 @@ public class ErrorMessageService {
      * @return the internal code
      */
     public String getInternalCode(String errorKey) {
-        return messageSource.getMessage(errorKey + ".internalCode", null, Locale.getDefault());
+        return messageSource.getMessage(errorKey + ErrorConstants.INTERNAL_CODE, null, Locale.getDefault());
     }
 }
