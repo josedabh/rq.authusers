@@ -1,48 +1,92 @@
 package com.rq.manager.authusers.config;
 
-import io.swagger.v3.oas.models.ExternalDocumentation;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Contact;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.servers.Server;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.List;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.ExternalDocumentation;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 
 /**
  * The Class SwaggerConfig.
  */
 @Configuration
 public class SwaggerConfig {
-	
-	@Value(value = "${server.port}")
-	private String port;
+
+    /** The port. */
+    @Value("${server.port}")
+    private String port;
 
     /**
      * Custom open API.
-     * Si se cambia el puerto en server url hay 
-     * que cambiarlo tambien para que funcione las respuestas
      *
      * @return the open API
      */
     @Bean
-    OpenAPI customOpenAPI() {
+    public OpenAPI customOpenAPI() {
         return new OpenAPI()
-                .info(new Info()
-                        .title("Authentication API")
-                        .description("API para gestionar los roles de los usuarios")
-                        .version("1.0.0")
-                        .contact(new Contact()
-                                .name("José Daniel Bravo Heredia"))
-                )
-                .externalDocs(new ExternalDocumentation()
-                        .description("Documentación completa")
-                        .url("https://localhost:" + port + "/index.html"))
-                .servers(List.of(
-                        new Server().url("http://localhost:"+ port)
-                        .description("Servidor Local")));
+                .info(apiInfo())
+                .externalDocs(apiDocumentation())
+                .servers(apiServers())
+                .addSecurityItem(new SecurityRequirement().addList("bearerAuth")) // Aplica seguridad
+                .components(securityComponents());
+    }
+
+    /**
+     * Api info.
+     *
+     * @return the info
+     */
+    private Info apiInfo() {
+        return new Info()
+                .title("Authentication API")
+                .description("API para gestionar los roles de los usuarios")
+                .version("1.0.0")
+                .contact(new Contact().name("José Daniel Bravo Heredia"));
+    }
+
+    /**
+     * Api extern documentation.
+     *
+     * @return the external documentation
+     */
+    private ExternalDocumentation apiDocumentation() {
+        return new ExternalDocumentation()
+                .description("Documentación completa")
+                .url("https://localhost:" + port + "/index.html");
+    }
+
+    /**
+     * Configuration servers.
+     *
+     * @return the list servers
+     */
+    private List<Server> apiServers() {
+        return List.of(new Server()
+                .url("http://localhost:" + port)
+                .description("Servidor Local"));
+    }
+
+    /**
+     * Security components.
+     *
+     * @return the components
+     */
+    private Components securityComponents() {
+        return new Components()
+                .addSecuritySchemes("bearerAuth",
+                        new SecurityScheme()
+                                .name("bearerAuth")
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("bearer")
+                                .bearerFormat("JWT"));
     }
 }

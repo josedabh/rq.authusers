@@ -60,6 +60,10 @@ public class User {
 			unique = true)
 	private String numPhone;
 	
+	/** The points. */
+	@Column(name = "POINTS")
+	private Integer points;
+	
 	/** The rol. */
 	@Enumerated(EnumType.STRING)
 	private Rol rol;

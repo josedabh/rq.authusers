@@ -2,6 +2,7 @@ package com.rq.manager.authusers.entity;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,12 +33,12 @@ public class UserChallenge {
 
     /** The user. */
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
     /** The challenge. */
     @ManyToOne
-    @JoinColumn(name = "challenge_id", nullable = false)
+    @JoinColumn(name = "CHALLENGE_ID", nullable = false)
     private Challenge challenge;
     
     /** The completed at. */
@@ -45,6 +46,7 @@ public class UserChallenge {
     private LocalDateTime completedAt;
     
     /** The earned points. */
+    @Column(name = "EARNED_POINTS")
     private Integer earnedPoints;
 
 }

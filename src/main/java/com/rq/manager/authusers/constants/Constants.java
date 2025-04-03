@@ -9,7 +9,7 @@ public class Constants {
 	 * Instantiates a new constants.
 	 */
 	public Constants() {
-		
+		// Default constructor
 	}
 	
 	/** The Constant REQUEST_LOGIN. */

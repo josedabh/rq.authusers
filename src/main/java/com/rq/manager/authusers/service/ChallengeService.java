@@ -1,5 +1,6 @@
 package com.rq.manager.authusers.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,7 +10,7 @@ import com.rq.manager.authusers.bean.ChallengeRequest;
 import com.rq.manager.authusers.bean.ChallengeResponse;
 import com.rq.manager.authusers.bean.ChallengeSummary;
 import com.rq.manager.authusers.entity.Challenge;
-import com.rq.manager.authusers.mapper.AdminMapper;
+import com.rq.manager.authusers.mapper.ChallengeMapper;
 import com.rq.manager.authusers.repository.ChallengeRepository;
 
 import lombok.AllArgsConstructor;
@@ -31,10 +32,9 @@ public class ChallengeService {
 	 * @return the challenge response
 	 */
 	public ChallengeResponse createChallenge(ChallengeRequest challengeRequest) {
-		// Averiguar como hacer lo de localDateTime
-		Challenge challenge = AdminMapper.mapChallengeRToEntity(challengeRequest);
+		Challenge challenge = ChallengeMapper.mapRequestToEntity(challengeRequest);
 		challengeRepository.save(challenge);
-		return AdminMapper.mapChallengeEntityToResponse(challenge);
+		return ChallengeMapper.mapEntityToResponse(challenge);
 	}
 
 	/**
@@ -44,7 +44,7 @@ public class ChallengeService {
 	 */
 	public List<ChallengeResponse> listChallenges() {
 		return challengeRepository.findAll().stream()
-				.map(challenge -> AdminMapper.mapChallengeEntityToResponse(challenge)).collect(Collectors.toList());
+				.map(challenge -> ChallengeMapper.mapEntityToResponse(challenge)).collect(Collectors.toList());
 	}
 
 	/**
@@ -56,13 +56,13 @@ public class ChallengeService {
 	 */
 	public ChallengeResponse updateChallenge(int id, ChallengeRequest request) {
 		Challenge challenge = challengeRepository.findById(id).orElseThrow(null);
-		challenge = AdminMapper.mapChallengeRToEntity(request);
+		challenge = ChallengeMapper.mapRequestToEntity(request);
 		challengeRepository.save(challenge);
-		return AdminMapper.mapChallengeEntityToResponse(challenge);
+		return ChallengeMapper.mapEntityToResponse(challenge);
 	}
 
 	/**
-	 * Delete challenge.
+	 * Delete challenge by id.
 	 *
 	 * @param id the id challenge
 	 */
@@ -78,7 +78,7 @@ public class ChallengeService {
 	 */
 	public List<ChallengeSummary> searchChallenge(String title) {
 		List<ChallengeSummary> searchedChallenges = challengeRepository.findByTitle(title).stream()
-				.map(ch -> AdminMapper.mapChallengeEToSummary(ch)).toList();
+				.map(ch -> ChallengeMapper.mapEntityToSummary(ch)).toList();
 		return searchedChallenges;
 	}
 
@@ -123,5 +123,23 @@ public class ChallengeService {
 //
 //		return "Inscripción al reto exitosa";
 //	}
+	
+	/**
+     * Verifica si un usuario puede ver el reto antes de la fecha de inicio.
+     * - Si es un evento instantáneo, solo se puede ver a partir de `startDate`.
+     * - Si se permite verlo una semana antes, se puede acceder desde `startDate - 7 días`.
+     *
+     * @param currentDate the current date
+     * @param isInstantEvent the is instant event
+	 * @param startDate 
+     * @return true, if successful
+     */
+    public boolean canUserSeeChallenge(LocalDateTime currentDate, boolean isInstantEvent, LocalDateTime startDate) {
+        if (isInstantEvent) {
+            return !currentDate.isBefore(startDate);
+        } else {
+            return !currentDate.isBefore(startDate.minusDays(7));
+        }
+    }
 
 }

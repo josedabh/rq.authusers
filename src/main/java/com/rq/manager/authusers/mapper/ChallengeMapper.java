@@ -4,31 +4,30 @@ import com.rq.manager.authusers.bean.ChallengeRequest;
 import com.rq.manager.authusers.bean.ChallengeResponse;
 import com.rq.manager.authusers.bean.ChallengeSummary;
 import com.rq.manager.authusers.entity.Challenge;
+import com.rq.manager.authusers.util.Util;
 
-/**
- * The Class AdminMapper.
- */
-public class AdminMapper {
+public class ChallengeMapper {
 	
 	/**
-	 * Instantiates a new admin mapper.
+	 * Instantiates a new challenge mapper.
 	 */
-	public AdminMapper() {
-		
+	public ChallengeMapper() {
+		// Default constructor
 	}
-	
+
 	/**
 	 * Map challenge request to entity.
 	 *
 	 * @param request the request
 	 * @return the challenge
 	 */
-	public static Challenge mapChallengeRToEntity(ChallengeRequest request) {
+	public static Challenge mapRequestToEntity(ChallengeRequest request) {
 		Challenge challenge = new Challenge();
 		challenge.setTitle(request.getTitle());
 		challenge.setDescription(request.getDescription());
-		challenge.setDifficulty(request.getDescription());
-//		challenge.setDuration(LocalDateTime.of(2000,01,01,10,30));
+		challenge.setState(request.getState());
+		challenge.setStartDate(Util.getLocalDateTime(request.getStartDate()));
+		challenge.setEndDate(Util.getLocalDateTime(request.getEndDate()));
 		challenge.setDifficulty(request.getDifficulty());
 		challenge.setPoints(request.getPoints());
 		return challenge;
@@ -40,16 +39,17 @@ public class AdminMapper {
 	 * @param entity the entity
 	 * @return the challenge response
 	 */
-	public static ChallengeResponse mapChallengeEntityToResponse(Challenge entity) {
+	public static ChallengeResponse mapEntityToResponse(Challenge entity) {
 		return ChallengeResponse.builder().id(entity.getId())
 				.title(entity.getTitle()).description(entity.getDescription())
-				.difficulty(entity.getDifficulty())//.duration(entity.getDuration())
+				.difficulty(entity.getDifficulty()).state(entity.getState())
+				.startDate(Util.getDate(entity.getStartDate()))
+				.endDate(Util.getDate(entity.getEndDate()))
 				.points(entity.getPoints()).build();
 	}
 
-	public static ChallengeSummary mapChallengeEToSummary(Challenge ch) {
+	public static ChallengeSummary mapEntityToSummary(Challenge ch) {
 		return ChallengeSummary.builder()
 				.title(ch.getTitle()).id(ch.getId()).build();
 	}
-
 }

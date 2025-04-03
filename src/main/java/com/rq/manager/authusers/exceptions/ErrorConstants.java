@@ -38,4 +38,7 @@ public class ErrorConstants {
 	
 	/** The Constant INTERNAL_CODE. */
 	public static final String INTERNAL_CODE = ".internalCode";
+
+	/** The Constant USER_NOT_FOUND. */
+	public static final String USER_NOT_FOUND = "user_not_found";
 }

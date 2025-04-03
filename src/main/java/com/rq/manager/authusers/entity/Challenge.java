@@ -42,6 +42,10 @@ public class Challenge {
     /** The difficulty. */
     @Column(name = "DIFFICULTY", nullable = false)
     private String difficulty;
+    
+    /** The state. */
+    @Column(name = "STATE"/*, nullable = false*/)
+    private String state;
 
     /** The start date. */
     @Column(name = "START_DATE"/*, nullable = false*/)
@@ -55,20 +59,4 @@ public class Challenge {
     @Column(name = "POINTS", nullable = false)
     private int points;
 
-    /**
-     * Verifica si un usuario puede ver el reto antes de la fecha de inicio.
-     * - Si es un evento instantáneo, solo se puede ver a partir de `startDate`.
-     * - Si se permite verlo una semana antes, se puede acceder desde `startDate - 7 días`.
-     *
-     * @param currentDate the current date
-     * @param isInstantEvent the is instant event
-     * @return true, if successful
-     */
-    public boolean canUserSeeChallenge(LocalDateTime currentDate, boolean isInstantEvent) {
-        if (isInstantEvent) {
-            return !currentDate.isBefore(startDate);
-        } else {
-            return !currentDate.isBefore(startDate.minusDays(7));
-        }
-    }
 }
