@@ -68,6 +68,11 @@ public class AuthController {
 	 * @param login the login
 	 * @return the token
 	 */
+	@Operation(summary = "Iniciar sesión del usuario",
+			description = "El usuario puede iniciar sesión con su email,"
+					+ " nombre de usuario o número de teléfono.")
+    @ApiResponse(responseCode = "201", description = "Iniciar sesión exitosamente",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)))
 	@PostMapping("/login")
     public String login(@Valid @RequestBody Login login) {
         return authService.authenticateUser(login);

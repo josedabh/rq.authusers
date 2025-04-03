@@ -1,7 +1,5 @@
 package com.rq.manager.authusers.mapper;
 
-import java.time.LocalDateTime;
-
 import com.rq.manager.authusers.bean.ChallengeRequest;
 import com.rq.manager.authusers.bean.ChallengeResponse;
 import com.rq.manager.authusers.bean.ChallengeSummary;
@@ -30,7 +28,7 @@ public class AdminMapper {
 		challenge.setTitle(request.getTitle());
 		challenge.setDescription(request.getDescription());
 		challenge.setDifficulty(request.getDescription());
-		challenge.setDuration(LocalDateTime.of(2000,01,01,10,30));
+//		challenge.setDuration(LocalDateTime.of(2000,01,01,10,30));
 		challenge.setDifficulty(request.getDifficulty());
 		challenge.setPoints(request.getPoints());
 		return challenge;
@@ -45,7 +43,7 @@ public class AdminMapper {
 	public static ChallengeResponse mapChallengeEntityToResponse(Challenge entity) {
 		return ChallengeResponse.builder().id(entity.getId())
 				.title(entity.getTitle()).description(entity.getDescription())
-				.difficulty(entity.getDifficulty()).duration(entity.getDuration())
+				.difficulty(entity.getDifficulty())//.duration(entity.getDuration())
 				.points(entity.getPoints()).build();
 	}
 

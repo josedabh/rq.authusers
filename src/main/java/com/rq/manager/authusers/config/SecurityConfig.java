@@ -49,7 +49,7 @@ public class SecurityConfig {
 				.cors(Customizer.withDefaults())
 				.authorizeHttpRequests(auth -> 
 				auth.requestMatchers(AuthController + "/login" , AuthController + "/register",
-						"/swagger-ui/**", "/v3/api-docs/**")
+						"/swagger-ui/**", "/v3/api-docs/**", "/api/admin/challenge/create-challenge")
 						.permitAll()
 						.anyRequest().authenticated())
 				.httpBasic(Customizer.withDefaults())

@@ -15,8 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.rq.manager.authusers.bean.ChallengeRequest;
 import com.rq.manager.authusers.bean.ChallengeResponse;
 import com.rq.manager.authusers.bean.ChallengeSummary;
+import com.rq.manager.authusers.bean.UserResponse;
 import com.rq.manager.authusers.service.ChallengeService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,7 +33,7 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/api/admin/challenge")
 @AllArgsConstructor
 @Tag(name = "ChallengeController", 
-description = "Controlador que maneja los usuarios")
+description = "Controlador de los retos")
 @ApiResponses(value = {
 		@ApiResponse(responseCode = "400", description = "BAD REQUEST")
 })
@@ -54,6 +58,9 @@ public class ChallengeController {
 	 * @param challengeRequest the challenge request
 	 * @return the challenge response
 	 */
+	@Operation(summary = "Crear nuevo reto", description = "Crea un nuevo reto")
+    @ApiResponse(responseCode = "201", description = "Creación del reto exitosamente",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class)))
 	@PostMapping("/create-challenge")
 	public ChallengeResponse createChallenge(@RequestBody ChallengeRequest challengeRequest) {
 		return challengeService.createChallenge(challengeRequest);

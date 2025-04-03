@@ -1,6 +1,6 @@
 package com.rq.manager.authusers.bean;
 
-import java.time.LocalDateTime;
+import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,15 +15,13 @@ import lombok.Setter;
 @Builder
 public class ChallengeResponse {
 	
-	private int id;
+	private UUID id;
 	
 	private String title;
 	
 	private String description;
 	
 	private String difficulty;
-	
-	private LocalDateTime duration;
 	
 	private int points;
 

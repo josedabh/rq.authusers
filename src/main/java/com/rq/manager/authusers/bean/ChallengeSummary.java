@@ -1,5 +1,7 @@
 package com.rq.manager.authusers.bean;
 
+import java.util.UUID;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +19,7 @@ import lombok.Setter;
 public class ChallengeSummary {
 	
 	/** The id. */
-	private int id;
+	private UUID id;
 	
 	/** The title. */
 	private String title;
