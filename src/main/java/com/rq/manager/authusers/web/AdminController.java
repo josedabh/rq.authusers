@@ -14,18 +14,22 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 
+/**
+ * The Class AdminController.
+ */
 @RestController
 @RequestMapping("/api/admin/auth")
 @AllArgsConstructor
-@Tag(name = "AuthController", 
+@Tag(name = "AuthController",
 description = "Controlador que maneja los usuarios")
-@ApiResponses(value = {
-		@ApiResponse(responseCode = "400", description = "BAD REQUEST")
+@ApiResponses(value = { 
+		@ApiResponse(responseCode = "400", description = "BAD REQUEST") 
 })
 public class AdminController {
 
+	/** The admin service. */
 	private AdminService adminService;
-	
+
 	/**
 	 * List users.
 	 *
@@ -35,4 +39,5 @@ public class AdminController {
 	public List<UserResponse> listUsers() {
 		return adminService.getListUsers();
 	}
+
 }

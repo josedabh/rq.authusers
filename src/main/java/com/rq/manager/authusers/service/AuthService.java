@@ -4,6 +4,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.rq.manager.authusers.bean.Login;
@@ -26,6 +27,9 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class AuthService {
 
+    /** The password encoder. */
+    private final PasswordEncoder passwordEncoder;
+
 	/** The user repository. */
 	private UserRepository userRepository;
 	
@@ -34,7 +38,7 @@ public class AuthService {
 	
 	/** The authentication manager builder. */
 	private AuthenticationManagerBuilder authenticationManagerBuilder;
-	
+
 	/**
 	 * Register user.
 	 *
@@ -61,14 +65,14 @@ public class AuthService {
 	 * @return the user
 	 */
 	public String authenticateUser(Login login) {
-		User user = userRepository.findByUsernameOrEmailOrNumPhoneAndPassword(
-                login.getIdentifier(), 
-                login.getIdentifier(), 
-                login.getIdentifier(), 
-                login.getPassword()
-        )
-        .orElseThrow(() -> new CustomException(ErrorConstants.ERROR_CREDENTIALS));
-		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
+		User user = userRepository.findByIdentifier(login.getIdentifier())
+					.orElseThrow(() -> 
+					new CustomException(ErrorConstants.ERROR_CREDENTIALS));
+		if (!passwordEncoder.matches(login.getPassword(), user.getPassword())) {
+			throw new CustomException(ErrorConstants.ERROR_CREDENTIALS);
+		}
+		//Creamos el token al encontrar el usuario
+		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), login.getPassword());
 		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	    return jwtUtil.generarToken(authentication);

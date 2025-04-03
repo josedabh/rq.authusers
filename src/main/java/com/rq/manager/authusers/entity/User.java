@@ -14,6 +14,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * The Class User.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -23,33 +26,41 @@ import lombok.Setter;
 //Mejorar la clase de rol en base de datos
 public class User {
 
+	/** The id. */
 	@Id
 	@GeneratedValue(generator = "UUID")
 	@Column(name = "UUID", unique = true)
 	private UUID id;
 	
+	/** The email. */
 	@Column(name = "EMAIL", length = 100,
 			unique = true, nullable = false)
 	private String email;
 	
+	/** The password. */
 	@Column(name = "PASSWORD", length = 200,
 			nullable = false)
 	private String password;
 	
+	/** The name. */
 	@Column(name = "NAME", length = 80)
 	private String name;
 	
+	/** The lastname. */
 	@Column(name = "LASTNAME", length = 150)
 	private String lastname;
 	
+	/** The username. */
 	@Column(name = "USERNAME", length = 100, 
 			unique = true, nullable = false)
 	private String username;
 	
+	/** The num phone. */
 	@Column(name = "NUM_PHONE",length = 9,
 			unique = true)
 	private String numPhone;
 	
+	/** The rol. */
 	@Enumerated(EnumType.STRING)
 	private Rol rol;
 }

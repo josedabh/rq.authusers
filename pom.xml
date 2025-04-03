@@ -84,6 +84,12 @@
 			<scope>test</scope>
 		</dependency>
 
+        <!--Oauth dependencies-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-client</artifactId>
+		</dependency>
+
 		<!--JWT dependencies version 11.5 la 12.6 falla-->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
