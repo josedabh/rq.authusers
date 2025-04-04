@@ -23,13 +23,12 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Table(name = "USER")
-//Mejorar la clase de rol en base de datos
 public class User {
 
 	/** The id. */
 	@Id
 	@GeneratedValue(generator = "UUID")
-	@Column(name = "UUID", unique = true)
+	@Column(name = "ID", unique = true)
 	private UUID id;
 	
 	/** The email. */

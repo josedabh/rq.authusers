@@ -26,10 +26,10 @@ import lombok.Setter;
 public class Challenge {
 
     /** The id. */
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @Column(name = "ID")
-    private UUID id;
+	@Id
+	@GeneratedValue(generator = "UUID")
+	@Column(name = "ID", unique = true)
+	private UUID id;
 
     /** The title. */
     @Column(name = "TITLE", nullable = false)

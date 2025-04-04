@@ -1,6 +1,7 @@
 package com.rq.manager.authusers.web;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -60,9 +61,11 @@ public class ChallengeController {
 	 */
 	@Operation(summary = "Crear nuevo reto", description = "Crea un nuevo reto")
     @ApiResponse(responseCode = "201", description = "Creación del reto exitosamente",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class)))
+            content = @Content(mediaType = "application/json",
+            schema = @Schema(implementation = UserResponse.class)))
 	@PostMapping("/create-challenge")
-	public ChallengeResponse createChallenge(@RequestBody ChallengeRequest challengeRequest) {
+	public ChallengeResponse createChallenge(@RequestBody ChallengeRequest 
+			challengeRequest) {
 		return challengeService.createChallenge(challengeRequest);
 	}
 	
@@ -72,7 +75,7 @@ public class ChallengeController {
 	 * @param id the id
 	 */
 	@DeleteMapping("/delete-challenge/{id}")
-	public void deleteChallenge(@PathVariable int id) {
+	public void deleteChallenge(@PathVariable UUID id) {
 		challengeService.deleteChallenge(id);
 	}
 	
@@ -84,7 +87,8 @@ public class ChallengeController {
 	 * @return the challenge response
 	 */
 	@PutMapping("/update-challenge/{id}")
-	public ChallengeResponse updateChallenge(@PathVariable int id, @RequestBody ChallengeRequest challengeRequest) {
+	public ChallengeResponse updateChallenge(@PathVariable UUID id,
+			@RequestBody ChallengeRequest challengeRequest) {
 		return challengeService.updateChallenge(id, challengeRequest);
 	}
 	
@@ -95,7 +99,8 @@ public class ChallengeController {
 	 * @return the list
 	 */
 	@GetMapping("/search-challenge")
-	public List<ChallengeSummary> searchChallenges(@RequestParam(defaultValue = "", required = true) String title) {
+	public List<ChallengeSummary> searchChallenges(@RequestParam(defaultValue = "",
+		required = true) String title) {
 		return challengeService.searchChallenge(title);
 	}
 

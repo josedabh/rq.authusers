@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.rq.manager.authusers.bean.Key;
 import com.rq.manager.authusers.bean.Login;
 import com.rq.manager.authusers.bean.Register;
 import com.rq.manager.authusers.bean.UserResponse;
@@ -64,7 +65,7 @@ public class AuthService {
 	 * @param login the credentials for open
 	 * @return the user
 	 */
-	public String authenticateUser(Login login) {
+	public Key authenticateUser(Login login) {
 		User user = userRepository.findByIdentifier(login.getIdentifier())
 					.orElseThrow(() -> 
 					new CustomException(ErrorConstants.ERROR_CREDENTIALS));
@@ -75,7 +76,9 @@ public class AuthService {
 		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), login.getPassword());
 		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-	    return jwtUtil.generarToken(authentication);
+		Key key = new Key();
+		key.setToken(jwtUtil.generarToken(authentication));
+	    return key;
 	}
 
 }

@@ -2,6 +2,7 @@ package com.rq.manager.authusers.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -54,7 +55,7 @@ public class ChallengeService {
 	 * @param request the challenge request
 	 * @return the challenge response
 	 */
-	public ChallengeResponse updateChallenge(int id, ChallengeRequest request) {
+	public ChallengeResponse updateChallenge(UUID id, ChallengeRequest request) {
 		Challenge challenge = challengeRepository.findById(id).orElseThrow(null);
 		challenge = ChallengeMapper.mapRequestToEntity(request);
 		challengeRepository.save(challenge);
@@ -66,7 +67,7 @@ public class ChallengeService {
 	 *
 	 * @param id the id challenge
 	 */
-	public void deleteChallenge(int id) {
+	public void deleteChallenge(UUID id) {
 		challengeRepository.deleteById(id);
 	}
 
