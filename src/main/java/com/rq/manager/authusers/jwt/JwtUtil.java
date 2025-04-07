@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 
 /**
  * The Class JwtUtil.
@@ -27,6 +28,13 @@ public class JwtUtil {
     /** The time expiration of token (in milliseconds). */
     @Value("${jwt.expiration}")
     private long expiration; 
+    
+    private SecretKey key;
+    
+    @PostConstruct
+    public void init() {
+        this.key = Keys.hmacShaKeyFor(secretJwt.getBytes(StandardCharsets.UTF_8));
+    }
 
     /**
      * Generar token mediante la authenticacion del usuario.
@@ -40,7 +48,7 @@ public class JwtUtil {
                 .setSubject(mainUser.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration)) // Usa el valor de application.properties
-                .signWith(getSigningKey())
+                .signWith(key)
                 .compact();
     }
 
@@ -94,18 +102,10 @@ public class JwtUtil {
      */
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey()) // Usa la misma clave
+                .setSigningKey(key) // Usa la misma clave
                 .build()
                 .parseClaimsJws(token) // Usa parseClaimsJws() en vez de parseClaimsJwt()
                 .getBody();
     }
 
-    /**
-     * Generate signing key.
-     *
-     * @return the secret key
-     */
-    private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(secretJwt.getBytes(StandardCharsets.UTF_8));
-    }
 }
