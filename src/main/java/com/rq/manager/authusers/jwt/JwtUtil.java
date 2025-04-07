@@ -40,7 +40,7 @@ public class JwtUtil {
                 .setSubject(mainUser.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration)) // Usa el valor de application.properties
-                .signWith(getSigningKey()) // Usa un método para obtener la clave
+                .signWith(getSigningKey())
                 .compact();
     }
 

@@ -41,9 +41,11 @@ public class UserService implements UserDetailsService {
 				.orElseThrow(() -> new CustomException(ErrorConstants.USER_NOT_FOUND));
 		System.out.println("🔍 Buscando usuario en la BD: " + username);
 		SimpleGrantedAuthority authority = new SimpleGrantedAuthority(user.getRol().toString());
-		return new org.springframework.security.core.userdetails.User(
-				user.getName(),
-				user.getPassword(),
-				Collections.singleton(authority));
+		return org.springframework.security.core.userdetails.User
+				.withUsername(user.getUsername())
+				.password(user.getPassword())
+				.authorities(Collections.singleton(authority))
+				.accountExpired(false)
+				.build();
 	}
 }
