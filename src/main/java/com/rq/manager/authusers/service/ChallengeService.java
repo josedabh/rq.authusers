@@ -16,6 +16,9 @@ import com.rq.manager.authusers.repository.ChallengeRepository;
 
 import lombok.AllArgsConstructor;
 
+/**
+ * The Class ChallengeService.
+ */
 @Service
 @AllArgsConstructor
 public class ChallengeService {
@@ -23,7 +26,12 @@ public class ChallengeService {
 	/** The challenge repository. */
 	private ChallengeRepository challengeRepository;
 
-	/** The user challenge repository. */
+	/**
+	 * The user challenge repository.
+	 *
+	 * @param challengeRequest the challenge request
+	 * @return the challenge response
+	 */
 //	private UserChallengeRepository userChallengeRepository;
 
 	/**
@@ -46,6 +54,17 @@ public class ChallengeService {
 	public List<ChallengeResponse> listChallenges() {
 		return challengeRepository.findAll().stream()
 				.map(challenge -> ChallengeMapper.mapEntityToResponse(challenge)).collect(Collectors.toList());
+	}
+	
+	/**
+	 * Gets the challenge by id.
+	 *
+	 * @param id the id
+	 * @return the challenge by id
+	 */
+	public ChallengeResponse getChallengeById(UUID id) {
+		Challenge challenge = challengeRepository.findById(id).orElseThrow(null);
+		return ChallengeMapper.mapEntityToResponse(challenge);
 	}
 
 	/**
@@ -78,16 +97,17 @@ public class ChallengeService {
 	 * @return the list challenge searched
 	 */
 	public List<ChallengeSummary> searchChallenge(String title) {
-		List<ChallengeSummary> searchedChallenges = challengeRepository.findByTitle(title).stream()
+		List<ChallengeSummary> searchedChallenges = challengeRepository.searchByTitle(title).stream()
 				.map(ch -> ChallengeMapper.mapEntityToSummary(ch)).toList();
 		return searchedChallenges;
 	}
 
 	/**
 	 * Join challenge. modificar
-	 * 
-	 * @param userId      the user id
-	 * @param challengeId the challenge id
+	 *
+	 * @param currentDate the current date
+	 * @param isInstantEvent the is instant event
+	 * @param startDate the start date
 	 * @return the string
 	 */
 //	@Transactional

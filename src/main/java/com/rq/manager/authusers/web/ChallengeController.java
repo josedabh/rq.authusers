@@ -54,6 +54,18 @@ public class ChallengeController {
 	}
 	
 	/**
+	 * Gets the challenge by id.
+	 *
+	 * @param id the id
+	 * @return the challenge by id
+	 */
+	@GetMapping("/get-challenge/{id}")
+	public ChallengeResponse getChallengeById(@PathVariable UUID id) {
+		return challengeService.getChallengeById(id);
+	}
+	
+	
+	/**
 	 * Creates the challenge.
 	 *
 	 * @param challengeRequest the challenge request

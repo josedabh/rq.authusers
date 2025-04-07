@@ -12,7 +12,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -41,19 +40,28 @@ public class SecurityConfig {
 	 * @return the security filter chain
 	 * @throws Exception the exception
 	 */
+//	@Bean
+//	protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//		http.csrf(AbstractHttpConfigurer::disable)
+//				.cors(Customizer.withDefaults())
+//				.authorizeHttpRequests(auth -> 
+//				auth.requestMatchers(Constants.REQUEST_LOGIN , Constants.REQUEST_REGISTER,
+//						Constants.SWAGGER_UI, Constants.API_DOCS)
+//						.permitAll()
+//						.anyRequest().authenticated())
+//				.httpBasic(Customizer.withDefaults())
+//				.exceptionHandling(exception -> exception.authenticationEntryPoint(jwtEntryPoint()))
+//				.addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+//		return http.build();
+//	}
 	@Bean
 	protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.csrf(AbstractHttpConfigurer::disable)
-				.cors(Customizer.withDefaults())
-				.authorizeHttpRequests(auth -> 
-				auth.requestMatchers(Constants.REQUEST_LOGIN , Constants.REQUEST_REGISTER,
-						Constants.SWAGGER_UI, Constants.API_DOCS)
-						.permitAll()
-						.anyRequest().authenticated())
-				.httpBasic(Customizer.withDefaults())
-				.exceptionHandling(exception -> exception.authenticationEntryPoint(jwtEntryPoint()))
-				.addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-		return http.build();
+	    http.csrf(AbstractHttpConfigurer::disable)
+	        .cors(Customizer.withDefaults())
+	        .authorizeHttpRequests(auth -> auth
+	            .anyRequest().permitAll())
+	        .httpBasic(Customizer.withDefaults());
+	    return http.build();
 	}
 	
 	/**
