@@ -47,7 +47,7 @@ public class AuthController {
 	 */
 	@Operation(summary = "Registrar un nuevo usuario", description = "Registra un usuario con rol NORMAL.")
     @ApiResponse(responseCode = "201", description = "Usuario registrado exitosamente",
-            content = @Content(mediaType = Constants.MEDIA_TYPE, schema = @Schema(implementation = UserResponse.class)))
+            content = @Content(mediaType = Constants.APPLICATION_JSON, schema = @Schema(implementation = UserResponse.class)))
 	@PostMapping("/register")
 	public UserResponse registerUser(@Valid @RequestBody Register register) {
 		return authService.registerUser(register);

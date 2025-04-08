@@ -36,8 +36,8 @@ public class Constants {
 	/** The Constant BAD_REQUEST. */
 	public static final String BAD_REQUEST = "Bad Request";
 	
-	/** The Constant MEDIA_TYPE. */
-	public static final String MEDIA_TYPE = "application/json";
+	/** The Constant APPLICATION_JSON. */
+	public static final String APPLICATION_JSON = "application/json";
 	
 	/** The Constant BEARER. */
 	public static final String BEARER = "Bearer ";

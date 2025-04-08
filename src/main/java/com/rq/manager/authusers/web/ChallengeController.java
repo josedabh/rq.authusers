@@ -17,6 +17,8 @@ import com.rq.manager.authusers.bean.ChallengeRequest;
 import com.rq.manager.authusers.bean.ChallengeResponse;
 import com.rq.manager.authusers.bean.ChallengeSummary;
 import com.rq.manager.authusers.bean.UserResponse;
+import com.rq.manager.authusers.constants.Constants;
+import com.rq.manager.authusers.exceptions.ErrorResponse;
 import com.rq.manager.authusers.service.ChallengeService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,7 +38,12 @@ import lombok.AllArgsConstructor;
 @Tag(name = "ChallengeController", 
 description = "Controlador de los retos")
 @ApiResponses(value = {
-		@ApiResponse(responseCode = "400", description = "BAD REQUEST")
+		@ApiResponse(responseCode = "400", description = Constants.BAD_REQUEST,
+				content = @Content),
+		@ApiResponse(responseCode = "401", 
+        description = Constants.UNAUTHORIZED,
+        content = @Content(mediaType = Constants.APPLICATION_JSON,
+        schema = @Schema(implementation = ErrorResponse.class)))
 })
 public class ChallengeController {
 	
