@@ -22,4 +22,6 @@ public interface UserChallengeRepository extends JpaRepository<UserChallenge, Lo
 	 */
 	// Permite verificar si un usuario ya se ha unido a un reto.
 	Optional<UserChallenge> findByUserAndChallenge(User user, Challenge challenge);
+	
+	boolean existsByUserAndChallenge(User user, Challenge challenge);
 }

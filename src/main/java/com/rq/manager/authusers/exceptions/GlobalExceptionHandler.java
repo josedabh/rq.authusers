@@ -34,6 +34,28 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ErrorResponse> handleCustomException(CustomException ex) {
 		return buildErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
 	}
+	
+	/**
+	 * Handle business exception.
+	 *
+	 * @param ex the ex
+	 * @return the response entity
+	 */
+	@ExceptionHandler(BusinessException.class)
+	public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException ex) {
+		return buildErrorResponse(ex.getMessage(), HttpStatus.EXPECTATION_FAILED);
+	}
+	
+	/**
+	 * Handle resource not found exception.
+	 *
+	 * @param ex the ex
+	 * @return the response entity
+	 */
+	@ExceptionHandler(ResourceNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex) {
+		return buildErrorResponse(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+	}
 
 	/**
 	 * Builds the error response.

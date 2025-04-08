@@ -34,12 +34,10 @@ public class UserService implements UserDetailsService {
 	 * @return the user details
 	 * @throws UsernameNotFoundException the username not found exception
 	 */
-	//Como rehacer el metodo loadUserByUsername
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		User user = userRepository.findByIdentifier(username)
 				.orElseThrow(() -> new CustomException(ErrorConstants.USER_NOT_FOUND));
-		System.out.println("🔍 Buscando usuario en la BD: " + username);
 		SimpleGrantedAuthority authority = new SimpleGrantedAuthority(user.getRol().toString());
 		return org.springframework.security.core.userdetails.User
 				.withUsername(user.getUsername())

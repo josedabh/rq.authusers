@@ -48,6 +48,12 @@ public class ChallengeMapper {
 				.points(entity.getPoints()).build();
 	}
 
+	/**
+	 * Map entity to summary.
+	 *
+	 * @param ch the ch
+	 * @return the challenge summary
+	 */
 	public static ChallengeSummary mapEntityToSummary(Challenge ch) {
 		return ChallengeSummary.builder()
 				.title(ch.getTitle()).id(ch.getId()).build();
