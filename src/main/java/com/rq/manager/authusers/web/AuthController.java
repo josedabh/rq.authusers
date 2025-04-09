@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.rq.manager.authusers.bean.Key;
 import com.rq.manager.authusers.bean.Login;
 import com.rq.manager.authusers.bean.Register;
-import com.rq.manager.authusers.bean.UserResponse;
 import com.rq.manager.authusers.constants.Constants;
 import com.rq.manager.authusers.exceptions.ErrorResponse;
 import com.rq.manager.authusers.service.AuthService;
@@ -53,11 +52,11 @@ public class AuthController {
 	 * @return the user response
 	 */
 	@Operation(summary = "Registrar un nuevo usuario", description = "Registra un usuario con rol NORMAL.")
-    @ApiResponse(responseCode = "201", description = "Usuario registrado exitosamente",
+    @ApiResponse(responseCode = "200", description = "Usuario registrado exitosamente",
             content = @Content(mediaType = Constants.APPLICATION_JSON,
-            schema = @Schema(implementation = UserResponse.class)))
+            schema = @Schema(implementation = Key.class)))
 	@PostMapping("/register")
-	public UserResponse registerUser(@Valid @RequestBody Register register) {
+	public Key registerUser(@Valid @RequestBody Register register) {
 		return authService.registerUser(register);
 	}
 	
@@ -70,7 +69,7 @@ public class AuthController {
 	@Operation(summary = "Iniciar sesión del usuario",
 			description = "El usuario puede iniciar sesión con su email,"
 					+ " nombre de usuario o número de teléfono.")
-    @ApiResponse(responseCode = "201", description = "Iniciar sesión exitosamente",
+    @ApiResponse(responseCode = "200", description = "Iniciar sesión exitosamente",
             content = @Content(mediaType = Constants.APPLICATION_JSON,
             schema = @Schema(implementation = Key.class)))
 	@PostMapping("/login")

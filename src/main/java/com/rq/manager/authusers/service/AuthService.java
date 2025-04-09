@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import com.rq.manager.authusers.bean.Key;
 import com.rq.manager.authusers.bean.Login;
 import com.rq.manager.authusers.bean.Register;
-import com.rq.manager.authusers.bean.UserResponse;
 import com.rq.manager.authusers.entity.Rol;
 import com.rq.manager.authusers.entity.User;
 import com.rq.manager.authusers.exceptions.CustomException;
@@ -46,17 +45,22 @@ public class AuthService {
 	 * @param register The value of the new user
 	 * @return the new user
 	 */
-	public UserResponse registerUser(Register register) {
-		if (userRepository.existsByEmail(register.getEmail())) {
-			throw new CustomException(ErrorConstants.NULL_USER);
-		}
-
-		if (userRepository.existsByUsername(register.getUsername())) {
+	public Key registerUser(Register register) {
+		//Verificamos que el email y el username no existan
+		//Cambiar el mensaje del throw
+		if (userRepository.existsByEmail(register.getEmail())
+				|| userRepository.existsByUsername(register.getUsername())) {
 			throw new CustomException(ErrorConstants.NULL_USER);
 		}
 		User user = UserMapper.mapRegisterEntity(register, Rol.NORMAL);
 		userRepository.save(user);
-		return UserMapper.mapEntityUserResponse(user);
+		//Creamos el token al encontrar el usuario
+		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), register.getPassword());
+		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		Key key = new Key();
+		key.setToken(jwtUtil.generarToken(authentication));
+	    return key;
 	}
 	
 	/**

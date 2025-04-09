@@ -28,7 +28,7 @@ public class User {
 	/** The id. */
 	@Id
 	@GeneratedValue(generator = "UUID")
-	@Column(name = "ID", unique = true)
+	@Column(name = "ID")
 	private UUID id;
 	
 	/** The email. */
@@ -61,7 +61,7 @@ public class User {
 	
 	/** The points. */
 	@Column(name = "POINTS")
-	private Integer points;
+	private int points;
 	
 	/** The rol. */
 	@Enumerated(EnumType.STRING)

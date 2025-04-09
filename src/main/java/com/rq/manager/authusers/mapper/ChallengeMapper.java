@@ -4,7 +4,6 @@ import com.rq.manager.authusers.bean.ChallengeRequest;
 import com.rq.manager.authusers.bean.ChallengeResponse;
 import com.rq.manager.authusers.bean.ChallengeSummary;
 import com.rq.manager.authusers.entity.Challenge;
-import com.rq.manager.authusers.entity.StatesChallengeEnum;
 import com.rq.manager.authusers.util.Util;
 
 public class ChallengeMapper {
@@ -26,7 +25,6 @@ public class ChallengeMapper {
 		Challenge challenge = new Challenge();
 		challenge.setTitle(request.getTitle());
 		challenge.setDescription(request.getDescription());
-		challenge.setState(StatesChallengeEnum.setState(request.getState()));
 		challenge.setStartDate(Util.getLocalDateTime(request.getStartDate()));
 		challenge.setEndDate(Util.getLocalDateTime(request.getEndDate()));
 		challenge.setDifficulty(request.getDifficulty());

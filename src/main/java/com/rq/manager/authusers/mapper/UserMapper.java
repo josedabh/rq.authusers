@@ -37,6 +37,7 @@ public class UserMapper {
         user.setLastname(register.getLastname());
         user.setUsername(register.getUsername());
         user.setNumPhone(register.getNumPhone());
+        user.setPoints(0);
         user.setRol(rol);
         return user;
     }
@@ -48,10 +49,11 @@ public class UserMapper {
 	 * @return the user response
 	 */
 	public static UserResponse mapEntityUserResponse(User user) {
-		return UserResponse.builder().id(user.getId()).email(user.getEmail())
+		return UserResponse.builder().id(user.getId().toString()).email(user.getEmail())
 				.name(user.getName()).lastname(user.getLastname())
 				.password(user.getPassword()).username(user.getUsername())
-				.numPhone(user.getNumPhone()).rol(user.getRol()).build();
+				.numPhone(user.getNumPhone()).points(user.getPoints())
+				.rol(user.getRol()).build();
 	}
 
 }
