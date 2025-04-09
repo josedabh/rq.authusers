@@ -1,6 +1,7 @@
 package com.rq.manager.authusers.service;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -11,10 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.rq.manager.authusers.bean.ChallengeRequest;
 import com.rq.manager.authusers.bean.ChallengeResponse;
 import com.rq.manager.authusers.bean.ChallengeSummary;
+import com.rq.manager.authusers.constants.Constants;
 import com.rq.manager.authusers.entity.Challenge;
+import com.rq.manager.authusers.entity.StatesChallengeEnum;
 import com.rq.manager.authusers.entity.User;
 import com.rq.manager.authusers.entity.UserChallenge;
 import com.rq.manager.authusers.exceptions.BusinessException;
+import com.rq.manager.authusers.exceptions.ErrorConstants;
 import com.rq.manager.authusers.exceptions.ResourceNotFoundException;
 import com.rq.manager.authusers.mapper.ChallengeMapper;
 import com.rq.manager.authusers.repository.ChallengeRepository;
@@ -40,14 +44,6 @@ public class ChallengeService {
 	private UserChallengeRepository userChallengeRepository;
 
 	/**
-	 * The user challenge repository.
-	 *
-	 * @param challengeRequest the challenge request
-	 * @return the challenge response
-	 */
-//	private UserChallengeRepository userChallengeRepository;
-
-	/**
 	 * Creates the challenge.
 	 *
 	 * @param challengeRequest the challenge request
@@ -55,7 +51,7 @@ public class ChallengeService {
 	 */
 	public ChallengeResponse createChallenge(ChallengeRequest challengeRequest) {
 		Challenge challenge = ChallengeMapper.mapRequestToEntity(challengeRequest);
-		challenge.setState("Pending");
+		challenge.setState(StatesChallengeEnum.PENDING);
 		challengeRepository.save(challenge);
 		return ChallengeMapper.mapEntityToResponse(challenge);
 	}
@@ -89,10 +85,18 @@ public class ChallengeService {
 	 * @return the challenge response
 	 */
 	public ChallengeResponse updateChallenge(UUID id, ChallengeRequest request) {
-		Challenge challenge = challengeRepository.findById(id).orElseThrow(null);
-		challenge = ChallengeMapper.mapRequestToEntity(request);
-		challengeRepository.save(challenge);
-		return ChallengeMapper.mapEntityToResponse(challenge);
+		Challenge challenge = challengeRepository.findById(id)
+				.orElse(new Challenge());
+		//Mira que el estado del reto está en pendiente
+		if (Constants.PENDING.equals(challenge.getState().getState())) {
+			challenge = ChallengeMapper.mapRequestToEntity(request);
+			challengeRepository.save(challenge);
+			return ChallengeMapper.mapEntityToResponse(challenge);
+		} else {
+			//Cambiar el throw
+			throw new BusinessException("Challenge is not in pending state");
+		}
+		
 	}
 
 	/**
@@ -101,7 +105,14 @@ public class ChallengeService {
 	 * @param id the id challenge
 	 */
 	public void deleteChallenge(UUID id) {
-		challengeRepository.deleteById(id);
+		Challenge challenge = challengeRepository.findById(id)
+				.orElse(new Challenge());
+		if (Constants.PENDING.equals(challenge.getState().getState())
+				|| Constants.CANCELLED.equals(challenge.getState().getState())) {
+			challengeRepository.deleteById(id);
+		} else {
+			throw new BusinessException("Challenge is not in pending state");
+		}
 	}
 
 	/**
@@ -123,33 +134,34 @@ public class ChallengeService {
 	 */
 	public void cancelChallenge(UUID id) {
 		Challenge challenge = challengeRepository.findById(id).orElseThrow(null);
-		challenge.setState("Cancelled");
-		challengeRepository.save(challenge);
+		if (Constants.IN_PROGRESS.equals(challenge.getState().getState())) {
+			challenge.setState(StatesChallengeEnum.CANCELLED);
+			challengeRepository.save(challenge);
+		}
 	}
 
 	@Transactional
-	public String joinChallenge(UUID userId, UUID challengeId) {
-		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
-
+	public void joinChallenge(UUID userId, UUID challengeId) {
 		Challenge challenge = challengeRepository.findById(challengeId)
 				.orElseThrow(() -> new ResourceNotFoundException("Challenge not found with id: " + challengeId));
-
-		if (userChallengeRepository.existsByUserAndChallenge(user, challenge)) {
-			throw new BusinessException("User is already registered in this challenge");
-		}
-
-		if ("Cancelled".equals(challenge.getState())) {
-			throw new BusinessException("Cannot join a cancelled challenge");
-		}
-
-//		UserChallenge userChallenge = UserChallenge.builder().user(user).challenge(challenge)
-//				.joinDate(LocalDateTime.now()).earnedPoints(0).build();
-		UserChallenge userChallenge = new UserChallenge();
-		userChallengeRepository.save(userChallenge);
-		return "Successfully joined the challenge";
+		
+		if (Constants.IN_PROGRESS.equals(challenge.getState().getState())
+				|| Constants.PENDING.equals(challenge.getState().getState())) {
+			
+			User user = userRepository.findById(userId)
+					.orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+			if (userChallengeRepository.existsByUserAndChallenge(user, challenge)) {
+				throw new BusinessException(ErrorConstants.USER_ALREADY_JOINED_CHALLENGE);
+			}
+			UserChallenge userChallenge = new UserChallenge();
+			userChallenge.setUser(user);
+			userChallenge.setChallenge(challenge);
+			userChallenge.setCompletedAt(new Date());
+			userChallengeRepository.save(userChallenge);
+		} else {
+            throw new BusinessException(ErrorConstants.NOT_STATUS_CHALLENGE);
+        }
 	}
-
 	
 	/**
 	 * Verifica si un usuario puede ver el reto antes de la fecha de inicio. - Si es

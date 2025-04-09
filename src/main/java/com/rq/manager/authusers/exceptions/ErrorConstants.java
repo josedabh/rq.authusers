@@ -41,4 +41,10 @@ public class ErrorConstants {
 
 	/** The Constant USER_NOT_FOUND. */
 	public static final String USER_NOT_FOUND = "user_not_found";
+
+	/** The Constant USER_ALREADY_JOINED_CHALLENGE. */
+	public static final String USER_ALREADY_JOINED_CHALLENGE = "user_already_joined_challenge";
+
+	/** The Constant NOT_STATUS_CHALLENGE. */
+	public static final String NOT_STATUS_CHALLENGE = "not_status_challenge";
 }

@@ -5,6 +5,8 @@ import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -42,10 +44,10 @@ public class Challenge {
     /** The difficulty. */
     @Column(name = "DIFFICULTY", nullable = false)
     private String difficulty;
-    
-    /** The state. */
-    @Column(name = "STATE"/*, nullable = false*/)
-    private String state;
+
+	@Column(name = "STATE")
+	@Enumerated(EnumType.STRING)
+	private StatesChallengeEnum state;
 
     /** The start date. */
     @Column(name = "START_DATE"/*, nullable = false*/)

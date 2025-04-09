@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.rq.manager.authusers.bean.ChallengeRequest;
 import com.rq.manager.authusers.bean.ChallengeResponse;
 import com.rq.manager.authusers.bean.ChallengeSummary;
-import com.rq.manager.authusers.bean.UserResponse;
 import com.rq.manager.authusers.constants.Constants;
 import com.rq.manager.authusers.exceptions.ErrorResponse;
 import com.rq.manager.authusers.service.ChallengeService;
@@ -38,12 +37,14 @@ import lombok.AllArgsConstructor;
 @Tag(name = "ChallengeController", 
 description = "Controlador de los retos")
 @ApiResponses(value = {
-		@ApiResponse(responseCode = "400", description = Constants.BAD_REQUEST,
-				content = @Content),
+		@ApiResponse(responseCode = "400", 
+			description = Constants.BAD_REQUEST, 
+			content = @Content(mediaType = Constants.APPLICATION_JSON,
+			schema = @Schema(implementation = ErrorResponse.class))),
 		@ApiResponse(responseCode = "401", 
-        description = Constants.UNAUTHORIZED,
-        content = @Content(mediaType = Constants.APPLICATION_JSON,
-        schema = @Schema(implementation = ErrorResponse.class)))
+			description = Constants.UNAUTHORIZED, 
+			content = @Content(mediaType = Constants.APPLICATION_JSON, 
+			schema = @Schema(implementation = ErrorResponse.class))) 
 })
 public class ChallengeController {
 	
@@ -66,7 +67,11 @@ public class ChallengeController {
 	 * @param id the id
 	 * @return the challenge by id
 	 */
-	@GetMapping("/get-challenge/{id}")
+	@Operation(summary = "Encontrar reto por id", description = "Busca un reto por id")
+    @ApiResponse(responseCode = "201", description = "El reto ha sido encontrado",
+            content = @Content(mediaType = Constants.APPLICATION_JSON,
+            schema = @Schema(implementation = ChallengeResponse.class)))
+	@GetMapping("/find-challenge/{id}")
 	public ChallengeResponse getChallengeById(@PathVariable UUID id) {
 		return challengeService.getChallengeById(id);
 	}
@@ -80,8 +85,8 @@ public class ChallengeController {
 	 */
 	@Operation(summary = "Crear nuevo reto", description = "Crea un nuevo reto")
     @ApiResponse(responseCode = "201", description = "Creación del reto exitosamente",
-            content = @Content(mediaType = "application/json",
-            schema = @Schema(implementation = UserResponse.class)))
+            content = @Content(mediaType = Constants.APPLICATION_JSON,
+            schema = @Schema(implementation = ChallengeResponse.class)))
 	@PostMapping("/create-challenge")
 	public ChallengeResponse createChallenge(@RequestBody ChallengeRequest 
 			challengeRequest) {
@@ -93,6 +98,10 @@ public class ChallengeController {
 	 *
 	 * @param id the id
 	 */
+	@Operation(summary = "Eliminar reto por id", description = "Elimina un reto por id")
+	@ApiResponse(responseCode = "201", description = "El reto ha sido eliminado", 
+		content = @Content(mediaType = Constants.APPLICATION_JSON, 
+		schema = @Schema(implementation = Void.class)))
 	@DeleteMapping("/delete-challenge/{id}")
 	public void deleteChallenge(@PathVariable UUID id) {
 		challengeService.deleteChallenge(id);
@@ -105,6 +114,8 @@ public class ChallengeController {
 	 * @param challengeRequest the challenge request
 	 * @return the challenge response
 	 */
+	@Operation(summary = "Actualizar reto por id", description = "Actualiza un reto por id")
+	@ApiResponse(responseCode = "201", description = "El reto ha sido actualizado", content = @Content(mediaType = Constants.APPLICATION_JSON, schema = @Schema(implementation = ChallengeResponse.class)))
 	@PutMapping("/update-challenge/{id}")
 	public ChallengeResponse updateChallenge(@PathVariable UUID id,
 			@RequestBody ChallengeRequest challengeRequest) {
@@ -117,10 +128,23 @@ public class ChallengeController {
 	 * @param title the title
 	 * @return the list
 	 */
+	@Operation(summary = "Buscar retos por título", description = "Busca retos por título")
+	@ApiResponse(responseCode = "201", description = "Los retos han sido encontrados",
+		content = @Content(mediaType = Constants.APPLICATION_JSON, 
+		schema = @Schema(implementation = ChallengeSummary.class)))
 	@GetMapping("/search-challenge")
 	public List<ChallengeSummary> searchChallenges(@RequestParam(defaultValue = "",
 		required = true) String title) {
 		return challengeService.searchChallenge(title);
+	}
+	
+	@PostMapping("/{userId}/join/{challengeId}")
+	@Operation(summary = "Unirse a un reto", 
+		description = "Permite a un usuario unirse a un reto específico")
+	@ApiResponse(responseCode = "200", description = "Usuario unido al reto exitosamente")
+	public void joinChallenge(@PathVariable UUID userId, 
+			@PathVariable UUID challengeId) {
+		challengeService.joinChallenge(userId, challengeId);
 	}
 
 }

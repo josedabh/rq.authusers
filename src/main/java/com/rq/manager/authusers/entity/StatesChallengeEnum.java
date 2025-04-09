@@ -6,16 +6,16 @@ package com.rq.manager.authusers.entity;
 public enum StatesChallengeEnum {
 
 	/** The cancelled. */
-	CANCELLED("Cancelled"),
+	CANCELLED("CANCELLED"),
 	
 	/** The pending. */
-	PENDING("Pending"),
+	PENDING("PENDING"),
 
 	/** The in progress. */
-	IN_PROGRESS("In_progress"),
+	IN_PROGRESS("IN_PROGRESS"),
 
 	/** The finished. */
-	FINISHED("Finished");
+	FINISHED("FINISHED");
 
 	/** The state. */
 	private String state;
@@ -36,5 +36,26 @@ public enum StatesChallengeEnum {
 	 */
 	public String getState() {
 		return state;
+	}
+	
+	/**
+	 * Sets the state.
+	 *
+	 * @param state the state
+	 * @return the states challenge enum
+	 */
+	public static StatesChallengeEnum setState(String state) {
+		switch (state) {
+		case "CANCELLED":
+			return CANCELLED;
+		case "PENDING":
+			return PENDING;
+		case "IN_PROGRESS":
+			return IN_PROGRESS;
+		case "FINISHED":
+			return FINISHED;
+		default:
+			throw new IllegalArgumentException("Unknown state: " + state);
+		}
 	}
 }

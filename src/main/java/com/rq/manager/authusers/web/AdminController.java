@@ -20,8 +20,8 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping("/api/admin/auth")
 @AllArgsConstructor
-@Tag(name = "AuthController",
-description = "Controlador que maneja los usuarios")
+@Tag(name = "AdminController",
+description = "Los administradores realizan acciones administrativas")
 @ApiResponses(value = { 
 		@ApiResponse(responseCode = "400", description = "BAD REQUEST") 
 })

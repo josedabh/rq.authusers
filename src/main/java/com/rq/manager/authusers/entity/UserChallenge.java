@@ -1,6 +1,6 @@
 package com.rq.manager.authusers.entity;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,7 +43,7 @@ public class UserChallenge {
     
     /** The completed at. */
     // Fecha y hora en que se completó el reto (si aún está en curso, puede ser nulo)
-    private LocalDateTime completedAt;
+    private Date completedAt;
     
     /** The earned points. */
     @Column(name = "EARNED_POINTS")

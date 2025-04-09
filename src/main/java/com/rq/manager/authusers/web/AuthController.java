@@ -1,6 +1,5 @@
 package com.rq.manager.authusers.web;
 
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +10,7 @@ import com.rq.manager.authusers.bean.Login;
 import com.rq.manager.authusers.bean.Register;
 import com.rq.manager.authusers.bean.UserResponse;
 import com.rq.manager.authusers.constants.Constants;
+import com.rq.manager.authusers.exceptions.ErrorResponse;
 import com.rq.manager.authusers.service.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,8 +31,14 @@ import lombok.AllArgsConstructor;
 @Tag(name = "AuthController", 
 description = "Controlador donde se genera un token")
 @ApiResponses(value = {
-		@ApiResponse(responseCode = "400", description = Constants.BAD_REQUEST),
-		@ApiResponse(responseCode = "401", description = Constants.BAD_REQUEST)
+		@ApiResponse(responseCode = "400", 
+			description = Constants.BAD_REQUEST, 
+			content = @Content(mediaType = Constants.APPLICATION_JSON,
+			schema = @Schema(implementation = ErrorResponse.class))),
+		@ApiResponse(responseCode = "401", 
+			description = Constants.UNAUTHORIZED, 
+			content = @Content(mediaType = Constants.APPLICATION_JSON, 
+			schema = @Schema(implementation = ErrorResponse.class))) 
 })
 public class AuthController {
 
@@ -40,6 +46,7 @@ public class AuthController {
 	private AuthService authService;
 
 	/**
+	 * Cambiar esto a token
 	 * Register user.
 	 *
 	 * @param register the register
@@ -47,22 +54,12 @@ public class AuthController {
 	 */
 	@Operation(summary = "Registrar un nuevo usuario", description = "Registra un usuario con rol NORMAL.")
     @ApiResponse(responseCode = "201", description = "Usuario registrado exitosamente",
-            content = @Content(mediaType = Constants.APPLICATION_JSON, schema = @Schema(implementation = UserResponse.class)))
+            content = @Content(mediaType = Constants.APPLICATION_JSON,
+            schema = @Schema(implementation = UserResponse.class)))
 	@PostMapping("/register")
 	public UserResponse registerUser(@Valid @RequestBody Register register) {
 		return authService.registerUser(register);
 	}
-	
-	/**
-	 * Gets the hello. The evidence if works swagger
-	 *
-	 * @return the hello
-	 */
-	@GetMapping()
-	public String getHello() {
-		return "Hola";
-	}
-	
 	
 	/**
 	 * Login the user.
@@ -74,7 +71,8 @@ public class AuthController {
 			description = "El usuario puede iniciar sesión con su email,"
 					+ " nombre de usuario o número de teléfono.")
     @ApiResponse(responseCode = "201", description = "Iniciar sesión exitosamente",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Key.class)))
+            content = @Content(mediaType = Constants.APPLICATION_JSON,
+            schema = @Schema(implementation = Key.class)))
 	@PostMapping("/login")
     public Key login(@Valid @RequestBody Login login) {
         return authService.authenticateUser(login);
