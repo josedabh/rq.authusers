@@ -35,9 +35,9 @@ public class ChallengeRequest {
 	@Schema(description = "the difficulty", example = "easy")
 	private String difficulty;
 
-	/** The state. */
-	@Schema(description = "the state", example = "active")
-	private String state;
+//	/** The state. */
+//	@Schema(description = "the state", example = "active")
+//	private String state;
 
 	/** The start date. */
 	@Schema(description = "the start date", example = "2023-10-01T00:00:00")

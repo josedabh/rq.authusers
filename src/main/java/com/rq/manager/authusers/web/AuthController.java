@@ -77,4 +77,11 @@ public class AuthController {
         return authService.authenticateUser(login);
     }
 	
+	@Operation(summary = "Cerrar sesión del usuario", description = "El usuario puede cerrar sesión.")
+	@ApiResponse(responseCode = "200", description = "Cerrar sesión exitosamente", content = @Content(mediaType = Constants.APPLICATION_JSON, schema = @Schema(implementation = Key.class)))
+	@PostMapping("/logout")
+	public void logout() {
+		authService.logout();
+	}
+	
 }

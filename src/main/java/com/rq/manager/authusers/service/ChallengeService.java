@@ -132,14 +132,21 @@ public class ChallengeService {
 	 *
 	 * @param id the id
 	 */
-	public void cancelChallenge(UUID id) {
+	public ChallengeResponse cancelChallenge(UUID id) {
 		Challenge challenge = challengeRepository.findById(id).orElseThrow(null);
 		if (Constants.IN_PROGRESS.equals(challenge.getState().getState())) {
 			challenge.setState(StatesChallengeEnum.CANCELLED);
 			challengeRepository.save(challenge);
 		}
+		return ChallengeMapper.mapEntityToResponse(challenge);
 	}
 
+	/**
+	 * Join challenge.
+	 *
+	 * @param userId the user id
+	 * @param challengeId the challenge id
+	 */
 	@Transactional
 	public void joinChallenge(UUID userId, UUID challengeId) {
 		Challenge challenge = challengeRepository.findById(challengeId)

@@ -18,15 +18,15 @@ public enum StatesChallengeEnum {
 	FINISHED("FINISHED");
 
 	/** The state. */
-	private String state;
+	private String description;
 
 	/**
 	 * Instantiates a new states challenge.
 	 *
 	 * @param state the state
 	 */
-	private StatesChallengeEnum(String state) {
-		this.state = state;
+	private StatesChallengeEnum(String description) {
+		this.description = description;
 	}
 
 	/**
@@ -35,7 +35,7 @@ public enum StatesChallengeEnum {
 	 * @return the state
 	 */
 	public String getState() {
-		return state;
+		return description;
 	}
 	
 	/**
@@ -44,8 +44,8 @@ public enum StatesChallengeEnum {
 	 * @param state the state
 	 * @return the states challenge enum
 	 */
-	public static StatesChallengeEnum setState(String state) {
-		switch (state) {
+	public static StatesChallengeEnum setState(String description) {
+		switch (description) {
 		case "CANCELLED":
 			return CANCELLED;
 		case "PENDING":
@@ -55,7 +55,7 @@ public enum StatesChallengeEnum {
 		case "FINISHED":
 			return FINISHED;
 		default:
-			throw new IllegalArgumentException("Unknown state: " + state);
+			throw new IllegalArgumentException("Unknown state: " + description);
 		}
 	}
 }

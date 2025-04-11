@@ -16,6 +16,7 @@ import com.rq.manager.authusers.exceptions.CustomException;
 import com.rq.manager.authusers.exceptions.ErrorConstants;
 import com.rq.manager.authusers.jwt.JwtUtil;
 import com.rq.manager.authusers.mapper.UserMapper;
+import com.rq.manager.authusers.repository.UserChallengeRepository;
 import com.rq.manager.authusers.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
@@ -38,6 +39,9 @@ public class AuthService {
 	
 	/** The authentication manager builder. */
 	private AuthenticationManagerBuilder authenticationManagerBuilder;
+	
+	/** The user challenge repository. */
+	private UserChallengeRepository userChallengeRepository;
 
 	/**
 	 * Register user.
@@ -84,5 +88,15 @@ public class AuthService {
 		key.setToken(jwtUtil.generarToken(authentication));
 	    return key;
 	}
+	
+	public void logout() {
+		SecurityContextHolder.clearContext();
+	}
+	
+//	public void historyChallenges() {
+//		HistoryChallenges historyChallenges =  userChallengeRepository.findAll().stream()
+//			.map(userChallenge -> UserChallengeMapper.mapEntityToResponse(userChallenge))
+//				.collect(Collectors.toList());
+//	}
 
 }

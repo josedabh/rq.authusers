@@ -94,6 +94,22 @@ public class ChallengeController {
 	}
 	
 	/**
+	 * Cancel challenge.
+	 *
+	 * @param id the id
+	 */
+	@Operation(summary = "Cancelar reto por id", 
+			description = "Cancela un reto por id")
+	@ApiResponse(responseCode = "200", 
+		description = "El reto ha sido cancelado", 
+		content = @Content(mediaType = Constants.APPLICATION_JSON, 
+		schema = @Schema(implementation = ChallengeResponse.class)))
+	@PutMapping("/cancel-challenge/{id}")
+	public ChallengeResponse cancelChallenge(@PathVariable UUID id) {
+		return challengeService.cancelChallenge(id);
+	}
+	
+	/**
 	 * Delete challenge.
 	 *
 	 * @param id the id
@@ -140,6 +156,12 @@ public class ChallengeController {
 		return challengeService.searchChallenge(title);
 	}
 	
+	/**
+	 * Join challenge.
+	 *
+	 * @param userId the user id
+	 * @param challengeId the challenge id
+	 */
 	@PostMapping("/{userId}/join/{challengeId}")
 	@Operation(summary = "Unirse a un reto", 
 		description = "Permite a un usuario unirse a un reto específico")
