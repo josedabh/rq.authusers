@@ -47,7 +47,7 @@ public class SecurityConfig {
 				.cors(Customizer.withDefaults())
 				.authorizeHttpRequests(auth -> 
 				auth.requestMatchers(Constants.REQUEST_LOGIN , Constants.REQUEST_REGISTER,
-						Constants.SWAGGER_UI, Constants.API_DOCS)
+						Constants.SWAGGER_UI, Constants.API_DOCS, "/api/user/auth/hello")
 						.permitAll()
 						.anyRequest().authenticated())
 				.httpBasic(Customizer.withDefaults())
@@ -104,7 +104,9 @@ public class SecurityConfig {
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 
-		configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+		//Cambiar esto a la url del front si n o me falla
+		configuration.setAllowedOrigins(List.of("http://localhost:8081"));
+		//Cambiar esto si hago mas metodos
 		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(List.of(Constants.AUTHORIZATION, Constants.CONTENT_TYPE));
 		configuration.setAllowCredentials(true);

@@ -48,7 +48,7 @@ public class UserMapper {
 	 * @param user the user
 	 * @return the user response
 	 */
-	public static UserResponse mapEntityUserResponse(User user) {
+	public static UserResponse mapEntityToResponse(User user) {
 		return UserResponse.builder().id(user.getId().toString()).email(user.getEmail())
 				.name(user.getName()).lastname(user.getLastname())
 				.password(user.getPassword()).username(user.getUsername())

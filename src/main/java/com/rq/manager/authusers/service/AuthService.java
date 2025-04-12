@@ -10,13 +10,13 @@ import org.springframework.stereotype.Service;
 import com.rq.manager.authusers.bean.Key;
 import com.rq.manager.authusers.bean.Login;
 import com.rq.manager.authusers.bean.Register;
+import com.rq.manager.authusers.bean.UserResponse;
 import com.rq.manager.authusers.entity.Rol;
 import com.rq.manager.authusers.entity.User;
 import com.rq.manager.authusers.exceptions.CustomException;
 import com.rq.manager.authusers.exceptions.ErrorConstants;
-import com.rq.manager.authusers.jwt.JwtUtil;
+import com.rq.manager.authusers.jwt.JwtService;
 import com.rq.manager.authusers.mapper.UserMapper;
-import com.rq.manager.authusers.repository.UserChallengeRepository;
 import com.rq.manager.authusers.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
@@ -35,13 +35,13 @@ public class AuthService {
 	private UserRepository userRepository;
 	
 	/** The jwt util. */
-	private JwtUtil jwtUtil;
+	private JwtService jwtService;
 	
 	/** The authentication manager builder. */
 	private AuthenticationManagerBuilder authenticationManagerBuilder;
 	
 	/** The user challenge repository. */
-	private UserChallengeRepository userChallengeRepository;
+//	private UserChallengeRepository userChallengeRepository;
 
 	/**
 	 * Register user.
@@ -63,7 +63,7 @@ public class AuthService {
 		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		Key key = new Key();
-		key.setToken(jwtUtil.generarToken(authentication));
+		key.setToken(jwtService.generarToken(authentication));
 	    return key;
 	}
 	
@@ -85,12 +85,23 @@ public class AuthService {
 		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		Key key = new Key();
-		key.setToken(jwtUtil.generarToken(authentication));
+		key.setToken(jwtService.generarToken(authentication));
 	    return key;
 	}
 	
 	public void logout() {
 		SecurityContextHolder.clearContext();
+	}
+	
+	/**
+	 * Gets the user.
+	 *
+	 * @return the user
+	 */
+	public UserResponse getUser() {
+		User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
+				.orElseThrow(() -> new CustomException(ErrorConstants.NULL_USER));
+		return UserMapper.mapEntityToResponse(user);
 	}
 	
 //	public void historyChallenges() {

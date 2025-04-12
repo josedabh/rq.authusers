@@ -1,5 +1,6 @@
 package com.rq.manager.authusers.web;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.rq.manager.authusers.bean.Key;
 import com.rq.manager.authusers.bean.Login;
 import com.rq.manager.authusers.bean.Register;
+import com.rq.manager.authusers.bean.UserResponse;
 import com.rq.manager.authusers.constants.Constants;
 import com.rq.manager.authusers.exceptions.ErrorResponse;
 import com.rq.manager.authusers.service.AuthService;
@@ -43,6 +45,12 @@ public class AuthController {
 
 	/** The auth service. */
 	private AuthService authService;
+	
+	//Prueba para ver si funciona la conexion
+	@GetMapping("/hello")
+	public String hello() {
+		return "Hello world!";
+	}
 
 	/**
 	 * Cambiar esto a token
@@ -76,6 +84,18 @@ public class AuthController {
     public Key login(@Valid @RequestBody Login login) {
         return authService.authenticateUser(login);
     }
+	
+	/**
+	 * Info user.
+	 *
+	 * @return the user response
+	 */
+	@Operation(summary = "Obtener información del usuario", description = "El usuario puede obtener su información.")
+	@ApiResponse(responseCode = "200", description = "Obtener información del usuario exitosamente", content = @Content(mediaType = Constants.APPLICATION_JSON, schema = @Schema(implementation = UserResponse.class)))
+	@GetMapping("/info-user")
+	public UserResponse infoUser() {
+		return authService.getUser();
+	}
 	
 	@Operation(summary = "Cerrar sesión del usuario", description = "El usuario puede cerrar sesión.")
 	@ApiResponse(responseCode = "200", description = "Cerrar sesión exitosamente", content = @Content(mediaType = Constants.APPLICATION_JSON, schema = @Schema(implementation = Key.class)))

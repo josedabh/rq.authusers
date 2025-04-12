@@ -8,20 +8,22 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import lombok.AllArgsConstructor;
 
 /**
  * The Class JwtUtil.
  */
-@Component
-public class JwtUtil {
+@Service
+@AllArgsConstructor
+public class JwtService {
 
-    /** The secret key. */
+    /** The secret jwt. */
     @Value("${jwt.secret}")
     private String secretJwt;
 
@@ -29,6 +31,7 @@ public class JwtUtil {
     @Value("${jwt.expiration}")
     private long expiration; 
     
+    /** The key. */
     private SecretKey key;
     
     @PostConstruct

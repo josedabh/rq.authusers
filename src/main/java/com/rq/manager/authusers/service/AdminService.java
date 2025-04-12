@@ -48,7 +48,7 @@ public class AdminService {
 	 */
 	public List<UserResponse> getListUsers() {
 		return userRepository.findAll().stream()
-				.map(u -> UserMapper.mapEntityUserResponse(u))
+				.map(u -> UserMapper.mapEntityToResponse(u))
 				.toList();
 	}
 
