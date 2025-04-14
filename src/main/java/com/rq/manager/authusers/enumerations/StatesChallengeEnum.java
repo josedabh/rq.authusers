@@ -1,4 +1,4 @@
-package com.rq.manager.authusers.entity;
+package com.rq.manager.authusers.enumerations;
 
 /**
  * The Enum StatesChallengeEnum.

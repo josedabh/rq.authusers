@@ -4,8 +4,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.rq.manager.authusers.bean.Register;
 import com.rq.manager.authusers.bean.UserResponse;
-import com.rq.manager.authusers.entity.Rol;
 import com.rq.manager.authusers.entity.User;
+import com.rq.manager.authusers.enumerations.RolEnum;
 
 /**
  * The Class UserMapper.
@@ -29,7 +29,7 @@ public class UserMapper {
      * @param rol the rol
      * @return the user
      */
-    public static User mapRegisterEntity(Register register, Rol rol) {
+    public static User mapRegisterEntity(Register register, RolEnum rol) {
         User user = new User();
         user.setEmail(register.getEmail());
         user.setPassword(encoder.encode(register.getPassword()));
@@ -53,7 +53,7 @@ public class UserMapper {
 				.name(user.getName()).lastname(user.getLastname())
 				.password(user.getPassword()).username(user.getUsername())
 				.numPhone(user.getNumPhone()).points(user.getPoints())
-				.rol(user.getRol()).build();
+				.rol(user.getRol().getCodigo()).build();
 	}
 
 }

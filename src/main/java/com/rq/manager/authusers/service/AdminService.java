@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 
 import com.rq.manager.authusers.bean.Register;
 import com.rq.manager.authusers.bean.UserResponse;
-import com.rq.manager.authusers.entity.Rol;
 import com.rq.manager.authusers.entity.User;
+import com.rq.manager.authusers.enumerations.RolEnum;
 import com.rq.manager.authusers.mapper.UserMapper;
 import com.rq.manager.authusers.repository.UserRepository;
 
@@ -35,7 +35,7 @@ public class AdminService {
 				|| userRepository.existsByUsername(register.getUsername())) {
 			throw new IllegalArgumentException();
 		}
-		User user = UserMapper.mapRegisterEntity(register, Rol.ADMIN);
+		User user = UserMapper.mapRegisterEntity(register, RolEnum.ADMIN);
 		userRepository.save(user);
 		return user;
 	}

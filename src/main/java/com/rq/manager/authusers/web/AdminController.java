@@ -22,7 +22,7 @@ import lombok.AllArgsConstructor;
  * The Class AdminController.
  */
 @RestController
-@RequestMapping("/api/admin/auth")
+@RequestMapping("/api/v1/admin")
 @AllArgsConstructor
 @Tag(name = "AdminController",
 description = "Los administradores realizan acciones administrativas")

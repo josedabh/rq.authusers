@@ -1,7 +1,5 @@
 package com.rq.manager.authusers.bean;
 
-import com.rq.manager.authusers.entity.Rol;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -53,5 +51,5 @@ public class UserResponse {
 	
 	/** The rol. */
 	@Schema(description = "the rol", example = "normal")
-	private Rol rol;
+	private String rol;
 }

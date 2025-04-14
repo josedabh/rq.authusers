@@ -2,6 +2,8 @@ package com.rq.manager.authusers.entity;
 
 import java.util.UUID;
 
+import com.rq.manager.authusers.enumerations.RolEnum;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -65,5 +67,5 @@ public class User {
 	
 	/** The rol. */
 	@Enumerated(EnumType.STRING)
-	private Rol rol;
+	private RolEnum rol;
 }

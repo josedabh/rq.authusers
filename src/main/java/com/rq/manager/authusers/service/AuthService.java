@@ -11,8 +11,8 @@ import com.rq.manager.authusers.bean.Key;
 import com.rq.manager.authusers.bean.Login;
 import com.rq.manager.authusers.bean.Register;
 import com.rq.manager.authusers.bean.UserResponse;
-import com.rq.manager.authusers.entity.Rol;
 import com.rq.manager.authusers.entity.User;
+import com.rq.manager.authusers.enumerations.RolEnum;
 import com.rq.manager.authusers.exceptions.CustomException;
 import com.rq.manager.authusers.exceptions.ErrorConstants;
 import com.rq.manager.authusers.jwt.JwtService;
@@ -56,7 +56,7 @@ public class AuthService {
 				|| userRepository.existsByUsername(register.getUsername())) {
 			throw new CustomException(ErrorConstants.NULL_USER);
 		}
-		User user = UserMapper.mapRegisterEntity(register, Rol.NORMAL);
+		User user = UserMapper.mapRegisterEntity(register, RolEnum.NORMAL);
 		userRepository.save(user);
 		//Creamos el token al encontrar el usuario
 		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), register.getPassword());

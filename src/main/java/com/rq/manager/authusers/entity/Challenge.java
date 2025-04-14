@@ -3,6 +3,8 @@ package com.rq.manager.authusers.entity;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.rq.manager.authusers.enumerations.StatesChallengeEnum;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

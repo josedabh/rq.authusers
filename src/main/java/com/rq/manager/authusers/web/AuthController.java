@@ -27,7 +27,7 @@ import lombok.AllArgsConstructor;
  * The Class AuthController.
  */
 @RestController
-@RequestMapping("/api/user/auth")
+@RequestMapping("/api/v1/auth")
 @AllArgsConstructor
 @Tag(name = "AuthController", 
 description = "Controlador donde se genera un token")
@@ -53,14 +53,15 @@ public class AuthController {
 	}
 
 	/**
-	 * Cambiar esto a token
 	 * Register user.
 	 *
 	 * @param register the register
 	 * @return the user response
 	 */
-	@Operation(summary = "Registrar un nuevo usuario", description = "Registra un usuario con rol NORMAL.")
-    @ApiResponse(responseCode = "200", description = "Usuario registrado exitosamente",
+	@Operation(summary = "Registrar un nuevo usuario", 
+			description = "Registra un usuario con rol NORMAL.")
+    @ApiResponse(responseCode = "200", 
+    		description = "Usuario registrado exitosamente",
             content = @Content(mediaType = Constants.APPLICATION_JSON,
             schema = @Schema(implementation = Key.class)))
 	@PostMapping("/register")
@@ -90,15 +91,23 @@ public class AuthController {
 	 *
 	 * @return the user response
 	 */
-	@Operation(summary = "Obtener información del usuario", description = "El usuario puede obtener su información.")
-	@ApiResponse(responseCode = "200", description = "Obtener información del usuario exitosamente", content = @Content(mediaType = Constants.APPLICATION_JSON, schema = @Schema(implementation = UserResponse.class)))
+	@Operation(summary = "Obtener información del usuario", 
+		description = "El usuario puede obtener su información.")
+	@ApiResponse(responseCode = "200", 
+		description = "Obtener información del usuario exitosamente",
+		content = @Content(mediaType = Constants.APPLICATION_JSON, 
+		schema = @Schema(implementation = UserResponse.class)))
 	@GetMapping("/info-user")
 	public UserResponse infoUser() {
 		return authService.getUser();
 	}
 	
-	@Operation(summary = "Cerrar sesión del usuario", description = "El usuario puede cerrar sesión.")
-	@ApiResponse(responseCode = "200", description = "Cerrar sesión exitosamente", content = @Content(mediaType = Constants.APPLICATION_JSON, schema = @Schema(implementation = Key.class)))
+	@Operation(summary = "Cerrar sesión del usuario", 
+			description = "El usuario puede cerrar sesión.")
+	@ApiResponse(responseCode = "200", 
+		description = "Cerrar sesión exitosamente", 
+		content = @Content(mediaType = Constants.APPLICATION_JSON, 
+		schema = @Schema(implementation = Key.class)))
 	@PostMapping("/logout")
 	public void logout() {
 		authService.logout();

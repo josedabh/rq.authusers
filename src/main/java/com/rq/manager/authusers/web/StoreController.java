@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.AllArgsConstructor;
 
 @RestController
-@RequestMapping("/api/store")
+@RequestMapping("/api/v1/store")
 @AllArgsConstructor
 public class StoreController {
 	

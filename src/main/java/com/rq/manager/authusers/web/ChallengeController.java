@@ -32,7 +32,7 @@ import lombok.AllArgsConstructor;
  * The Class ChallengeController.
  */
 @RestController
-@RequestMapping("/api/admin/challenge")
+@RequestMapping("/api/v1/challenge")
 @AllArgsConstructor
 @Tag(name = "ChallengeController", 
 description = "Controlador de los retos")
