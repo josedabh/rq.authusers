@@ -14,13 +14,11 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import lombok.AllArgsConstructor;
 
 /**
  * The Class JwtUtil.
  */
 @Service
-@AllArgsConstructor
 public class JwtService {
 
     /** The secret jwt. */
@@ -33,6 +31,9 @@ public class JwtService {
     
     /** The key. */
     private SecretKey key;
+    
+    public JwtService() {
+	}
     
     @PostConstruct
     public void init() {

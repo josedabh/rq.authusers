@@ -3,8 +3,6 @@ package com.rq.manager.authusers.entity;
 import java.util.Date;
 import java.util.List;
 
-import com.rq.manager.authusers.bean.HistoryChallenges;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -63,6 +61,6 @@ public class UserChallenge {
     /** The history of the challenges completed of the user. */
     //Cambiar esto por una entidad
     @OneToMany(mappedBy = "userChallenge")
-    private List<HistoryChallenges> history;
+    private List<ChallengeHistory> history;
 
 }

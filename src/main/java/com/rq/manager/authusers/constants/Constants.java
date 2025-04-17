@@ -2,6 +2,7 @@ package com.rq.manager.authusers.constants;
 
 /**
  * The Class Constants.
+ * Cambiar lo swager por ApiConstants
  */
 public class Constants {
 	
@@ -13,10 +14,10 @@ public class Constants {
 	}
 	
 	/** The Constant REQUEST_LOGIN. */
-	public static final String REQUEST_LOGIN = "/api/user/auth/login";
+	public static final String REQUEST_LOGIN = "/api/v1/auth/login";
 	
 	/** The Constant REQUEST_REGISTER. */
-	public static final String REQUEST_REGISTER = "/api/user/auth/register";
+	public static final String REQUEST_REGISTER = "/api/v1/auth/register";
 	
 	/** The Constant SWAGGER_UI. */
 	public static final String SWAGGER_UI = "/swagger-ui/**";
@@ -31,7 +32,7 @@ public class Constants {
 	public static final String CONTENT_TYPE = "Content-Type";
 	
 	/** The Constant UNAUTHORIZED. */
-	public static final String UNAUTHORIZED = "Unathorized";
+	public static final String UNAUTHORIZED = "Unauthorized";
 	
 	/** The Constant BAD_REQUEST. */
 	public static final String BAD_REQUEST = "Bad Request";
