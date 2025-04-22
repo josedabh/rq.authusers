@@ -3,6 +3,7 @@ package com.rq.manager.authusers.web;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,11 +40,11 @@ description = "Controlador de los retos")
 @ApiResponses(value = {
 		@ApiResponse(responseCode = "400", 
 			description = Constants.BAD_REQUEST, 
-			content = @Content(mediaType = Constants.APPLICATION_JSON,
+			content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
 			schema = @Schema(implementation = ErrorResponse.class))),
 		@ApiResponse(responseCode = "401", 
 			description = Constants.UNAUTHORIZED, 
-			content = @Content(mediaType = Constants.APPLICATION_JSON, 
+			content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, 
 			schema = @Schema(implementation = ErrorResponse.class))) 
 })
 public class ChallengeController {
@@ -69,7 +70,7 @@ public class ChallengeController {
 	 */
 	@Operation(summary = "Encontrar reto por id", description = "Busca un reto por id")
     @ApiResponse(responseCode = "200", description = "El reto ha sido encontrado",
-            content = @Content(mediaType = Constants.APPLICATION_JSON,
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
             schema = @Schema(implementation = ChallengeResponse.class)))
 	@GetMapping("/find-challenge/{id}")
 	public ChallengeResponse getChallengeById(@PathVariable UUID id) {
@@ -85,7 +86,7 @@ public class ChallengeController {
 	 */
 	@Operation(summary = "Crear nuevo reto", description = "Crea un nuevo reto")
     @ApiResponse(responseCode = "200", description = "Creación del reto exitosamente",
-            content = @Content(mediaType = Constants.APPLICATION_JSON,
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
             schema = @Schema(implementation = ChallengeResponse.class)))
 	@PostMapping("/create-challenge")
 	public ChallengeResponse createChallenge(@RequestBody ChallengeRequest 
@@ -102,7 +103,7 @@ public class ChallengeController {
 			description = "Cancela un reto por id")
 	@ApiResponse(responseCode = "200", 
 		description = "El reto ha sido cancelado", 
-		content = @Content(mediaType = Constants.APPLICATION_JSON, 
+		content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, 
 		schema = @Schema(implementation = ChallengeResponse.class)))
 	@PutMapping("/cancel-challenge/{id}")
 	public ChallengeResponse cancelChallenge(@PathVariable UUID id) {
@@ -116,7 +117,7 @@ public class ChallengeController {
 	 */
 	@Operation(summary = "Eliminar reto por id", description = "Elimina un reto por id")
 	@ApiResponse(responseCode = "200", description = "El reto ha sido eliminado", 
-		content = @Content(mediaType = Constants.APPLICATION_JSON, 
+		content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, 
 		schema = @Schema(implementation = Void.class)))
 	@DeleteMapping("/delete-challenge/{id}")
 	public void deleteChallenge(@PathVariable UUID id) {
@@ -132,7 +133,7 @@ public class ChallengeController {
 	 */
 	@Operation(summary = "Actualizar reto por id", description = "Actualiza un reto por id")
 	@ApiResponse(responseCode = "200", description = "El reto ha sido actualizado", 
-	content = @Content(mediaType = Constants.APPLICATION_JSON, 
+	content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, 
 	schema = @Schema(implementation = ChallengeResponse.class)))
 	@PutMapping("/update-challenge/{id}")
 	public ChallengeResponse updateChallenge(@PathVariable UUID id,
@@ -148,7 +149,7 @@ public class ChallengeController {
 	 */
 	@Operation(summary = "Buscar retos por título", description = "Busca retos por título")
 	@ApiResponse(responseCode = "200", description = "Los retos han sido encontrados",
-		content = @Content(mediaType = Constants.APPLICATION_JSON, 
+		content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, 
 		schema = @Schema(implementation = ChallengeSummary.class)))
 	@GetMapping("/search-challenge")
 	public List<ChallengeSummary> searchChallenges(@RequestParam(defaultValue = "",

@@ -2,12 +2,12 @@ package com.rq.manager.authusers.web;
 
 import java.util.List;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rq.manager.authusers.bean.UserResponse;
-import com.rq.manager.authusers.constants.Constants;
 import com.rq.manager.authusers.service.AdminService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,7 +42,7 @@ public class AdminController {
 	@Operation(summary = "Lista los usuarios registrados", 
 			description = "Lista los usuarios registrados en la base de datos")
 	@ApiResponse(responseCode = "200", description = "Lista de usuarios",
-		content = @Content(mediaType = Constants.APPLICATION_JSON,
+		content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
 		schema = @Schema(implementation = UserResponse.class)))
 	@GetMapping("/list-users")
 	public List<UserResponse> listUsers() {

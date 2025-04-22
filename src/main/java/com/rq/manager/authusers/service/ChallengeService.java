@@ -151,12 +151,12 @@ public class ChallengeService {
 	public void joinChallenge(UUID userId, UUID challengeId) {
 		Challenge challenge = challengeRepository.findById(challengeId)
 				.orElseThrow(() -> new ResourceNotFoundException("Challenge not found with id: " + challengeId));
-		
+		//Comprueba que el reto está en progreso o pendiente
 		if (Constants.IN_PROGRESS.equals(challenge.getState().getState())
 				|| Constants.PENDING.equals(challenge.getState().getState())) {
-			
 			User user = userRepository.findById(userId)
 					.orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+			//Comprueba que el usuario no haya participado en el reto
 			if (userChallengeRepository.existsByUserAndChallenge(user, challenge)) {
 				throw new BusinessException(ErrorConstants.USER_ALREADY_JOINED_CHALLENGE);
 			}
