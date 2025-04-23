@@ -47,4 +47,7 @@ public class ErrorConstants {
 
 	/** The Constant NOT_STATUS_CHALLENGE. */
 	public static final String NOT_STATUS_CHALLENGE = "not_status_challenge";
+
+	/** The Constant CHALLENGE_DIFFERENT_STATE. */
+	public static final String CHALLENGE_DIFFERENT_STATE = "challenge_different_state";
 }

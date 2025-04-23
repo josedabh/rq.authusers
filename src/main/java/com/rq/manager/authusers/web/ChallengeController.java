@@ -163,14 +163,13 @@ public class ChallengeController {
 	 * @param userId the user id
 	 * @param challengeId the challenge id
 	 */
-	@PostMapping("/{userId}/join/{challengeId}")
+	@PostMapping("/join/{challengeId}")
 	@Operation(summary = "Unirse a un reto", 
 		description = "Permite a un usuario unirse a un reto específico")
 	@ApiResponse(responseCode = "200", 
 		description = "Usuario unido al reto exitosamente")
-	public void joinChallenge(@PathVariable UUID userId, 
-			@PathVariable UUID challengeId) {
-		challengeService.joinChallenge(userId, challengeId);
+	public void joinChallenge(@PathVariable UUID challengeId) {
+		challengeService.joinChallenge(challengeId);
 	}
 
 }

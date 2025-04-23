@@ -18,6 +18,7 @@ import com.rq.manager.authusers.exceptions.ErrorConstants;
 import com.rq.manager.authusers.jwt.JwtService;
 import com.rq.manager.authusers.mapper.UserMapper;
 import com.rq.manager.authusers.repository.UserRepository;
+import com.rq.manager.authusers.util.Util;
 
 import lombok.AllArgsConstructor;
 
@@ -58,13 +59,27 @@ public class AuthService {
 		}
 		User user = UserMapper.mapRegisterEntity(register, RolEnum.NORMAL);
 		userRepository.save(user);
-		//Creamos el token al encontrar el usuario
-		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), register.getPassword());
+		//Devolvemos el token al usuario
+	    return createToken(user.getUsername(), register.getPassword());
+	}
+	
+	/**
+	 * Creates the token.
+	 *
+	 * @param user the user
+	 * @param password the password
+	 * @return the key
+	 */
+	private Key createToken(String username, String password) {
+		// Creamos el token al encontrar el usuario
+		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+				username, password);
 		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
+		//Generamos el token
 		Key key = new Key();
 		key.setToken(jwtService.generarToken(authentication));
-	    return key;
+		return key;
 	}
 	
 	/**
@@ -80,13 +95,8 @@ public class AuthService {
 		if (!passwordEncoder.matches(login.getPassword(), user.getPassword())) {
 			throw new CustomException(ErrorConstants.ERROR_CREDENTIALS);
 		}
-		//Creamos el token al encontrar el usuario
-		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), login.getPassword());
-		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		Key key = new Key();
-		key.setToken(jwtService.generarToken(authentication));
-	    return key;
+		//Generamos el token
+	    return createToken(user.getUsername(), login.getPassword());
 	}
 	
 	public void logout() {
@@ -99,8 +109,7 @@ public class AuthService {
 	 * @return the user
 	 */
 	public UserResponse getUser() {
-		User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
-				.orElseThrow(() -> new CustomException(ErrorConstants.NULL_USER));
+		User user = Util.getUserByToken();
 		return UserMapper.mapEntityToResponse(user);
 	}
 	

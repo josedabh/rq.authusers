@@ -64,12 +64,32 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!--Test dependency-->
+		<!--Tests dependencies-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
+		<!--Test security dependency-->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
+		<!--JUnits 5 dependency-->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.platform</groupId>
+			<artifactId>junit-platform-launcher</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!--End Tests dependencies-->
 
 		<!--Security dependency-->
 		<dependency>
@@ -77,20 +97,13 @@
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 
-		<!--Test security dependency-->
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-        <!--Oauth dependencies-->
+		<!--Oauth dependencies-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-oauth2-client</artifactId>
 		</dependency>
 
-		<!--JWT dependencies version 11.5 la 12.6 falla-->
+		<!--JWTs dependencies version 11.5 la 12.6 falla-->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
@@ -108,6 +121,7 @@
 			<version>0.11.5</version>
 			<scope>runtime</scope>
 		</dependency>
+		<!-- EndJWTS dependencies-->
 
 	</dependencies>
 
