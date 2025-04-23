@@ -85,12 +85,11 @@ public class ChallengeService {
 		Challenge challenge = challengeRepository.findById(id)
 				.orElse(new Challenge());
 		//Mira que el estado del reto está en pendiente
-		if (Constants.PENDING.equals(challenge.getState().getState())) {
+		if (Constants.PENDING.equals(challenge.getState().getDescription())) {
 			challenge = ChallengeMapper.mapRequestToEntity(request);
 			challengeRepository.save(challenge);
 			return ChallengeMapper.mapEntityToResponse(challenge);
 		} else {
-			//Cambiar el throw
 			throw new BusinessException(ErrorConstants.CHALLENGE_DIFFERENT_STATE);
 		}
 		
@@ -104,8 +103,8 @@ public class ChallengeService {
 	public void deleteChallenge(UUID id) {
 		Challenge challenge = challengeRepository.findById(id)
 				.orElse(new Challenge());
-		if (Constants.PENDING.equals(challenge.getState().getState())
-				|| Constants.CANCELLED.equals(challenge.getState().getState())) {
+		if (Constants.PENDING.equals(challenge.getState().getDescription())
+				|| Constants.CANCELLED.equals(challenge.getState().getDescription())) {
 			challengeRepository.deleteById(id);
 		} else {
 			throw new BusinessException(ErrorConstants.CHALLENGE_DIFFERENT_STATE);
@@ -132,7 +131,7 @@ public class ChallengeService {
 	 */
 	public ChallengeResponse cancelChallenge(UUID id) {
 		Challenge challenge = challengeRepository.findById(id).orElse(new Challenge());
-		if (Constants.IN_PROGRESS.equals(challenge.getState().getState())) {
+		if (Constants.IN_PROGRESS.equals(challenge.getState().getDescription())) {
 			challenge.setState(StatesChallengeEnum.CANCELLED);
 			challengeRepository.save(challenge);
 		}
@@ -150,8 +149,8 @@ public class ChallengeService {
 		Challenge challenge = challengeRepository.findById(challengeId)
 				.orElseThrow(() -> new ResourceNotFoundException("Challenge not found with id: " + challengeId));
 		//Comprueba que el reto está en progreso o pendiente
-		if (Constants.IN_PROGRESS.equals(challenge.getState().getState())
-				|| Constants.PENDING.equals(challenge.getState().getState())) {
+		if (Constants.IN_PROGRESS.equals(challenge.getState().getDescription())
+				|| Constants.PENDING.equals(challenge.getState().getDescription())) {
 			User user = Util.getUserByToken();
 			//Comprueba que el usuario no haya participado en el reto
 			if (userChallengeRepository.existsByUserAndChallenge(user, challenge)) {

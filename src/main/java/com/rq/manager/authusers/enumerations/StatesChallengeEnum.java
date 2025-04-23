@@ -34,7 +34,7 @@ public enum StatesChallengeEnum {
 	 *
 	 * @return the state
 	 */
-	public String getState() {
+	public String getDescription() {
 		return description;
 	}
 	
@@ -44,7 +44,7 @@ public enum StatesChallengeEnum {
 	 * @param state the state
 	 * @return the states challenge enum
 	 */
-	public static StatesChallengeEnum setState(String description) {
+	public static StatesChallengeEnum setDescription(String description) {
 		switch (description) {
 		case "CANCELLED":
 			return CANCELLED;

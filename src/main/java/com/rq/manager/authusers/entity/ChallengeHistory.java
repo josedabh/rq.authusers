@@ -33,7 +33,7 @@ public class ChallengeHistory {
     
     /** The user challenge. */
     @ManyToOne
-    @JoinColumn(name = "user_challenge_id")
+    @JoinColumn(name = "USER_CHALLENGE_ID", nullable = false)
     private UserChallenge userChallenge;
     
     /** The timestamp. */
