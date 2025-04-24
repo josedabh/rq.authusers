@@ -3,9 +3,11 @@ package com.rq.manager.authusers.service;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,11 +20,13 @@ import com.rq.manager.authusers.entity.User;
 import com.rq.manager.authusers.entity.UserChallenge;
 import com.rq.manager.authusers.enumerations.StatesChallengeEnum;
 import com.rq.manager.authusers.exceptions.BusinessException;
+import com.rq.manager.authusers.exceptions.CustomException;
 import com.rq.manager.authusers.exceptions.ErrorConstants;
 import com.rq.manager.authusers.exceptions.ResourceNotFoundException;
 import com.rq.manager.authusers.mapper.ChallengeMapper;
 import com.rq.manager.authusers.repository.ChallengeRepository;
 import com.rq.manager.authusers.repository.UserChallengeRepository;
+import com.rq.manager.authusers.repository.UserRepository;
 import com.rq.manager.authusers.util.Util;
 
 import lombok.AllArgsConstructor;
@@ -39,6 +43,9 @@ public class ChallengeService {
 	
 	/** The user challenge repository. */
 	private UserChallengeRepository userChallengeRepository;
+	
+	/** The user repository. */
+	private UserRepository userRepository;
 
 	/**
 	 * Creates the challenge.
@@ -76,6 +83,7 @@ public class ChallengeService {
 
 	/**
 	 * Update challenge.
+	 * Falla crea una de la nada
 	 *
 	 * @param id      the id
 	 * @param request the challenge request
@@ -86,7 +94,7 @@ public class ChallengeService {
 				.orElse(new Challenge());
 		//Mira que el estado del reto está en pendiente
 		if (Constants.PENDING.equals(challenge.getState().getDescription())) {
-			challenge = ChallengeMapper.mapRequestToEntity(request);
+			challenge = updateChallenge(challenge, request);
 			challengeRepository.save(challenge);
 			return ChallengeMapper.mapEntityToResponse(challenge);
 		} else {
@@ -94,6 +102,25 @@ public class ChallengeService {
 		}
 		
 	}
+	
+	private Challenge updateChallenge(Challenge challenge, ChallengeRequest request) {
+	    Optional.ofNullable(request.getTitle())
+	            .ifPresent(challenge::setTitle);
+	    Optional.ofNullable(request.getDescription())
+	            .ifPresent(challenge::setDescription);
+	    Optional.ofNullable(request.getStartDate())
+	            .map(Util::getLocalDateTime)
+	            .ifPresent(challenge::setStartDate);
+	    Optional.ofNullable(request.getEndDate())
+	            .map(Util::getLocalDateTime)
+	            .ifPresent(challenge::setEndDate);
+	    Optional.ofNullable(request.getDifficulty())
+	            .ifPresent(challenge::setDifficulty);
+	    Optional.ofNullable(request.getPoints())
+	            .ifPresent(challenge::setPoints);
+	    return challenge;
+	}
+
 
 	/**
 	 * Delete challenge by id.
@@ -131,11 +158,14 @@ public class ChallengeService {
 	 */
 	public ChallengeResponse cancelChallenge(UUID id) {
 		Challenge challenge = challengeRepository.findById(id).orElse(new Challenge());
+		//Comprueba que el reto está en progreso
 		if (Constants.IN_PROGRESS.equals(challenge.getState().getDescription())) {
 			challenge.setState(StatesChallengeEnum.CANCELLED);
 			challengeRepository.save(challenge);
+			return ChallengeMapper.mapEntityToResponse(challenge);
+		} else {
+			throw new BusinessException(ErrorConstants.CHALLENGE_DIFFERENT_STATE);
 		}
-		return ChallengeMapper.mapEntityToResponse(challenge);
 	}
 
 	/**
@@ -151,7 +181,8 @@ public class ChallengeService {
 		//Comprueba que el reto está en progreso o pendiente
 		if (Constants.IN_PROGRESS.equals(challenge.getState().getDescription())
 				|| Constants.PENDING.equals(challenge.getState().getDescription())) {
-			User user = Util.getUserByToken();
+			User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
+					.orElseThrow(() -> new CustomException(ErrorConstants.NULL_USER));
 			//Comprueba que el usuario no haya participado en el reto
 			if (userChallengeRepository.existsByUserAndChallenge(user, challenge)) {
 				throw new BusinessException(ErrorConstants.USER_ALREADY_JOINED_CHALLENGE);

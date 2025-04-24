@@ -41,7 +41,8 @@ public class ChallengeMapper {
 	public static ChallengeResponse mapEntityToResponse(Challenge entity) {
 		return ChallengeResponse.builder().id(entity.getId())
 				.title(entity.getTitle()).description(entity.getDescription())
-				.difficulty(entity.getDifficulty()).state(entity.getState().getDescription())
+				.difficulty(entity.getDifficulty())
+				.state(entity.getState() != null ? entity.getState().getDescription() : "NOTSTATE")
 				.startDate(Util.getDate(entity.getStartDate()))
 				.endDate(Util.getDate(entity.getEndDate()))
 				.points(entity.getPoints()).build();

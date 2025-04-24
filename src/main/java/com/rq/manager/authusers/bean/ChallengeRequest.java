@@ -50,6 +50,6 @@ public class ChallengeRequest {
 	/** The points. */
 	@Size(min = 1, max = 5)
 	@Schema(description = "the points", example = "2")
-	private int points;
+	private Integer points;
 
 }

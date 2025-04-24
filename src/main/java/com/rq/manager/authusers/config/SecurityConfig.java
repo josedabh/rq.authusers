@@ -47,7 +47,7 @@ public class SecurityConfig {
 				.cors(Customizer.withDefaults())
 				.authorizeHttpRequests(auth -> 
 				auth.requestMatchers(Constants.REQUEST_LOGIN , Constants.REQUEST_REGISTER,
-						Constants.SWAGGER_UI, Constants.API_DOCS, "/api/user/auth/hello")
+						Constants.SWAGGER_UI, Constants.API_DOCS, "/api/v1/auth/hello")
 						.permitAll()
 						.anyRequest().authenticated())
 				.httpBasic(Customizer.withDefaults())

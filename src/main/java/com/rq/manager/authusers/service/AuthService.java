@@ -18,7 +18,6 @@ import com.rq.manager.authusers.exceptions.ErrorConstants;
 import com.rq.manager.authusers.jwt.JwtService;
 import com.rq.manager.authusers.mapper.UserMapper;
 import com.rq.manager.authusers.repository.UserRepository;
-import com.rq.manager.authusers.util.Util;
 
 import lombok.AllArgsConstructor;
 
@@ -109,7 +108,8 @@ public class AuthService {
 	 * @return the user
 	 */
 	public UserResponse getUser() {
-		User user = Util.getUserByToken();
+		User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
+				.orElseThrow(() -> new CustomException(ErrorConstants.NULL_USER));
 		return UserMapper.mapEntityToResponse(user);
 	}
 	
