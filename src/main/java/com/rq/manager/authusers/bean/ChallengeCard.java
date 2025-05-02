@@ -17,7 +17,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ChallengeSummary {
+public class ChallengeCard {
 	
 	/** The id. */
 	@Schema(description = "Challenge ID", example = "123e4567-e89b-12d3-a456-426614174000")
@@ -26,5 +26,9 @@ public class ChallengeSummary {
 	/** The title. */
 	@Schema(description = "Challenge title", example = "Fitness Challenge")
 	private String title;
+	
+	/** The description. */
+	@Schema(description = "the description", example = "description")
+	private String description;
 
 }

@@ -1,4 +1,4 @@
-package com.rq.manager.authusers.bean;
+package com.rq.manager.authusers.bean.admin;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

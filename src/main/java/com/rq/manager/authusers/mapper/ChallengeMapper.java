@@ -1,11 +1,15 @@
 package com.rq.manager.authusers.mapper;
 
+import com.rq.manager.authusers.bean.ChallengeCard;
 import com.rq.manager.authusers.bean.ChallengeRequest;
 import com.rq.manager.authusers.bean.ChallengeResponse;
-import com.rq.manager.authusers.bean.ChallengeSummary;
 import com.rq.manager.authusers.entity.Challenge;
 import com.rq.manager.authusers.util.Util;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class ChallengeMapper.
+ */
 public class ChallengeMapper {
 	
 	/**
@@ -47,15 +51,17 @@ public class ChallengeMapper {
 				.endDate(Util.getDate(entity.getEndDate()))
 				.points(entity.getPoints()).build();
 	}
-
+	
 	/**
-	 * Map entity to summary.
+	 * Map entity to card.
 	 *
 	 * @param ch the ch
-	 * @return the challenge summary
+	 * @return the challenge card
 	 */
-	public static ChallengeSummary mapEntityToSummary(Challenge ch) {
-		return ChallengeSummary.builder()
-				.title(ch.getTitle()).id(ch.getId()).build();
+	public static ChallengeCard mapEntityToCard(Challenge ch) {
+		return ChallengeCard.builder()
+				.title(ch.getTitle()).id(ch.getId()).description(ch.getDescription()).build();
 	}
+	
+	
 }

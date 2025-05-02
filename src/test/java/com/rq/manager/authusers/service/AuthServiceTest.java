@@ -26,7 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.rq.manager.authusers.bean.Key;
 import com.rq.manager.authusers.bean.Login;
 import com.rq.manager.authusers.bean.Register;
-import com.rq.manager.authusers.bean.UserResponse;
+import com.rq.manager.authusers.bean.admin.UserResponse;
 import com.rq.manager.authusers.entity.User;
 import com.rq.manager.authusers.exceptions.CustomException;
 import com.rq.manager.authusers.jwt.JwtService;

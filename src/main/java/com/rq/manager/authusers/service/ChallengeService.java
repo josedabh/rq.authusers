@@ -11,9 +11,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.rq.manager.authusers.bean.ChallengeCard;
 import com.rq.manager.authusers.bean.ChallengeRequest;
 import com.rq.manager.authusers.bean.ChallengeResponse;
-import com.rq.manager.authusers.bean.ChallengeSummary;
 import com.rq.manager.authusers.constants.Constants;
 import com.rq.manager.authusers.entity.Challenge;
 import com.rq.manager.authusers.entity.User;
@@ -31,6 +31,7 @@ import com.rq.manager.authusers.util.Util;
 
 import lombok.AllArgsConstructor;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class ChallengeService.
  */
@@ -69,6 +70,16 @@ public class ChallengeService {
 		return challengeRepository.findAll().stream().map(challenge -> ChallengeMapper.mapEntityToResponse(challenge))
 				.collect(Collectors.toList());
 	}
+	
+	/**
+	 * User list challenges.
+	 *
+	 * @return the list
+	 */
+	public List<ChallengeCard> userListChallenges() {
+		return challengeRepository.findAll().stream().map(challenge -> ChallengeMapper.mapEntityToCard(challenge))
+				.collect(Collectors.toList());
+	}
 
 	/**
 	 * Gets the challenge by id.
@@ -103,6 +114,13 @@ public class ChallengeService {
 		
 	}
 	
+	/**
+	 * Update challenge.
+	 *
+	 * @param challenge the challenge
+	 * @param request the request
+	 * @return the challenge
+	 */
 	private Challenge updateChallenge(Challenge challenge, ChallengeRequest request) {
 	    Optional.ofNullable(request.getTitle())
 	            .ifPresent(challenge::setTitle);
@@ -139,22 +157,10 @@ public class ChallengeService {
 	}
 
 	/**
-	 * Search challenge.
-	 *
-	 * @param title the title challenge
-	 * @return the list challenge searched
-	 */
-	public List<ChallengeSummary> searchChallenge(String title) {
-		//Devuelve una lista de retos que contengan el título y el id
-		List<ChallengeSummary> searchedChallenges = challengeRepository.searchByTitle(title).stream()
-				.map(ch -> ChallengeMapper.mapEntityToSummary(ch)).toList();
-		return searchedChallenges;
-	}
-
-	/**
 	 * Cancel challenge.
 	 *
 	 * @param id the id
+	 * @return the challenge response
 	 */
 	public ChallengeResponse cancelChallenge(UUID id) {
 		Challenge challenge = challengeRepository.findById(id).orElse(new Challenge());
@@ -171,7 +177,6 @@ public class ChallengeService {
 	/**
 	 * Join challenge.
 	 *
-	 * @param userId the user id
 	 * @param challengeId the challenge id
 	 */
 	@Transactional
@@ -204,7 +209,7 @@ public class ChallengeService {
 	 *
 	 * @param currentDate    the current date
 	 * @param isInstantEvent the is instant event
-	 * @param startDate
+	 * @param startDate the start date
 	 * @return true, if successful
 	 */
 	public boolean canUserSeeChallenge(LocalDateTime currentDate, boolean isInstantEvent, LocalDateTime startDate) {

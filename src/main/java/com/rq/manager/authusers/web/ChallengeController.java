@@ -11,12 +11,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.rq.manager.authusers.bean.ChallengeCard;
 import com.rq.manager.authusers.bean.ChallengeRequest;
 import com.rq.manager.authusers.bean.ChallengeResponse;
-import com.rq.manager.authusers.bean.ChallengeSummary;
 import com.rq.manager.authusers.constants.Constants;
 import com.rq.manager.authusers.exceptions.ErrorResponse;
 import com.rq.manager.authusers.service.ChallengeService;
@@ -57,9 +56,27 @@ public class ChallengeController {
 	 *
 	 * @return the list
 	 */
-	@GetMapping("/list-challenges")
-	public List<ChallengeResponse> listChallenges() {
+	@Operation(summary = "Listar retos", description = "Lees todos los retos")
+    @ApiResponse(responseCode = "200", description = "Lista encontrada",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            schema = @Schema(implementation = ChallengeResponse.class)))
+	@GetMapping("/admin/list-challenges")
+	public List<ChallengeResponse> adminListChallenges() {
 		return challengeService.listChallenges();
+	}
+	
+	/**
+	 * List challenges.
+	 *s
+	 * @return the list
+	 */
+	@Operation(summary = "Listar retos", description = "Lees todos los retos")
+    @ApiResponse(responseCode = "200", description = "Lista encontrada",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            schema = @Schema(implementation = ChallengeCard.class)))
+	@GetMapping("/user/list-challenges")
+	public List<ChallengeCard> userListChallenges() {
+		return challengeService.userListChallenges();
 	}
 	
 	/**
@@ -139,22 +156,6 @@ public class ChallengeController {
 	public ChallengeResponse updateChallenge(@PathVariable UUID id,
 			@RequestBody ChallengeRequest challengeRequest) {
 		return challengeService.updateChallenge(id, challengeRequest);
-	}
-	
-	/**
-	 * Search challenges.
-	 *
-	 * @param title the title
-	 * @return the list
-	 */
-	@Operation(summary = "Buscar retos por título", description = "Busca retos por título")
-	@ApiResponse(responseCode = "200", description = "Los retos han sido encontrados",
-		content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, 
-		schema = @Schema(implementation = ChallengeSummary.class)))
-	@GetMapping("/search-challenge")
-	public List<ChallengeSummary> searchChallenges(@RequestParam(defaultValue = "",
-		required = true) String title) {
-		return challengeService.searchChallenge(title);
 	}
 	
 	/**

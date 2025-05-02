@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.rq.manager.authusers.bean.Register;
-import com.rq.manager.authusers.bean.UserResponse;
+import com.rq.manager.authusers.bean.admin.UserResponse;
 import com.rq.manager.authusers.entity.User;
 import com.rq.manager.authusers.enumerations.RolEnum;
 import com.rq.manager.authusers.mapper.UserMapper;
