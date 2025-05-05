@@ -31,7 +31,7 @@ public class ChallengeRequest {
 	private String description;
 
 	/** The difficulty. */
-	@Size(min = 10, max = 200)
+	@Size(min = 1, max = 200)
 	@Schema(description = "the difficulty", example = "easy")
 	private String difficulty;
 

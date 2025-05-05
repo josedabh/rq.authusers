@@ -88,7 +88,7 @@ public class ChallengeService {
 	 * @return the challenge by id
 	 */
 	public ChallengeResponse getChallengeById(UUID id) {
-		Challenge challenge = challengeRepository.findById(id).orElseThrow(null);
+		Challenge challenge = challengeRepository.findById(id).orElse(new Challenge());
 		return ChallengeMapper.mapEntityToResponse(challenge);
 	}
 
