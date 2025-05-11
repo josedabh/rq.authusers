@@ -11,9 +11,9 @@ import com.rq.manager.authusers.enumerations.RolEnum;
  * The Class UserMapper.
  */
 public class UserMapper {
-	
-	/** The Constant encoder. */
-	private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+    /** The Constant encoder. */
+    private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     /**
      * Instantiates a new user mapper.
@@ -41,19 +41,20 @@ public class UserMapper {
         user.setRol(rol);
         return user;
     }
-	
-	/**
-	 * Map entity user response.
-	 *
-	 * @param user the user
-	 * @return the user response
-	 */
-	public static UserResponse mapEntityToResponse(User user) {
-		return UserResponse.builder().id(user.getId().toString()).email(user.getEmail())
-				.name(user.getName()).lastname(user.getLastname())
-				.password(user.getPassword()).username(user.getUsername())
-				.numPhone(user.getNumPhone()).points(user.getPoints())
-				.rol(user.getRol().getCodigo()).build();
-	}
+
+    /**
+     * Map entity user response.
+     *
+     * @param user the user
+     * @return the user response
+     */
+    public static UserResponse mapEntityToResponse(User user) {
+        return UserResponse.builder().id(user.getId().toString())
+                .email(user.getEmail()).name(user.getName())
+                .lastname(user.getLastname()).password(user.getPassword())
+                .username(user.getUsername()).numPhone(user.getNumPhone())
+                .points(user.getPoints()).rol(user.getRol().getCodigo())
+                .build();
+    }
 
 }

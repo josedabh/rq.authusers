@@ -1,4 +1,4 @@
-package com.rq.manager.authusers.bean;
+package com.rq.manager.authusers.bean.admin;
 
 import java.util.UUID;
 

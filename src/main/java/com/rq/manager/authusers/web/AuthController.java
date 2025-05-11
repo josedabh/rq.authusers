@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.rq.manager.authusers.bean.Key;
+import com.rq.manager.authusers.bean.Credentials;
 import com.rq.manager.authusers.bean.Login;
 import com.rq.manager.authusers.bean.Register;
 import com.rq.manager.authusers.bean.admin.UserResponse;
@@ -64,9 +64,9 @@ public class AuthController {
     @ApiResponse(responseCode = "200", 
     		description = "Usuario registrado exitosamente",
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-            schema = @Schema(implementation = Key.class)))
+            schema = @Schema(implementation = Credentials.class)))
 	@PostMapping("/register")
-	public Key registerUser(@Valid @RequestBody Register register) {
+	public Credentials registerUser(@Valid @RequestBody Register register) {
 		return authService.registerUser(register);
 	}
 	
@@ -81,9 +81,9 @@ public class AuthController {
 					+ " nombre de usuario o número de teléfono.")
     @ApiResponse(responseCode = "200", description = "Iniciar sesión exitosamente",
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-            schema = @Schema(implementation = Key.class)))
+            schema = @Schema(implementation = Credentials.class)))
 	@PostMapping("/login")
-    public Key login(@Valid @RequestBody Login login) {
+    public Credentials login(@Valid @RequestBody Login login) {
         return authService.authenticateUser(login);
     }
 	
@@ -108,7 +108,7 @@ public class AuthController {
 	@ApiResponse(responseCode = "200", 
 		description = "Cerrar sesión exitosamente", 
 		content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, 
-		schema = @Schema(implementation = Key.class)))
+		schema = @Schema(implementation = Credentials.class)))
 	@PostMapping("/logout")
 	public void logout() {
 		authService.logout();

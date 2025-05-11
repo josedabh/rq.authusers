@@ -2,6 +2,8 @@ package com.rq.manager.authusers.bean;
 
 import java.util.List;
 
+import com.rq.manager.authusers.bean.admin.Questions;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

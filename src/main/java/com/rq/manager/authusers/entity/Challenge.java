@@ -53,15 +53,20 @@ public class Challenge {
 	private StatesChallengeEnum state;
 
     /** The start date. */
-    @Column(name = "START_DATE"/*, nullable = false*/)
+    @Column(name = "START_DATE")
     private LocalDateTime startDate;
 
     /** The end date. */
-    @Column(name = "END_DATE"/*, nullable = false*/)
+    @Column(name = "END_DATE")
     private LocalDateTime endDate;
 
     /** The points. */
     @Column(name = "POINTS", nullable = false)
     private int points;
-
+    
+    @Column(name = "VERIFICATION_TYPE",
+            nullable = true, length = 1)
+    private String verification_type;
+    
+    private String verification_id;
 }

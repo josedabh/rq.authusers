@@ -23,7 +23,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.rq.manager.authusers.bean.Key;
+import com.rq.manager.authusers.bean.Credentials;
 import com.rq.manager.authusers.bean.Login;
 import com.rq.manager.authusers.bean.Register;
 import com.rq.manager.authusers.bean.admin.UserResponse;
@@ -68,7 +68,7 @@ public class AuthServiceTest {
         when(authenticationManagerBuilder.getObject()).thenReturn(authManager);
         when(authManager.authenticate(any())).thenReturn(auth);
 
-        Key result = authService.registerUser(register);
+        Credentials result = authService.registerUser(register);
 
         assertNotNull(result);
         assertEquals("token123", result.getToken());
@@ -103,7 +103,7 @@ public class AuthServiceTest {
         when(authenticationManagerBuilder.getObject()).thenReturn(authManager);
         when(authManager.authenticate(any())).thenReturn(auth);
 
-        Key result = authService.authenticateUser(login);
+        Credentials result = authService.authenticateUser(login);
 
         assertNotNull(result);
         assertEquals("token123", result.getToken());

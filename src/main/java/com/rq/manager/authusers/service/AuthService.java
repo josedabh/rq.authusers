@@ -7,7 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.rq.manager.authusers.bean.Key;
+import com.rq.manager.authusers.bean.Credentials;
 import com.rq.manager.authusers.bean.Login;
 import com.rq.manager.authusers.bean.Register;
 import com.rq.manager.authusers.bean.admin.UserResponse;
@@ -24,95 +24,99 @@ import lombok.AllArgsConstructor;
 /**
  * The Class AuthService.
  */
-@Service
-@AllArgsConstructor
+@Service @AllArgsConstructor
 public class AuthService {
 
     /** The password encoder. */
     private final PasswordEncoder passwordEncoder;
 
-	/** The user repository. */
-	private UserRepository userRepository;
-	
-	/** The jwt util. */
-	private JwtService jwtService;
-	
-	/** The authentication manager builder. */
-	private AuthenticationManagerBuilder authenticationManagerBuilder;
-	
-	/** The user challenge repository. */
+    /** The user repository. */
+    private UserRepository userRepository;
+
+    /** The jwt util. */
+    private JwtService jwtService;
+
+    /** The authentication manager builder. */
+    private AuthenticationManagerBuilder authenticationManagerBuilder;
+
+    /** The user challenge repository. */
 //	private UserChallengeRepository userChallengeRepository;
 
-	/**
-	 * Register user.
-	 *
-	 * @param register The value of the new user
-	 * @return the new user
-	 */
-	public Key registerUser(Register register) {
-		//Verificamos que el email y el username no existan
-		//Cambiar el mensaje del throw
-		if (userRepository.existsByEmail(register.getEmail())
-				|| userRepository.existsByUsername(register.getUsername())) {
-			throw new CustomException(ErrorConstants.NULL_USER);
-		}
-		User user = UserMapper.mapRegisterEntity(register, RolEnum.NORMAL);
-		userRepository.save(user);
-		//Devolvemos el token al usuario
-	    return createToken(user.getUsername(), register.getPassword());
-	}
-	
-	/**
-	 * Creates the token.
-	 *
-	 * @param user the user
-	 * @param password the password
-	 * @return the key
-	 */
-	private Key createToken(String username, String password) {
-		// Creamos el token al encontrar el usuario
-		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-				username, password);
-		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		//Generamos el token
-		Key key = new Key();
-		key.setToken(jwtService.generarToken(authentication));
-		return key;
-	}
-	
-	/**
-	 * Authenticate user in the login.
-	 *
-	 * @param login the credentials for open
-	 * @return the user
-	 */
-	public Key authenticateUser(Login login) {
-		User user = userRepository.findByIdentifier(login.getIdentifier())
-					.orElseThrow(() -> 
-					new CustomException(ErrorConstants.ERROR_CREDENTIALS));
-		if (!passwordEncoder.matches(login.getPassword(), user.getPassword())) {
-			throw new CustomException(ErrorConstants.ERROR_CREDENTIALS);
-		}
-		//Generamos el token
-	    return createToken(user.getUsername(), login.getPassword());
-	}
-	
-	public void logout() {
-		SecurityContextHolder.clearContext();
-	}
-	
-	/**
-	 * Gets the user.
-	 *
-	 * @return the user
-	 */
-	public UserResponse getUser() {
-		User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
-				.orElseThrow(() -> new CustomException(ErrorConstants.NULL_USER));
-		return UserMapper.mapEntityToResponse(user);
-	}
-	
+    /**
+     * Register user.
+     *
+     * @param register The value of the new user
+     * @return the new user
+     */
+    public Credentials registerUser(Register register) {
+        // Verificamos que el email y el username no existan
+        // Cambiar el mensaje del throw
+        if (userRepository.existsByEmail(register.getEmail())
+                || userRepository.existsByUsername(register.getUsername())) {
+            throw new CustomException(ErrorConstants.NULL_USER);
+        }
+        User user = UserMapper.mapRegisterEntity(register, RolEnum.NORMAL);
+        userRepository.save(user);
+        // Devolvemos el token al usuario
+        return createToken(user.getUsername(), register.getPassword());
+    }
+
+    /**
+     * Creates the token.
+     *
+     * @param user the user
+     * @param password the password
+     * @return the key
+     */
+    private Credentials createToken(String username, String password) {
+        // Creamos el token al encontrar el usuario
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                username, password);
+        Authentication authentication = authenticationManagerBuilder.getObject()
+                .authenticate(authenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        // Generamos el token
+        Credentials credentials = new Credentials();
+        credentials.setToken(jwtService.generarToken(authentication));
+        credentials.setAdmin(false);
+        return credentials;
+    }
+
+    /**
+     * Authenticate user in the login.
+     *
+     * @param login the credentials for open
+     * @return the user
+     */
+    public Credentials authenticateUser(Login login) {
+        User user = userRepository.findByIdentifier(login.getIdentifier())
+                .orElseThrow(() -> new CustomException(
+                        ErrorConstants.ERROR_CREDENTIALS));
+        if (!passwordEncoder.matches(login.getPassword(), user.getPassword())) {
+            throw new CustomException(ErrorConstants.ERROR_CREDENTIALS);
+        }
+        // Generamos el token
+        return createToken(user.getUsername(), login.getPassword());
+    }
+
+    public void logout() {
+        SecurityContextHolder.clearContext();
+    }
+
+    /**
+     * Gets the user.
+     *
+     * @return the user
+     */
+    public UserResponse getUser() {
+        User user = userRepository
+                .findByUsername(SecurityContextHolder.getContext()
+                        .getAuthentication().getName())
+                .orElseThrow(
+                        () -> new CustomException(ErrorConstants.NULL_USER));
+        return UserMapper.mapEntityToResponse(user);
+    }
+
 //	public void historyChallenges() {
 //		HistoryChallenges historyChallenges =  userChallengeRepository.findAll().stream()
 //			.map(userChallenge -> UserChallengeMapper.mapEntityToResponse(userChallenge))
