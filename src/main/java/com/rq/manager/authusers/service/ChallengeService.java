@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.rq.manager.authusers.bean.ChallengeCard;
 import com.rq.manager.authusers.bean.ChallengeRequest;
-import com.rq.manager.authusers.bean.ChallengeResponse;
+import com.rq.manager.authusers.bean.admin.ChallengeResponse;
 import com.rq.manager.authusers.constants.Constants;
 import com.rq.manager.authusers.entity.Challenge;
 import com.rq.manager.authusers.entity.User;

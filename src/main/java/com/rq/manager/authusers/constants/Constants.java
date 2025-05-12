@@ -52,4 +52,6 @@ public class Constants {
 	/** The Constant CANCELLED. */
 	public static final String CANCELLED = "CANCELLED";
 	
+	/** The Constant FORMAT_VERIFICATION_CHALLENGE. */
+	public static final String FORMAT_VERIFICATION_CHALLENGE = "%07d";
 }
