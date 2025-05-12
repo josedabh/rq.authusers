@@ -103,19 +103,16 @@ public class AuthService {
         SecurityContextHolder.clearContext();
     }
 
-    /**
-     * Gets the user.
-     *
-     * @return the user
-     */
-    public UserResponse getUser() {
-        User user = userRepository
-                .findByUsername(SecurityContextHolder.getContext()
-                        .getAuthentication().getName())
-                .orElseThrow(
-                        () -> new CustomException(ErrorConstants.NULL_USER));
-        return UserMapper.mapEntityToResponse(user);
-    }
+	/**
+	 * Gets the user.
+	 *
+	 * @return the user
+	 */
+	public UserResponse getUser() {
+		User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
+				.orElseThrow(() -> new CustomException(ErrorConstants.NULL_USER));
+		return UserMapper.mapEntityToResponse(user);
+	}
 
 //	public void historyChallenges() {
 //		HistoryChallenges historyChallenges =  userChallengeRepository.findAll().stream()
