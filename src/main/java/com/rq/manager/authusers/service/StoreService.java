@@ -116,16 +116,41 @@ public class StoreService {
         reward.setStock(reward.getStock() - 1);
         user.setPoints(user.getPoints() - reward.getPoints());
         // 4. Registrar la transacción
-		PurchaseHistory purchase = new PurchaseHistory();
-		purchase.setId(1L); // Asignar un ID temporal
-		purchase.setUserId(UUID.fromString(user.getId()));
-		purchase.setRewardId(rewardId);
-		purchase.setPointsSpent(reward.getPoints());
-		purchase.setPurchaseDate(LocalDateTime.now());
+        PurchaseHistory purchase = createPurchaseHistory(user.getId(), rewardId, reward.getPoints());
         // 5. Guardar cambios en la base de datos
         rewardRepository.save(reward);
         userRepository.save(UserMapper.mapUserResponseToEntity(user));
         purchaseHistoryRepository.save(purchase);
-        return StoreMapper.mapRewardEntityToResponse(reward);
-    }
+		return StoreMapper.mapRewardEntityToResponse(reward);
+	}
+
+	/**
+	 * Creates a purchase history record.
+	 *
+	 * @param userId      the user ID
+	 * @param rewardId    the reward ID
+	 * @param pointsSpent the points spent
+	 * @return the purchase history
+	 */
+	private PurchaseHistory createPurchaseHistory(String userId, Long rewardId, Integer pointsSpent) {
+		PurchaseHistory purchase = new PurchaseHistory();
+		purchase.setUserId(UUID.fromString(userId));
+		purchase.setRewardId(rewardId);
+		purchase.setPointsSpent(pointsSpent);
+		purchase.setPurchaseDate(LocalDateTime.now());
+		return purchase;
+	}
+	
+	public void getTopRewards() {
+		
+	}
+//	getTopRewards - Obtener los rewards más comprados
+//	refundReward - Procesar la devolución de un reward y restaurar los puntos
+//	checkRewardAvailability - Verificar si un reward está disponible
+//	getUserPoints - Obtener el balance de puntos del usuario
+//	getRewardsByPriceRange - Obtener rewards dentro de un rango de puntos
+//	getActiveRewards - Obtener solo los rewards con stock disponible
+//	addRewardStock - Añadir más stock a un reward existente
+//	getUserPurchaseStatistics - Obtener estadísticas de compras de un usuario
+//	getRewardsByCategory - Obtener rewards filtrados por categoría
 }

@@ -50,4 +50,10 @@ public class ErrorConstants {
 
 	/** The Constant CHALLENGE_DIFFERENT_STATE. */
 	public static final String CHALLENGE_DIFFERENT_STATE = "challenge_different_state";
+
+	/** The Constant CHALLENGE_NOT_FOUND. */
+	public static final String CHALLENGE_NOT_FOUND = "Challenge not found";
+
+	/** The Constant QUIZ_NOT_FOUND. */
+	public static final String QUIZ_NOT_FOUND = "Quiz not found";
 }
