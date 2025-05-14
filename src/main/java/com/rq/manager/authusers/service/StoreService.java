@@ -51,59 +51,64 @@ public class StoreService {
 		return StoreMapper.mapRewardEntityToResponse(reward);
 	}
 	
+    /**
+     * List rewards.
+     *
+     * @return the list reward response
+     */
+    public List<RewardResponse> listRewards() {
+        return rewardRepository.findAll().stream()
+                .map(StoreMapper::mapRewardEntityToResponse).toList();
+    }
+
 	/**
-	 * List rewards.
-	 *
-	 * @return the list reward response
-	 */
-	public List<RewardResponse> listRewards() {
-		return rewardRepository.findAll().stream()
-				.map(StoreMapper::mapRewardEntityToResponse).toList();
-	}
-	
-	/**
-	 * Update reward.
-	 *
-	 * @param id the id
-	 * @param rewardRequest the reward request
-	 * @return the reward response
-	 */
-	public RewardResponse updateReward(long id, RewardRequest rewardRequest) {
-		Reward reward = StoreMapper.mapRewardRequestToEntity(rewardRequest);
-		rewardRepository.save(reward);
-		return null;
-	}
-	
-	/**
-	 * Delete reward.
-	 *
-	 * @param id the id
-	 */
-	public void deleteReward(long id) {
+     * Update reward.
+     *
+     * @param id
+     *            the id
+     * @param rewardRequest
+     *            the reward request
+     * @return the reward response
+     */
+    public RewardResponse updateReward(long id, RewardRequest rewardRequest) {
+        Reward reward = StoreMapper.mapRewardRequestToEntity(rewardRequest);
+        rewardRepository.save(reward);
+        return null;
+    }
+
+    /**
+     * Delete reward.
+     *
+     * @param id
+     *            the id
+     */
+    public void deleteReward(long id) {
 		rewardRepository.deleteById(id);
 	}
-	
-	/**
-	 * Gets the reward by id.
-	 *
-	 * @param id the id
-	 * @return the reward by id
-	 */
-	public RewardResponse getRewardById(long id) {
-		Reward reward = rewardRepository.findById(id).orElse(new Reward());
-		return StoreMapper.mapRewardEntityToResponse(reward);
-	}
+
+    /**
+     * Gets the reward by id.
+     *
+     * @param id
+     *            the id
+     * @return the reward by id
+     */
+    public RewardResponse getRewardById(long id) {
+        Reward reward = rewardRepository.findById(id).orElse(new Reward());
+        return StoreMapper.mapRewardEntityToResponse(reward);
+    }
 
     /**
      * Buy reward.
      *
-     * @param rewardId the reward id
+     * @param rewardId
+     *            the reward id
      * @return the reward response
      */
     public RewardResponse buyReward(long rewardId) {
         // 1. Obtener el reward y verificar stock
         Reward reward = rewardRepository.findById(rewardId)
-            .orElse(new Reward());
+                .orElse(new Reward());
         if (reward.getStock() <= 0) {
             throw new CustomException("No stock available");
         }
@@ -116,34 +121,39 @@ public class StoreService {
         reward.setStock(reward.getStock() - 1);
         user.setPoints(user.getPoints() - reward.getPoints());
         // 4. Registrar la transacción
-        PurchaseHistory purchase = createPurchaseHistory(user.getId(), rewardId, reward.getPoints());
+        PurchaseHistory purchase = createPurchaseHistory(user.getId(), rewardId,
+                reward.getPoints());
         // 5. Guardar cambios en la base de datos
         rewardRepository.save(reward);
         userRepository.save(UserMapper.mapUserResponseToEntity(user));
         purchaseHistoryRepository.save(purchase);
-		return StoreMapper.mapRewardEntityToResponse(reward);
-	}
+        return StoreMapper.mapRewardEntityToResponse(reward);
+    }
 
-	/**
-	 * Creates a purchase history record.
-	 *
-	 * @param userId      the user ID
-	 * @param rewardId    the reward ID
-	 * @param pointsSpent the points spent
-	 * @return the purchase history
-	 */
-	private PurchaseHistory createPurchaseHistory(String userId, Long rewardId, Integer pointsSpent) {
-		PurchaseHistory purchase = new PurchaseHistory();
-		purchase.setUserId(UUID.fromString(userId));
-		purchase.setRewardId(rewardId);
-		purchase.setPointsSpent(pointsSpent);
-		purchase.setPurchaseDate(LocalDateTime.now());
-		return purchase;
-	}
-	
-	public void getTopRewards() {
-		
-	}
+    /**
+     * Creates a purchase history record.
+     *
+     * @param userId
+     *            the user ID
+     * @param rewardId
+     *            the reward ID
+     * @param pointsSpent
+     *            the points spent
+     * @return the purchase history
+     */
+    private PurchaseHistory createPurchaseHistory(String userId, Long rewardId,
+            Integer pointsSpent) {
+        PurchaseHistory purchase = new PurchaseHistory();
+        purchase.setUserId(UUID.fromString(userId));
+        purchase.setRewardId(rewardId);
+        purchase.setPointsSpent(pointsSpent);
+        purchase.setPurchaseDate(LocalDateTime.now());
+        return purchase;
+    }
+
+    public void getTopRewards() {
+
+    }
 //	getTopRewards - Obtener los rewards más comprados
 //	refundReward - Procesar la devolución de un reward y restaurar los puntos
 //	checkRewardAvailability - Verificar si un reward está disponible
