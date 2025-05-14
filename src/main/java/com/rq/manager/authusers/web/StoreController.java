@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.rq.manager.authusers.bean.RewardRequest;
-import com.rq.manager.authusers.bean.RewardResponse;
+import com.rq.manager.authusers.bean.admin.RewardRequest;
+import com.rq.manager.authusers.bean.admin.RewardResponse;
 import com.rq.manager.authusers.service.StoreService;
 
 import io.swagger.v3.oas.annotations.Operation;

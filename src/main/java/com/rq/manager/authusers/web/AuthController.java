@@ -3,11 +3,13 @@ package com.rq.manager.authusers.web;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rq.manager.authusers.bean.Credentials;
+import com.rq.manager.authusers.bean.FormPassword;
 import com.rq.manager.authusers.bean.Login;
 import com.rq.manager.authusers.bean.Register;
 import com.rq.manager.authusers.bean.admin.UserResponse;
@@ -109,9 +111,26 @@ public class AuthController {
 		description = "Cerrar sesión exitosamente", 
 		content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, 
 		schema = @Schema(implementation = Credentials.class)))
-	@PostMapping("/logout")
-	public void logout() {
-		authService.logout();
+    @PostMapping("/logout")
+    public void logout() {
+        authService.logout();
+    }
+
+    /**
+     * Change password.
+     *
+     * @param formPassword
+     *            the form password
+     * @return the user response
+     */
+    @Operation(summary = "Cambia la contraseña",
+            description = "El usaurio puede cambiar la contraseña")
+    @ApiResponse(responseCode = "200", 
+	        description = "Contraseña cambiada", 
+	        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, 
+	        schema = @Schema(implementation = UserResponse.class)))
+	@PutMapping("/change-password")
+	public UserResponse changePassword(@Valid @RequestBody FormPassword formPassword) {
+	    return authService.changePassword(formPassword);
 	}
-	
 }

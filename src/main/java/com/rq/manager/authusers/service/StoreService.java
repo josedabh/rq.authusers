@@ -6,8 +6,8 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.rq.manager.authusers.bean.RewardRequest;
-import com.rq.manager.authusers.bean.RewardResponse;
+import com.rq.manager.authusers.bean.admin.RewardRequest;
+import com.rq.manager.authusers.bean.admin.RewardResponse;
 import com.rq.manager.authusers.bean.admin.UserResponse;
 import com.rq.manager.authusers.entity.PurchaseHistory;
 import com.rq.manager.authusers.entity.Reward;

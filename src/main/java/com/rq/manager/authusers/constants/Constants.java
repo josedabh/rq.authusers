@@ -41,16 +41,16 @@ public class Constants {
 	public static final String BEARER = "Bearer ";
 	
 	/** The Constant PENDING. */
-	public static final String PENDING = "PENDING";
+	public static final String PENDING = "PENDIENTE";
 	
 	/** The Constant IN_PROGRESS. */
-	public static final String IN_PROGRESS = "IN_PROGRESS";
+	public static final String IN_PROGRESS = "EN_PROGRESO";
 	
 	/** The Constant FINISHED. */
-	public static final String FINISHED = "FINISHED";
+	public static final String FINISHED = "FINALIZADO";
 
 	/** The Constant CANCELLED. */
-	public static final String CANCELLED = "CANCELLED";
+	public static final String CANCELLED = "CANCELADO";
 	
 	/** The Constant FORMAT_VERIFICATION_CHALLENGE. */
 	public static final String FORMAT_VERIFICATION_CHALLENGE = "%07d";

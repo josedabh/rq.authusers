@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.rq.manager.authusers.bean.Credentials;
+import com.rq.manager.authusers.bean.FormPassword;
 import com.rq.manager.authusers.bean.Login;
 import com.rq.manager.authusers.bean.Register;
 import com.rq.manager.authusers.bean.admin.UserResponse;
@@ -113,6 +114,41 @@ public class AuthService {
 				.orElseThrow(() -> new CustomException(ErrorConstants.NULL_USER));
 		return UserMapper.mapEntityToResponse(user);
 	}
+
+    /**
+     * Change password.
+     *
+     * @param formPassword
+     *            the form password
+     * @return the user response
+     */
+    public UserResponse changePassword(FormPassword formPassword) {
+        UserResponse userResponse = getUser();
+        if (isEqualsPasswords(userResponse, formPassword)) {
+            User user = UserMapper.mapUserResponseToEntity(userResponse);
+            user.setPassword(passwordEncoder.encode(formPassword.getNewPassword()));
+            userRepository.save(user);
+            return UserMapper.mapEntityToResponse(user);
+        }
+        return userResponse;
+    }
+
+    /**
+     * Checks if is equals passwords.
+     *
+     * @param userResponse
+     *            the user response
+     * @param formPassword
+     *            the form password
+     * @return true, if is equals passwords
+     */
+    private boolean isEqualsPasswords(UserResponse userResponse,
+            FormPassword formPassword) {
+        return passwordEncoder.matches(userResponse.getPassword(),
+                formPassword.getOldPassword())
+                && formPassword.getNewPassword() != formPassword
+                        .getVerifyNewPassword();
+    }
 
 //	public void historyChallenges() {
 //		HistoryChallenges historyChallenges =  userChallengeRepository.findAll().stream()

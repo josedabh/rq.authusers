@@ -1,7 +1,7 @@
 package com.rq.manager.authusers.mapper;
 
-import com.rq.manager.authusers.bean.RewardRequest;
-import com.rq.manager.authusers.bean.RewardResponse;
+import com.rq.manager.authusers.bean.admin.RewardRequest;
+import com.rq.manager.authusers.bean.admin.RewardResponse;
 import com.rq.manager.authusers.entity.Reward;
 
 public class StoreMapper {

@@ -1,30 +1,28 @@
-package com.rq.manager.authusers.bean;
+package com.rq.manager.authusers.bean.admin;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * The Class RewardRequest.
- */
-@Setter
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@NotBlank
-public class RewardRequest {
+@Builder
+public class RewardResponse {
+	
+	/** The id. */
+	@Schema(description = "Reward ID", example = "1")
+	private long id;
 	
 	/** The name. */
-	@Size(min = 1, max = 80)
 	@Schema(description = "Reward name", example = "Reward 1")
 	private String name;
 	
 	/** The description. */
-	@Size(min = 1, max = 200)
 	@Schema(description = "Reward description", example = "Reward 1 description")
 	private String description;
 	
