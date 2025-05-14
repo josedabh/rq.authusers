@@ -70,6 +70,7 @@ public class StoreService {
      *            the reward request
      * @return the reward response
      */
+    //A cambiar metodos
     public RewardResponse updateReward(long id, RewardRequest rewardRequest) {
         Reward reward = StoreMapper.mapRewardRequestToEntity(rewardRequest);
         rewardRepository.save(reward);
@@ -148,19 +149,56 @@ public class StoreService {
         purchase.setRewardId(rewardId);
         purchase.setPointsSpent(pointsSpent);
         purchase.setPurchaseDate(LocalDateTime.now());
-        return purchase;
+		return purchase;
+	}
+
+	/**
+	 * Gets the top rewards based on purchase count.
+	 *
+	 * @return the list of most purchased rewards
+	 */
+//	public List<RewardResponse> getTopRewards() {
+//		// Obtener los IDs de los rewards más comprados y su cantidad de compras
+//		List<Object[]> topRewardIds = purchaseHistoryRepository.findTopRewards();
+//
+//		// Obtener los rewards completos y mapearlos a RewardResponse
+//		return topRewardIds.stream().map(result -> {
+//			Long rewardId = (Long) result[0];
+//			Long purchaseCount = (Long) result[1];
+//			Reward reward = rewardRepository.findById(rewardId)
+//					.orElseThrow(() -> new CustomException("Reward not found"));
+//			RewardResponse response = StoreMapper.mapRewardEntityToResponse(reward);
+//			response.setPurchaseCount(purchaseCount.intValue());
+//			return response;
+//		}).toList();
+//	}
+
+	/**
+	 * Gets the user points.
+	 *
+	 * @return the user points
+	 */
+	public int getUserPoints() {
+		return authService.getUser().getPoints();
     }
-
-    public void getTopRewards() {
-
+	
+	/**
+	 * Adds the reward stock.
+	 *
+	 * @param id the id
+	 * @param stock the stock
+	 * @return the reward response
+	 */
+	public RewardResponse addRewardStock(long id, int stock) {
+        Reward reward = rewardRepository.findById(id).orElseThrow(() -> new CustomException("Reward not found"));
+        reward.setStock(reward.getStock() + stock);
+        rewardRepository.save(reward);
+        return StoreMapper.mapRewardEntityToResponse(reward);
     }
 //	getTopRewards - Obtener los rewards más comprados
-//	refundReward - Procesar la devolución de un reward y restaurar los puntos
 //	checkRewardAvailability - Verificar si un reward está disponible
-//	getUserPoints - Obtener el balance de puntos del usuario
 //	getRewardsByPriceRange - Obtener rewards dentro de un rango de puntos
 //	getActiveRewards - Obtener solo los rewards con stock disponible
-//	addRewardStock - Añadir más stock a un reward existente
 //	getUserPurchaseStatistics - Obtener estadísticas de compras de un usuario
 //	getRewardsByCategory - Obtener rewards filtrados por categoría
 }
