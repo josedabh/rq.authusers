@@ -42,7 +42,7 @@ public class Challenge {
     private String difficulty;
 
     /** The category. */
-    @Column(name = "CATEGORY", nullable = false, length = 20)
+    @Column(name = "CATEGORY", nullable = true, length = 20)
     @Enumerated(EnumType.STRING)
     private CategoryEnum category;
 

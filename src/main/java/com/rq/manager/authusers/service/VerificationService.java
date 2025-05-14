@@ -88,8 +88,7 @@ public class VerificationService {
             Map<String, Long> answersMap) {
         // 1. Cargar reto y quiz
         Challenge ch = challengeRepo.findById(challengeId)
-                .orElseThrow(() -> new BusinessException(
-                        ErrorConstants.CHALLENGE_NOT_FOUND));
+                .orElse(new Challenge());
         QuizVerification quiz = getQuizForChallenge(challengeId);
         // 2. Validar que reto esté en estado PENDIENTE o INICIADO
         if (ch.getState() != StatesChallengeEnum.PENDING &&
@@ -100,6 +99,13 @@ public class VerificationService {
         // 3. Recorrer las preguntas y comparar
         int total = quiz.getQuestions().size();
         int correctCount = 0;
+		quiz.getQuestions().forEach(q -> {
+			// System.out.println("Pregunta: " + q.getQuestionId());
+			// q.getAnswers().forEach(a -> {
+			// System.out.println("Respuesta: " + a.getAnswerId() + " - "
+			// + a.isCorrect());
+			// });
+		});
         for (QuizQuestion q : quiz.getQuestions()) {
             Long selected = answersMap.get(q.getQuestionId());
             if (selected == null)
@@ -128,5 +134,6 @@ public class VerificationService {
         // 6. Devolver un objeto con resultado
         return new VerificationResult(total, correctCount, scorePercent,
                 passed);
-    }
+	}
+
 }

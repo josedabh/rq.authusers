@@ -4,6 +4,7 @@ import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -16,6 +17,7 @@ import lombok.Setter;
 /**
  * The Class QuizQuestion.
  */
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -23,19 +25,21 @@ import lombok.Setter;
 @Entity
 @Table(name = "QUIZQUESTION")
 public class QuizQuestion {
+	
+	/** The question id. */
+	@Id
+	private String questionId;
 
-    /** The question id. */
-    private String questionId;
-    
-    /** The question. */
-    private String question;
-    
-    /** The quiz. */
-    @ManyToOne
-    @JoinColumn(name = "quiz_id")
-    QuizVerification quiz;
+	/** The question. */
+	private String question;
 
-    /** The answers. */
-    @OneToMany(mappedBy="question", cascade=CascadeType.ALL, orphanRemoval=true)
-    List<QuizAnswer> answers;
+	/** The quiz. */
+	@ManyToOne
+	@JoinColumn(name = "quiz_id")
+	private QuizVerification quiz;
+
+	/** The answers. */
+	@OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<QuizAnswer> answers;
+
 }
