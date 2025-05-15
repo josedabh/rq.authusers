@@ -13,6 +13,7 @@ import com.rq.manager.authusers.bean.FormPassword;
 import com.rq.manager.authusers.bean.Login;
 import com.rq.manager.authusers.bean.Register;
 import com.rq.manager.authusers.bean.admin.UserResponse;
+import com.rq.manager.authusers.constants.ApiConstants;
 import com.rq.manager.authusers.constants.Constants;
 import com.rq.manager.authusers.exceptions.ErrorResponse;
 import com.rq.manager.authusers.service.AuthService;
@@ -32,11 +33,11 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping("/api/v1/auth")
 @AllArgsConstructor
-@Tag(name = "AuthController", 
+@Tag(name = "Auth Controller", 
 description = "Controlador donde se genera un token")
 @ApiResponses(value = {
 		@ApiResponse(responseCode = "400", 
-			description = Constants.BAD_REQUEST, 
+			description = ApiConstants.BAD_REQUEST, 
 			content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
 			schema = @Schema(implementation = ErrorResponse.class))),
 		@ApiResponse(responseCode = "401", 

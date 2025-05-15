@@ -9,7 +9,7 @@ public class Constants {
 	/**
 	 * Instantiates a new constants.
 	 */
-	public Constants() {
+	private Constants() {
 		// Default constructor
 	}
 	
@@ -18,27 +18,15 @@ public class Constants {
 	
 	/** The Constant REQUEST_REGISTER. */
 	public static final String REQUEST_REGISTER = "/api/v1/auth/register";
-	
-	/** The Constant SWAGGER_UI. */
-	public static final String SWAGGER_UI = "/swagger-ui/**";
-	
-	/** The Constant API_DOCS. */
-	public static final String API_DOCS = "/v3/api-docs/**";
-	
+
+	/** The Constant BEARER. */
+	public static final String BEARER = "Bearer ";
+
 	/** The Constant AUTHORIZATION. */
 	public static final String AUTHORIZATION = "Authorization";
 	
-	/** The Constant CONTENT_TYPE. */
-	public static final String CONTENT_TYPE = "Content-Type";
-	
 	/** The Constant UNAUTHORIZED. */
 	public static final String UNAUTHORIZED = "Unauthorized";
-	
-	/** The Constant BAD_REQUEST. */
-	public static final String BAD_REQUEST = "Bad Request";
-	
-	/** The Constant BEARER. */
-	public static final String BEARER = "Bearer ";
 	
 	/** The Constant PENDING. */
 	public static final String PENDING = "PENDIENTE";

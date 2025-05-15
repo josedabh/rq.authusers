@@ -29,6 +29,7 @@ public class RewardRequest {
 	private String description;
 	
 	/** The points. */
+	@NotBlank
 	@Schema(description = "Reward points", example = "100")
 	private int points;
 	
@@ -37,10 +38,12 @@ public class RewardRequest {
 	private String image;
 	
 	/** The active. */
+	@NotBlank
 	@Schema(description = "Reward active status", example = "true")
 	private boolean active;
 	
 	/** The stock. */
+	@NotBlank
 	@Schema(description = "Reward stock", example = "2")
 	private int stock;
 

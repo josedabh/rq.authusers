@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rq.manager.authusers.bean.admin.UserResponse;
+import com.rq.manager.authusers.constants.ApiConstants;
 import com.rq.manager.authusers.service.AdminService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,10 +25,10 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping("/api/v1/admin")
 @AllArgsConstructor
-@Tag(name = "AdminController",
+@Tag(name = "Admin Controller",
 description = "Los administradores realizan acciones administrativas")
 @ApiResponses(value = { 
-		@ApiResponse(responseCode = "400", description = "BAD REQUEST") 
+		@ApiResponse(responseCode = "400", description = ApiConstants.BAD_REQUEST) 
 })
 public class AdminController {
 

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.rq.manager.authusers.bean.admin.RewardRequest;
 import com.rq.manager.authusers.bean.admin.RewardResponse;
+import com.rq.manager.authusers.constants.ApiConstants;
 import com.rq.manager.authusers.service.StoreService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +18,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 
 /**
@@ -25,8 +27,10 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping("/api/v1/store")
 @AllArgsConstructor
+@Tag(name = "Store Controller", description = "Controlador de la tienda")
 @ApiResponses(value = { 
-		@ApiResponse(responseCode = "400", description = "BAD REQUEST") 
+		@ApiResponse(responseCode = "400", 
+				description = ApiConstants.BAD_REQUEST)
 })
 public class StoreController {
 	

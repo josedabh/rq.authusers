@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.rq.manager.authusers.bean.ChallengeCard;
 import com.rq.manager.authusers.bean.ChallengeRequest;
 import com.rq.manager.authusers.bean.admin.ChallengeResponse;
+import com.rq.manager.authusers.constants.ApiConstants;
 import com.rq.manager.authusers.constants.Constants;
 import com.rq.manager.authusers.exceptions.ErrorResponse;
 import com.rq.manager.authusers.service.ChallengeService;
@@ -34,12 +35,12 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping("/api/v1/challenge")
 @AllArgsConstructor
-@Tag(name = "ChallengeController",
+@Tag(name = "Challenge Controller",
     description = "Controlador de los retos")
 @ApiResponses(value = {
 @ApiResponse(
     responseCode = "400",
-    description = Constants.BAD_REQUEST,
+    description = ApiConstants.BAD_REQUEST,
     content = @Content(
         mediaType = MediaType.APPLICATION_JSON_VALUE,
         schema = @Schema(
