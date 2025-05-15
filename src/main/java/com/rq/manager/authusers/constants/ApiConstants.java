@@ -17,5 +17,11 @@ public class ApiConstants {
 	
 	/** The Constant BAD_REQUEST. */
 	public static final String BAD_REQUEST = "Bad Request";
+	
+	/** The Constant NOT_FOUND. */
+	public static final String NOT_FOUND = "Not Found";
+	
+	/** The Constant INTERNAL_SERVER_ERROR. */
+	public static final String INTERNAL_SERVER_ERROR = "Internal Server Error";
 
 }

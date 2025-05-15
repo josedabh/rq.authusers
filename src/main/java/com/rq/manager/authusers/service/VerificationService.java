@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.rq.manager.authusers.bean.VerificationResult;
+import com.rq.manager.authusers.bean.admin.AnswerDTO;
+import com.rq.manager.authusers.bean.admin.QuizSubmitRequest;
 import com.rq.manager.authusers.entity.Challenge;
 import com.rq.manager.authusers.entity.QuizAnswer;
 import com.rq.manager.authusers.entity.QuizQuestion;
@@ -41,17 +43,51 @@ public class VerificationService {
 //    private final QuizAnswerRepository quizAnswerRepository;
 
     /**
-     * Creates the quiz verfication.
-     *
-     * @param id
-     *            the id
-     */
-    public void createQuizVerfication(String id) {
-        QuizVerification quizVerification = new QuizVerification();
-        String idprueba = "I000001";
-        quizVerification.setId(idprueba);
-        quizVerificationRepository.save(quizVerification);
+ * Creates the quiz verfication.
+ *
+ * @param quizSubmitRequest the quiz submit request
+ */
+	public void createQuizVerfication(QuizSubmitRequest quizSubmitRequest) {
+		QuizVerification quiz = mapQuizRequestToVerification(quizSubmitRequest);
+		List<QuizQuestion> questions = quizSubmitRequest.getQuestions().stream().map(q -> {
+			QuizQuestion question = new QuizQuestion();
+			question.setQuestionId(q.getQuestionId());
+			question.setQuestion(q.getQuestion());
+			question.setAnswers(q.getAnswers().stream().map(answer -> {
+				return mapAnswerRequestToEntity(answer);
+			}).collect(Collectors.toList()));
+			return question;
+		}).collect(Collectors.toList());
+		quiz.setQuestions(questions);
+		quizVerificationRepository.save(quiz);
+    	
     }
+	
+	/**
+	 * Map answer request to entity.
+	 *
+	 * @param a the a
+	 * @return the quiz answer
+	 */
+	private QuizAnswer mapAnswerRequestToEntity(AnswerDTO a) {
+		QuizAnswer answer = new QuizAnswer();
+		answer.setAnswerId(a.getAnswerId());
+		answer.setResult(a.getResult());
+		answer.setCorrect(a.isCorrect());
+		return answer;
+	}
+	
+	/**
+	 * Map quiz request to verification.
+	 *
+	 * @param quizSubmitRequest the quiz submit request
+	 * @return the quiz verification
+	 */
+	private QuizVerification mapQuizRequestToVerification(QuizSubmitRequest quizSubmitRequest) {
+		QuizVerification quiz = new QuizVerification();
+		quiz.setId(quizSubmitRequest.getQuizId());
+		return quiz;
+	}
 
     /**
      * Obtiene el quiz completo (preguntas y respuestas) para un reto dado.
@@ -98,28 +134,16 @@ public class VerificationService {
         }
         // 3. Recorrer las preguntas y comparar
         int total = quiz.getQuestions().size();
-        int correctCount = 0;
-		quiz.getQuestions().forEach(q -> {
-			// System.out.println("Pregunta: " + q.getQuestionId());
-			// q.getAnswers().forEach(a -> {
-			// System.out.println("Respuesta: " + a.getAnswerId() + " - "
-			// + a.isCorrect());
-			// });
-		});
-        for (QuizQuestion q : quiz.getQuestions()) {
-            Long selected = answersMap.get(q.getQuestionId());
-            if (selected == null)
-                continue; // no contestó: cuenta como fallo
-            // buscar la respuesta dentro de la pregunta
-            List<QuizAnswer> corrects = q.getAnswers().stream()
-                    .filter(QuizAnswer::isCorrect)
-                    .collect(Collectors.toList());
-            // si la seleccionada es correcta
-            if (corrects.stream()
-                    .anyMatch(a -> a.getAnswerId().equals(selected))) {
-                correctCount++;
-            }
-        }
+        int correctCount = (int) quiz.getQuestions().stream()
+        	    .filter(q -> {
+        	        Long selected = answersMap.get(q.getQuestionId());
+        	        if (selected == null) return false;
+
+        	        return q.getAnswers().stream()
+        	            .filter(QuizAnswer::isCorrect)
+        	            .anyMatch(a -> a.getAnswerId() != null && a.getAnswerId().toString().equals(selected.toString()));
+        	    })
+        	    .count();
         // 4. Calcular porcentaje
         double scorePercent = total > 0
                 ? (correctCount * 100.0) / total
@@ -135,5 +159,4 @@ public class VerificationService {
         return new VerificationResult(total, correctCount, scorePercent,
                 passed);
 	}
-
 }
