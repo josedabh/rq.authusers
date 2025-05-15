@@ -1,8 +1,10 @@
 package com.rq.manager.authusers.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -23,23 +25,25 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "QUIZQUESTION")
+@Table(name = "QUIZ_QUESTION")
 public class QuizQuestion {
 	
-	/** The question id. */
-	@Id
-	private String questionId;
+    /**
+     * ID compuesto:
+     *   [quizId]-P[counterPreg]
+     * Ejemplo: "Q00001-P01", "Q00001-P02", …
+     */
+    @Id
+    @Column(length = 10)
+    private String id;
 
-	/** The question. */
-	private String question;
+    @ManyToOne
+    @JoinColumn(name = "QUIZ_ID", nullable = false)
+    private QuizVerification quiz;
 
-	/** The quiz. */
-	@ManyToOne
-	@JoinColumn(name = "quiz_id")
-	private QuizVerification quiz;
+    @Column(nullable = false)
+    private String title;
 
-	/** The answers. */
-	@OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<QuizAnswer> answers;
-
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<QuizAnswer> answers = new ArrayList<>();
 }

@@ -69,7 +69,7 @@ public class Challenge {
 
     /**
      * Identificador de la entidad de verificación
-     * (p.ej. Q00001, I00002, L00003)
+     * (p.ej. 00001, 00002, 00003)
      */
     @Column(name = "VERIFICATION_ID")
     private String verificationId;

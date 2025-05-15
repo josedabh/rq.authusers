@@ -19,24 +19,24 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "QUIZANSWER")
+@Table(name = "QUIZ_ANSWER")
 public class QuizAnswer {
 
-    /** The answer id. */
+    /** ID compuesto:   [questionId]-R[counterResp] Ejemplo: "Q00001-P01-R01", "Q00001-P01-R02", …. */
     @Id
-    @Column(name = "ANSWER_ID")
-    private String answerId;
-
-    /** The result. */
-    @Column(name = "RESULT", nullable = false)
-    private String result;
-
-    /** The is correct. */
-    @Column(name = "ISCORRECT", nullable = false)
-    private boolean isCorrect;
+    @Column(length = 14)
+    private String id;
 
     /** The question. */
     @ManyToOne
-    @JoinColumn(name = "question_id")
+    @JoinColumn(name = "QUESTION_ID", nullable = false)
     private QuizQuestion question;
+
+    /** The text. */
+    @Column(nullable = false)
+    private String text;
+
+    /** The correct. */
+    @Column(nullable = false)
+    private boolean correct;
 }

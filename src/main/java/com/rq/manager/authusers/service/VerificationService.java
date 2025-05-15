@@ -1,9 +1,7 @@
 package com.rq.manager.authusers.service;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +11,6 @@ import com.rq.manager.authusers.bean.admin.AnswerDTO;
 import com.rq.manager.authusers.bean.admin.QuizSubmitRequest;
 import com.rq.manager.authusers.entity.Challenge;
 import com.rq.manager.authusers.entity.QuizAnswer;
-import com.rq.manager.authusers.entity.QuizQuestion;
 import com.rq.manager.authusers.entity.QuizVerification;
 import com.rq.manager.authusers.enumerations.StatesChallengeEnum;
 import com.rq.manager.authusers.exceptions.BusinessException;
@@ -48,19 +45,16 @@ public class VerificationService {
  * @param quizSubmitRequest the quiz submit request
  */
 	public void createQuizVerfication(QuizSubmitRequest quizSubmitRequest) {
-		QuizVerification quiz = mapQuizRequestToVerification(quizSubmitRequest);
-		List<QuizQuestion> questions = quizSubmitRequest.getQuestions().stream().map(q -> {
-			QuizQuestion question = new QuizQuestion();
-			question.setQuestionId(q.getQuestionId());
-			question.setQuestion(q.getQuestion());
-			question.setAnswers(q.getAnswers().stream().map(answer -> {
-				return mapAnswerRequestToEntity(answer);
-			}).collect(Collectors.toList()));
-			return question;
-		}).collect(Collectors.toList());
-		quiz.setQuestions(questions);
-		quizVerificationRepository.save(quiz);
-    	
+//		QuizVerification quiz = mapQuizRequestToVerification(quizSubmitRequest);
+//		List<QuizQuestion> questions = quizSubmitRequest.getQuestions().stream().map(q -> {
+//			QuizQuestion question = new QuizQuestion();
+//			question.setAnswers(q.getAnswers().stream().map(answer -> {
+//				return mapAnswerRequestToEntity(answer);
+//			}).collect(Collectors.toList()));
+//			return question;
+//		}).collect(Collectors.toList());
+//		quiz.setQuestions(questions);
+//		quizVerificationRepository.save(quiz);
     }
 	
 	/**
@@ -71,8 +65,6 @@ public class VerificationService {
 	 */
 	private QuizAnswer mapAnswerRequestToEntity(AnswerDTO a) {
 		QuizAnswer answer = new QuizAnswer();
-		answer.setAnswerId(a.getAnswerId());
-		answer.setResult(a.getResult());
 		answer.setCorrect(a.isCorrect());
 		return answer;
 	}
@@ -134,16 +126,17 @@ public class VerificationService {
         }
         // 3. Recorrer las preguntas y comparar
         int total = quiz.getQuestions().size();
-        int correctCount = (int) quiz.getQuestions().stream()
-        	    .filter(q -> {
-        	        Long selected = answersMap.get(q.getQuestionId());
-        	        if (selected == null) return false;
-
-        	        return q.getAnswers().stream()
-        	            .filter(QuizAnswer::isCorrect)
-        	            .anyMatch(a -> a.getAnswerId() != null && a.getAnswerId().toString().equals(selected.toString()));
-        	    })
-        	    .count();
+//        int correctCount = (int) quiz.getQuestions().stream()
+//        	    .filter(q -> {
+//        	        Long selected = answersMap.get(q.getQuestionId());
+//        	        if (selected == null) return false;
+//
+//        	        return q.getAnswers().stream()
+//        	            .filter(QuizAnswer::isCorrect)
+//        	            .anyMatch(a -> a.getAnswerId() != null && a.getAnswerId().toString().equals(selected.toString()));
+//        	    })
+//        	    .count();
+        int correctCount = 0;
         // 4. Calcular porcentaje
         double scorePercent = total > 0
                 ? (correctCount * 100.0) / total

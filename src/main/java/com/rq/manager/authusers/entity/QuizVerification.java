@@ -1,12 +1,15 @@
 package com.rq.manager.authusers.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,18 +24,21 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "QUIZVERIFICATION")
+@Table(name = "QUIZ_VERIFICATION")
 public class QuizVerification {
     
-    /** The id. */
+    /** ID completo: prefijo + numeric (ej. "Q00001") */
     @Id
-    @Column(name = "ID")
+    @Column(length = 6)
     private String id;
-    
-    /** The questions. */
-    @OneToMany(mappedBy = "quiz",
+
+    @OneToOne
+    @JoinColumn(name = "CHALLENGE_ID", nullable = false)
+    private Challenge challenge;
+
+    @OneToMany(
+            mappedBy = "quiz",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
-    List<QuizQuestion> questions;
-    
+    private List<QuizQuestion> questions = new ArrayList<>();
 }
