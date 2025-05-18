@@ -106,6 +106,9 @@ public class AuthController {
 		return authService.getUser();
 	}
 	
+	/**
+	 * Cmabiar el metodo para una eficiencia mayor
+	 */
 	@Operation(summary = "Cerrar sesión del usuario", 
 			description = "El usuario puede cerrar sesión.")
 	@ApiResponse(responseCode = "200", 

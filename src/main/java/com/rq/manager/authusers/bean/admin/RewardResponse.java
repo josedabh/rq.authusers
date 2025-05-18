@@ -36,7 +36,7 @@ public class RewardResponse {
 	
 	/** The active. */
 	@Schema(description = "Reward active status", example = "true")
-	private boolean active;
+	private boolean visible;
 	
 	/** The stock. */
 	@Schema(description = "Reward stock", example = "2")

@@ -27,7 +27,7 @@ public class StoreMapper {
 		return RewardResponse.builder().id(reward.getId()).name(reward.getName())
 				.description(reward.getDescription())
 				.points(reward.getPoints())
-				.image(reward.getImage()).active(reward.isActive())
+				.image(reward.getImage()).visible(reward.isActive())
 				.stock(reward.getStock())
 				.build();
 	}

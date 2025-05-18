@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.rq.manager.authusers.service;
 
 import java.time.LocalDateTime;
@@ -20,6 +23,7 @@ import com.rq.manager.authusers.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class StoreService.
  */
@@ -155,6 +159,8 @@ public class StoreService {
 	/**
 	 * Gets the top rewards based on purchase count.
 	 *
+	 * @param id the id
+	 * @param stock the stock
 	 * @return the list of most purchased rewards
 	 */
 //	public List<RewardResponse> getTopRewards() {
@@ -172,15 +178,6 @@ public class StoreService {
 //			return response;
 //		}).toList();
 //	}
-
-	/**
-	 * Gets the user points.
-	 *
-	 * @return the user points
-	 */
-	public int getUserPoints() {
-		return authService.getUser().getPoints();
-    }
 	
 	/**
 	 * Adds the reward stock.
@@ -189,16 +186,27 @@ public class StoreService {
 	 * @param stock the stock
 	 * @return the reward response
 	 */
-	public RewardResponse addRewardStock(long id, int stock) {
-        Reward reward = rewardRepository.findById(id).orElseThrow(() -> new CustomException("Reward not found"));
+    public RewardResponse addRewardStock(long id, int stock) {
+        Reward reward = rewardRepository.findById(id)
+                .orElseThrow(() -> new CustomException("No hay recompensa"));
         reward.setStock(reward.getStock() + stock);
         rewardRepository.save(reward);
         return StoreMapper.mapRewardEntityToResponse(reward);
     }
-//	getTopRewards - Obtener los rewards más comprados
-//	checkRewardAvailability - Verificar si un reward está disponible
-//	getRewardsByPriceRange - Obtener rewards dentro de un rango de puntos
-//	getActiveRewards - Obtener solo los rewards con stock disponible
-//	getUserPurchaseStatistics - Obtener estadísticas de compras de un usuario
-//	getRewardsByCategory - Obtener rewards filtrados por categoría
+
+    /**
+     * Toggle reward visibility.
+     *
+     * @param id
+     *            the id
+     * @return the reward response
+     */
+	public RewardResponse toggleRewardVisibility(long id) {
+	    Reward reward = rewardRepository.findById(id)
+	        .orElseThrow(() -> new CustomException("No hay recompensa"));
+	    //Cambiamos la visibilidad
+	    reward.setActive(!reward.isActive());
+	    rewardRepository.save(reward);
+	    return StoreMapper.mapRewardEntityToResponse(reward);
+	}
 }

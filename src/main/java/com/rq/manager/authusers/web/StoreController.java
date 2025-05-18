@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -53,7 +54,7 @@ public class StoreController {
 	@ApiResponse(responseCode = "200", description = "Producto creado",
 		content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
 		schema = @Schema(implementation = RewardResponse.class)))
-	@GetMapping("/create-product")
+	@PostMapping("/create-product")
 	public RewardResponse createProduct(@Valid @RequestBody RewardRequest rewardRequest) {
 		return storeService.createReward(rewardRequest);
 	}
@@ -103,7 +104,7 @@ public class StoreController {
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = RewardResponse.class)))
-    @GetMapping("/product/{id}")
+    @GetMapping("/reward/{id}")
     public RewardResponse getRewardById(
             @PathVariable @Parameter(description = "the id product") long id) {
         return storeService.getRewardById(id);
@@ -124,10 +125,28 @@ public class StoreController {
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = RewardResponse.class)))
-    @PostMapping("/buy")
-    public RewardResponse buyReward(long id) {
+    @PostMapping("/buy/{id}")
+    public RewardResponse buyReward(@PathVariable long id) {
         return storeService.buyReward(id);
     }
 	
-	
+    /**
+     * Can see user reward.
+     *
+     * @param id the id
+     * @return the reward response
+     */
+    @Operation(
+            summary = "El usuario lo ve o no",
+            description = "El administrador activa o deactiva la visiblidad del producto")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Visibilidad cambiada",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = RewardResponse.class)))
+	@PatchMapping("/change-visibility/{id}")
+	public RewardResponse canSeeUserReward(@PathVariable long id) {
+        return storeService.toggleRewardVisibility(id);
+    }
 }
