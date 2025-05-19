@@ -75,6 +75,7 @@ public class StoreController {
 	public RewardResponse updateReward(@PathVariable long id, @Valid @RequestBody RewardRequest rewardRequest) {
 		return storeService.updateReward(id, rewardRequest);
 	}
+	
 	/**
 	 * List products.
 	 *
@@ -85,9 +86,24 @@ public class StoreController {
 	@ApiResponse(responseCode = "200", description = "Lista de productos",
 		content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
 		schema = @Schema(implementation = RewardResponse.class)))
-	@GetMapping("/list-products")
-	public List<RewardResponse> listProducts() {
+	@GetMapping("/admin/list-rewards")
+	public List<RewardResponse> listRewards() {
         return storeService.listRewards();
+    }
+	
+	/**
+     * List products.
+     *
+     * @return the list of reward response
+     */
+    @Operation(summary = "Lista los productos", 
+            description = "Lista los productos en la tienda")
+    @ApiResponse(responseCode = "200", description = "Lista de productos",
+        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+        schema = @Schema(implementation = RewardResponse.class)))
+    @GetMapping("/users/list-rewards")
+    public List<RewardResponse> listRewardsUsers() {
+        return storeService.listRewardsUsers();
     }
 	
 	/**

@@ -68,6 +68,16 @@ public class StoreService {
         return rewardRepository.findAll().stream()
                 .map(StoreMapper::mapRewardEntityToResponse).toList();
     }
+    
+    /**
+     * List rewards users.
+     *
+     * @return the list reward response
+     */
+    public List<RewardResponse> listRewardsUsers() {
+        return rewardRepository.findAllVisible().stream()
+                .map(StoreMapper::mapRewardEntityToResponse).toList();
+    }
 
 	/**
      * Update reward.
