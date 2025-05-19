@@ -60,6 +60,22 @@ public class StoreController {
 	}
 
 	/**
+	 * Update reward.
+	 *
+	 * @param id the id
+	 * @param rewardRequest the reward request
+	 * @return the reward response
+	 */
+	@Operation(summary = "Actualiza un producto", 
+			description = "Actualiza un producto en la tienda")
+	@ApiResponse(responseCode = "200", description = "Producto actualizado",
+		content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+		schema = @Schema(implementation = RewardResponse.class)))
+	@PostMapping("/update-product/{id}")
+	public RewardResponse updateReward(@PathVariable long id, @Valid @RequestBody RewardRequest rewardRequest) {
+		return storeService.updateReward(id, rewardRequest);
+	}
+	/**
 	 * List products.
 	 *
 	 * @return the list of reward response

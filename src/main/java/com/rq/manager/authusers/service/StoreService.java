@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.rq.manager.authusers.bean.admin.RewardRequest;
@@ -14,6 +15,9 @@ import com.rq.manager.authusers.bean.admin.RewardResponse;
 import com.rq.manager.authusers.bean.admin.UserResponse;
 import com.rq.manager.authusers.entity.PurchaseHistory;
 import com.rq.manager.authusers.entity.Reward;
+import com.rq.manager.authusers.entity.User;
+import com.rq.manager.authusers.enumerations.RolEnum;
+import com.rq.manager.authusers.exceptions.BusinessException;
 import com.rq.manager.authusers.exceptions.CustomException;
 import com.rq.manager.authusers.mapper.StoreMapper;
 import com.rq.manager.authusers.mapper.UserMapper;
@@ -74,12 +78,42 @@ public class StoreService {
      *            the reward request
      * @return the reward response
      */
-    //A cambiar metodos
     public RewardResponse updateReward(long id, RewardRequest rewardRequest) {
-        Reward reward = StoreMapper.mapRewardRequestToEntity(rewardRequest);
-        rewardRepository.save(reward);
-        return null;
+        Reward existingReward = rewardRepository.findById(id)
+            .orElse(new Reward());
+
+        // Validación: ¿tiene permiso para modificar?
+		User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (currentUser.getRol() == null || !currentUser.getRol().equals(RolEnum.ADMIN)) {
+            throw new BusinessException("UNAUTHORIZED_ACCESS");
+        }
+
+        // Validación de lógica de negocio
+        if (rewardRequest.getPoints() != null && rewardRequest.getPoints() < 0) {
+            throw new BusinessException("POINTS_CANNOT_BE_NEGATIVE");
+        }
+        
+		if (rewardRequest.getStock() != null && rewardRequest.getStock() < 0) {
+			throw new BusinessException("STOCK_CANNOT_BE_NEGATIVE");
+		}
+        // Actualización parcial (tipo PATCH)
+        if (rewardRequest.getName() != null) {
+            existingReward.setName(rewardRequest.getName());
+        }
+
+        if (rewardRequest.getDescription() != null) {
+            existingReward.setDescription(rewardRequest.getDescription());
+        }
+        if (rewardRequest.getImage() != null) {
+            existingReward.setImage(rewardRequest.getImage());
+        }
+
+        // Guardar cambios
+        rewardRepository.save(existingReward);
+
+        return StoreMapper.mapRewardEntityToResponse(existingReward);
     }
+
 
     /**
      * Delete reward.

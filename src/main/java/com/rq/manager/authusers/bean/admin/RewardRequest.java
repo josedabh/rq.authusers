@@ -31,7 +31,7 @@ public class RewardRequest {
 	/** The points. */
 	@NotBlank
 	@Schema(description = "Reward points", example = "100")
-	private int points;
+	private Integer points;
 	
 	/** The image. */
 	@Schema(description = "Reward image", example = "reward1.png")
@@ -45,6 +45,5 @@ public class RewardRequest {
 	/** The stock. */
 	@NotBlank
 	@Schema(description = "Reward stock", example = "2")
-	private int stock;
-
+	private Integer stock;
 }
