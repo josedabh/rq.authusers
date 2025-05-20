@@ -40,7 +40,7 @@ public class RewardRequest {
 	/** The active. */
 	@NotBlank
 	@Schema(description = "Reward active status", example = "true")
-	private boolean active;
+	private boolean visible;
 	
 	/** The stock. */
 	@NotBlank

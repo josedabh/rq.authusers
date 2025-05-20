@@ -109,7 +109,7 @@ public class SecurityConfig {
 		//Cambiar esto a la url del front si n o me falla
 		configuration.setAllowedOrigins(List.of("http://localhost:8081"));
 		//Cambiar esto si hago mas metodos
-		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH"));
 		configuration.setAllowedHeaders(List.of(Constants.AUTHORIZATION, ApiConstants.CONTENT_TYPE));
 		configuration.setAllowCredentials(true);
 

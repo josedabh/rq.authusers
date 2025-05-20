@@ -245,12 +245,11 @@ public class StoreService {
      *            the id
      * @return the reward response
      */
-	public RewardResponse toggleRewardVisibility(long id) {
+	public void toggleRewardVisibility(long id) {
 	    Reward reward = rewardRepository.findById(id)
 	        .orElseThrow(() -> new CustomException("No hay recompensa"));
 	    //Cambiamos la visibilidad
-	    reward.setActive(!reward.isActive());
+	    reward.setVisible(!reward.isVisible());
 	    rewardRepository.save(reward);
-	    return StoreMapper.mapRewardEntityToResponse(reward);
 	}
 }

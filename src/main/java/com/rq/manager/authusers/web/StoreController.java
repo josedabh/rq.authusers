@@ -116,8 +116,8 @@ public class StoreController {
 	@ApiResponse(responseCode = "200", description = "Producto eliminado",
 		content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
 		schema = @Schema(implementation = Void.class)))
-	@DeleteMapping("/delete-product")
-	public void deleteProduct(long id) {
+	@DeleteMapping("/delete-product/{id}")
+	public void deleteProduct(@PathVariable long id) {
 		storeService.deleteReward(id);
 	}
 	
@@ -172,13 +172,13 @@ public class StoreController {
             summary = "El usuario lo ve o no",
             description = "El administrador activa o deactiva la visiblidad del producto")
     @ApiResponse(
-            responseCode = "200",
+            responseCode = "200+",
             description = "Visibilidad cambiada",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = RewardResponse.class)))
+                    schema = @Schema(implementation = Void.class)))
 	@PatchMapping("/change-visibility/{id}")
-	public RewardResponse canSeeUserReward(@PathVariable long id) {
-        return storeService.toggleRewardVisibility(id);
+	public void canSeeUserReward(@PathVariable long id) {
+        storeService.toggleRewardVisibility(id);
     }
 }

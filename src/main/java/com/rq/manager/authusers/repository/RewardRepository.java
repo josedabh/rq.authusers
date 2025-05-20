@@ -9,7 +9,7 @@ import com.rq.manager.authusers.entity.Reward;
 
 public interface RewardRepository extends JpaRepository<Reward, Long> {
 
-    @Query(name = "SELECT * FROM REWARD WHERE REWARD.ACTIVE = TRUE",
+    @Query(value = "SELECT * FROM REWARD R WHERE R.VISIBLE = TRUE",
             nativeQuery = true)
-    public List<Reward> findAllVisible();
+    List<Reward> findAllVisible();
 }

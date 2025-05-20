@@ -6,28 +6,36 @@ import com.rq.manager.authusers.entity.Reward;
 
 public class StoreMapper {
 	
-	/**
-	 * Map reward request to entity.
-	 *
-	 * @param rewardRequest the reward request
-	 * @return the reward
-	 */
+    /**
+     * Map reward request to entity.
+     *
+     * @param rewardRequest
+     *            the reward request
+     * @return the reward
+     */
 	public static Reward mapRewardRequestToEntity(RewardRequest rewardRequest) {
 		Reward reward = new Reward();
 		reward.setName(rewardRequest.getName());
 		reward.setDescription(rewardRequest.getDescription());
 		reward.setPoints(rewardRequest.getPoints());
 		reward.setImage(rewardRequest.getImage());
-		reward.setActive(rewardRequest.isActive());
+		reward.setVisible(rewardRequest.isVisible());
 		reward.setStock(rewardRequest.getStock());
 		return reward;
 	}
 	
+    /**
+     * Map reward entity to response.
+     *
+     * @param reward
+     *            the reward
+     * @return the reward response
+     */
 	public static RewardResponse mapRewardEntityToResponse(Reward reward) {
 		return RewardResponse.builder().id(reward.getId()).name(reward.getName())
 				.description(reward.getDescription())
 				.points(reward.getPoints())
-				.image(reward.getImage()).visible(reward.isActive())
+				.image(reward.getImage()).visible(reward.isVisible())
 				.stock(reward.getStock())
 				.build();
 	}

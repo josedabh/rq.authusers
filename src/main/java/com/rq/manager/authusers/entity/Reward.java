@@ -44,8 +44,8 @@ public class Reward {
 	private String image;
 	
 	/** The active. */
-	@Column(name = "ACTIVE")
-	private boolean active;
+	@Column(name = "VISIBLE")
+	private boolean visible;
 	
 	/** The stock. */
 	@Column(name = "STOCK")
