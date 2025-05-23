@@ -1,6 +1,3 @@
-/*
- * 
- */
 package com.rq.manager.authusers.service;
 
 import java.time.LocalDateTime;
@@ -9,25 +6,24 @@ import java.util.UUID;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.rq.manager.authusers.bean.HistoryShopping;
 import com.rq.manager.authusers.bean.admin.RewardRequest;
 import com.rq.manager.authusers.bean.admin.RewardResponse;
-import com.rq.manager.authusers.bean.admin.UserResponse;
 import com.rq.manager.authusers.entity.PurchaseHistory;
 import com.rq.manager.authusers.entity.Reward;
 import com.rq.manager.authusers.entity.User;
-import com.rq.manager.authusers.enumerations.RolEnum;
 import com.rq.manager.authusers.exceptions.BusinessException;
 import com.rq.manager.authusers.exceptions.CustomException;
+import com.rq.manager.authusers.exceptions.ErrorConstants;
 import com.rq.manager.authusers.mapper.StoreMapper;
-import com.rq.manager.authusers.mapper.UserMapper;
 import com.rq.manager.authusers.repository.PurchaseHistoryRepository;
 import com.rq.manager.authusers.repository.RewardRepository;
 import com.rq.manager.authusers.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class StoreService.
  */
@@ -37,9 +33,6 @@ public class StoreService {
 	
 	/** The reward repository. */
 	private RewardRepository rewardRepository;
-	
-	/** The auth service. */
-	private AuthService authService;
 	
 	 /** The user repository. */
  	private UserRepository userRepository;
@@ -92,11 +85,11 @@ public class StoreService {
         Reward existingReward = rewardRepository.findById(id)
             .orElse(new Reward());
 
-        // Validación: ¿tiene permiso para modificar?
-		User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (currentUser.getRol() == null || !currentUser.getRol().equals(RolEnum.ADMIN)) {
-            throw new BusinessException("UNAUTHORIZED_ACCESS");
-        }
+//        // Validación: ¿tiene permiso para modificar?
+//		User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        if (currentUser.getRol() == null || !currentUser.getRol().equals(RolEnum.ADMIN)) {
+//            throw new BusinessException("UNAUTHORIZED_ACCESS");
+//        }
 
         // Validación de lógica de negocio
         if (rewardRequest.getPoints() != null && rewardRequest.getPoints() < 0) {
@@ -105,6 +98,8 @@ public class StoreService {
         
 		if (rewardRequest.getStock() != null && rewardRequest.getStock() < 0) {
 			throw new BusinessException("STOCK_CANNOT_BE_NEGATIVE");
+		} else {
+			existingReward.setStock(rewardRequest.getStock());
 		}
         // Actualización parcial (tipo PATCH)
         if (rewardRequest.getName() != null) {
@@ -154,7 +149,8 @@ public class StoreService {
      *            the reward id
      * @return the reward response
      */
-    public RewardResponse buyReward(long rewardId) {
+    @Transactional
+    public void buyReward(long rewardId) {
         // 1. Obtener el reward y verificar stock
         Reward reward = rewardRepository.findById(rewardId)
                 .orElse(new Reward());
@@ -162,7 +158,8 @@ public class StoreService {
             throw new CustomException("No stock available");
         }
         // 2. Obtener el usuario y verificar puntos
-        UserResponse user = authService.getUser();
+		User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
+				.orElseThrow(() -> new CustomException(ErrorConstants.NULL_USER));
         if (user.getPoints() < reward.getPoints()) {
             throw new CustomException("Not enough points");
         }
@@ -170,13 +167,13 @@ public class StoreService {
         reward.setStock(reward.getStock() - 1);
         user.setPoints(user.getPoints() - reward.getPoints());
         // 4. Registrar la transacción
-        PurchaseHistory purchase = createPurchaseHistory(user.getId(), rewardId,
+        PurchaseHistory purchase = createPurchaseHistory(String.valueOf(user.getId()), rewardId,
                 reward.getPoints());
         // 5. Guardar cambios en la base de datos
         rewardRepository.save(reward);
-        userRepository.save(UserMapper.mapUserResponseToEntity(user));
+        userRepository.save(user);
         purchaseHistoryRepository.save(purchase);
-        return StoreMapper.mapRewardEntityToResponse(reward);
+        StoreMapper.mapRewardEntityToResponse(reward);
     }
 
     /**
@@ -190,6 +187,7 @@ public class StoreService {
      *            the points spent
      * @return the purchase history
      */
+    
     private PurchaseHistory createPurchaseHistory(String userId, Long rewardId,
             Integer pointsSpent) {
         PurchaseHistory purchase = new PurchaseHistory();
@@ -251,5 +249,16 @@ public class StoreService {
 	    //Cambiamos la visibilidad
 	    reward.setVisible(!reward.isVisible());
 	    rewardRepository.save(reward);
+	}
+	
+	/**
+	 * Gets the list purchase history.
+	 *
+	 * @param id the id
+	 * @return the list purchase history
+	 */
+	public List<HistoryShopping> getListPurchaseHistory() {
+		return purchaseHistoryRepository.findAll().stream()
+				.map(StoreMapper::mapPurchaseHistoryToResponse).toList();
 	}
 }

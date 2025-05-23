@@ -1,7 +1,9 @@
 package com.rq.manager.authusers.mapper;
 
+import com.rq.manager.authusers.bean.HistoryShopping;
 import com.rq.manager.authusers.bean.admin.RewardRequest;
 import com.rq.manager.authusers.bean.admin.RewardResponse;
+import com.rq.manager.authusers.entity.PurchaseHistory;
 import com.rq.manager.authusers.entity.Reward;
 
 public class StoreMapper {
@@ -38,6 +40,12 @@ public class StoreMapper {
 				.image(reward.getImage()).visible(reward.isVisible())
 				.stock(reward.getStock())
 				.build();
+	}
+	
+	public static HistoryShopping mapPurchaseHistoryToResponse(PurchaseHistory purchaseHistory) {
+		return HistoryShopping.builder().id(purchaseHistory.getId()).userId(String.valueOf(purchaseHistory.getUserId()))
+				.productId(purchaseHistory.getRewardId()).totalPrice(purchaseHistory.getPointsSpent())
+				.purchaseDate(purchaseHistory.getPurchaseDate().toString()).build();
 	}
 
 }

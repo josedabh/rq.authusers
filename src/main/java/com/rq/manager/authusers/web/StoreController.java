@@ -8,10 +8,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.rq.manager.authusers.bean.HistoryShopping;
 import com.rq.manager.authusers.bean.admin.RewardRequest;
 import com.rq.manager.authusers.bean.admin.RewardResponse;
 import com.rq.manager.authusers.constants.ApiConstants;
@@ -71,7 +73,7 @@ public class StoreController {
 	@ApiResponse(responseCode = "200", description = "Producto actualizado",
 		content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
 		schema = @Schema(implementation = RewardResponse.class)))
-	@PostMapping("/update-product/{id}")
+	@PutMapping("/update-reward/{id}")
 	public RewardResponse updateReward(@PathVariable long id, @Valid @RequestBody RewardRequest rewardRequest) {
 		return storeService.updateReward(id, rewardRequest);
 	}
@@ -156,10 +158,10 @@ public class StoreController {
             description = "Producto comprado",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = RewardResponse.class)))
-    @PostMapping("/buy/{id}")
-    public RewardResponse buyReward(@PathVariable long id) {
-        return storeService.buyReward(id);
+                    schema = @Schema(implementation = Void.class)))
+    @PostMapping("/buy-reward/{id}")
+    public void buyReward(@PathVariable long id) {
+        storeService.buyReward(id);
     }
 	
     /**
@@ -181,4 +183,16 @@ public class StoreController {
 	public void canSeeUserReward(@PathVariable long id) {
         storeService.toggleRewardVisibility(id);
     }
+    
+	/**
+	 * Gets the list purchase history.
+	 *
+	 * @return the list purchase history
+	 */
+	@Operation(summary = "Lista el historial de compras", description = "Lista el historial de compras")
+	@ApiResponse(responseCode = "200", description = "Lista de compras", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = HistoryShopping.class)))
+    @GetMapping("/admin/purchase-history")
+	public List<HistoryShopping> getListPurchaseHistory() {
+        return storeService.getListPurchaseHistory();
+	}
 }
