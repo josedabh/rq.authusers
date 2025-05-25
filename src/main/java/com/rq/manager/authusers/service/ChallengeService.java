@@ -11,7 +11,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.rq.manager.authusers.bean.ChallengeCard;
 import com.rq.manager.authusers.bean.ChallengeRequest;
 import com.rq.manager.authusers.bean.admin.ChallengeResponse;
 import com.rq.manager.authusers.constants.Constants;
@@ -71,16 +70,6 @@ public class ChallengeService {
 				.collect(Collectors.toList());
 	}
 	
-	/**
-	 * User list challenges.
-	 *
-	 * @return the list
-	 */
-	public List<ChallengeCard> userListChallenges() {
-		return challengeRepository.findAll().stream().map(challenge -> ChallengeMapper.mapEntityToCard(challenge))
-				.collect(Collectors.toList());
-	}
-
 	/**
 	 * Gets the challenge by id.
 	 *

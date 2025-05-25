@@ -189,10 +189,17 @@ public class StoreController {
 	 *
 	 * @return the list purchase history
 	 */
-	@Operation(summary = "Lista el historial de compras", description = "Lista el historial de compras")
-	@ApiResponse(responseCode = "200", description = "Lista de compras", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = HistoryShopping.class)))
+    @Operation(
+            summary = "Lista el historial de compras",
+            description = "Lista el historial de compras")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Lista de compras",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = HistoryShopping.class)))
     @GetMapping("/admin/purchase-history")
-	public List<HistoryShopping> getListPurchaseHistory() {
+    public List<HistoryShopping> getListPurchaseHistory() {
         return storeService.getListPurchaseHistory();
-	}
+    }
 }

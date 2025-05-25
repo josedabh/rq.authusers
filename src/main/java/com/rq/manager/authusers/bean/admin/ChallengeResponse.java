@@ -35,6 +35,10 @@ public class ChallengeResponse {
 	@Schema(description = "the difficulty", example = "easy")
 	private String difficulty;
 	
+    /** The category. */
+    @Schema(description = "the category", example = "deportes")
+    private String category;
+	
 	/** The state. */
 	@Schema(description = "the state", example = "active")
 	private String state;

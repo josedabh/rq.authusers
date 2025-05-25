@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.rq.manager.authusers.bean.ChallengeCard;
 import com.rq.manager.authusers.bean.ChallengeRequest;
 import com.rq.manager.authusers.bean.admin.ChallengeResponse;
 import com.rq.manager.authusers.constants.ApiConstants;
@@ -72,23 +71,6 @@ public class ChallengeController {
     @GetMapping("/admin/list-challenges")
     public List<ChallengeResponse> adminListChallenges() {
         return challengeService.listChallenges();
-    }
-
-    /**
-     * List challenges. s
-     * 
-     * @return the list
-     */
-    @Operation(summary = "Listar retos", description = "Lees todos los retos")
-    @ApiResponse(
-            responseCode = "200",
-            description = "Lista encontrada",
-            content = @Content(
-                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = ChallengeCard.class)))
-    @GetMapping("/user/list-challenges")
-    public List<ChallengeCard> userListChallenges() {
-        return challengeService.userListChallenges();
     }
 
     /**

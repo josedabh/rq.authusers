@@ -1,12 +1,11 @@
 package com.rq.manager.authusers.mapper;
 
-import com.rq.manager.authusers.bean.ChallengeCard;
 import com.rq.manager.authusers.bean.ChallengeRequest;
 import com.rq.manager.authusers.bean.admin.ChallengeResponse;
 import com.rq.manager.authusers.entity.Challenge;
+import com.rq.manager.authusers.enumerations.CategoryEnum;
 import com.rq.manager.authusers.util.Util;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ChallengeMapper.
  */
@@ -33,6 +32,7 @@ public class ChallengeMapper {
 		challenge.setEndDate(Util.getLocalDateTime(request.getEndDate()));
 		challenge.setDifficulty(request.getDifficulty());
 		challenge.setPoints(request.getPoints());
+		challenge.setCategory(CategoryEnum.setDescription(request.getCategory()));
 		return challenge;
 	}
 
@@ -46,22 +46,11 @@ public class ChallengeMapper {
 		return ChallengeResponse.builder().id(entity.getId())
 				.title(entity.getTitle()).description(entity.getDescription())
 				.difficulty(entity.getDifficulty())
+				.category(entity.getCategory().getDescription())
 				.state(entity.getState() != null ? entity.getState().getDescription() : "NOTSTATE")
 				.startDate(Util.getDate(entity.getStartDate()))
 				.endDate(Util.getDate(entity.getEndDate()))
 				.points(entity.getPoints()).build();
 	}
-	
-	/**
-	 * Map entity to card.
-	 *
-	 * @param ch the ch
-	 * @return the challenge card
-	 */
-	public static ChallengeCard mapEntityToCard(Challenge ch) {
-		return ChallengeCard.builder()
-				.title(ch.getTitle()).id(ch.getId()).description(ch.getDescription()).build();
-	}
-	
 	
 }

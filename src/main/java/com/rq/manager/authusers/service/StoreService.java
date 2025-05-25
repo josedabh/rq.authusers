@@ -17,6 +17,7 @@ import com.rq.manager.authusers.entity.User;
 import com.rq.manager.authusers.exceptions.BusinessException;
 import com.rq.manager.authusers.exceptions.CustomException;
 import com.rq.manager.authusers.exceptions.ErrorConstants;
+import com.rq.manager.authusers.exceptions.ResourceNotFoundException;
 import com.rq.manager.authusers.mapper.StoreMapper;
 import com.rq.manager.authusers.repository.PurchaseHistoryRepository;
 import com.rq.manager.authusers.repository.RewardRepository;
@@ -155,13 +156,13 @@ public class StoreService {
         Reward reward = rewardRepository.findById(rewardId)
                 .orElse(new Reward());
         if (reward.getStock() <= 0) {
-            throw new CustomException("No stock available");
+            throw new ResourceNotFoundException("No stock available");
         }
         // 2. Obtener el usuario y verificar puntos
 		User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
 				.orElseThrow(() -> new CustomException(ErrorConstants.NULL_USER));
         if (user.getPoints() < reward.getPoints()) {
-            throw new CustomException("Not enough points");
+            throw new ResourceNotFoundException("Not enough points");
         }
         // 3. Actualizar stock y puntos
         reward.setStock(reward.getStock() - 1);
@@ -173,7 +174,7 @@ public class StoreService {
         rewardRepository.save(reward);
         userRepository.save(user);
         purchaseHistoryRepository.save(purchase);
-        StoreMapper.mapRewardEntityToResponse(reward);
+//        StoreMapper.mapRewardEntityToResponse(reward);
     }
 
     /**
@@ -190,12 +191,18 @@ public class StoreService {
     
     private PurchaseHistory createPurchaseHistory(String userId, Long rewardId,
             Integer pointsSpent) {
-        PurchaseHistory purchase = new PurchaseHistory();
-        purchase.setUserId(UUID.fromString(userId));
-        purchase.setRewardId(rewardId);
-        purchase.setPointsSpent(pointsSpent);
-        purchase.setPurchaseDate(LocalDateTime.now());
-		return purchase;
+        User user = userRepository.findById(UUID.fromString(userId)).orElse(null);
+        Reward reward = rewardRepository.findById(rewardId).orElse(null);
+        if(user != null && reward != null) {
+            PurchaseHistory purchase = new PurchaseHistory();
+            purchase.setUser(user);
+            purchase.setReward(reward);
+            purchase.setPointsSpent(pointsSpent);
+            purchase.setPurchaseDate(LocalDateTime.now());
+            return purchase;
+        } else {
+            throw new ResourceNotFoundException("Usuario o recompensa no encontrada");
+        }
 	}
 
 	/**

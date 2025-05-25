@@ -34,6 +34,10 @@ public class ChallengeRequest {
 	@Size(min = 1, max = 200)
 	@Schema(description = "the difficulty", example = "easy")
 	private String difficulty;
+	
+	@Size(min = 1, max = 200)
+	@Schema(description = "the category", example = "deportes")
+	private String category;
 
 //	/** The state. */
 //	@Schema(description = "the state", example = "active")
