@@ -17,7 +17,6 @@ import com.rq.manager.authusers.constants.Constants;
 import com.rq.manager.authusers.entity.Challenge;
 import com.rq.manager.authusers.entity.User;
 import com.rq.manager.authusers.entity.UserChallenge;
-import com.rq.manager.authusers.enumerations.ChallengeVerificationType;
 import com.rq.manager.authusers.enumerations.StatesChallengeEnum;
 import com.rq.manager.authusers.exceptions.BusinessException;
 import com.rq.manager.authusers.exceptions.CustomException;
@@ -31,7 +30,6 @@ import com.rq.manager.authusers.util.Util;
 
 import lombok.AllArgsConstructor;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ChallengeService.
  */
@@ -191,38 +189,73 @@ public class ChallengeService {
         }
 	}
 	
-	/**
-	 * Verifica si un usuario puede ver el reto antes de la fecha de inicio. - Si es
-	 * un evento instantáneo, solo se puede ver a partir de `startDate`. - Si se
-	 * permite verlo una semana antes, se puede acceder desde `startDate - 7 días`.
-	 *
-	 * @param currentDate    the current date
-	 * @param isInstantEvent the is instant event
-	 * @param startDate the start date
-	 * @return true, if successful
-	 */
-	public boolean canUserSeeChallenge(LocalDateTime currentDate, boolean isInstantEvent, LocalDateTime startDate) {
-		if (isInstantEvent) {
-			return !currentDate.isBefore(startDate);
-		} else {
-			return !currentDate.isBefore(startDate.minusDays(7));
-		}
-	}
+    /**
+     * Verifica si un usuario puede ver el reto antes de la fecha de inicio. -
+     * Si es un evento instantáneo, solo se puede ver a partir de `startDate`. -
+     * Si se permite verlo una semana antes, se puede acceder desde `startDate -
+     * 7 días`.
+     *
+     * @param currentDate
+     *            the current date
+     * @param isInstantEvent
+     *            the is instant event
+     * @param startDate
+     *            the start date
+     * @return true, if successful
+     */
+    public boolean canUserSeeChallenge(LocalDateTime currentDate,
+            boolean isInstantEvent, LocalDateTime startDate) {
+        if (isInstantEvent) {
+            return !currentDate.isBefore(startDate);
+        } else {
+            return !currentDate.isBefore(startDate.minusDays(7));
+        }
+    }
 
-	/**
-	 * Assign verification type.
-	 *
-	 * @param challengeId             the challenge id
-	 * @param validationChallengeType the validation challenge type
-	 * @return the string
-	 */
-	public String assignVerificationType(UUID challengeId, String validationChallengeType) {
-		Challenge challenge = challengeRepository.findById(challengeId)
-				.orElseThrow(() -> new ResourceNotFoundException("Challenge not found with id: " + challengeId));
-		ChallengeVerificationType verificationType = ChallengeVerificationType.fromType(validationChallengeType);
-		challenge.setVerificationId(verificationType.getVerificationId());
-		challengeRepository.save(challenge);
-		return challenge.getVerificationId();
-	}
+    /**
+     * Genera el ID completo (prefijo + cinco dígitos) y se lo asigna al reto.
+     * Devuelve el ID completo, p.ej. "Q00003".
+     *
+     * @param challengeId
+     *            the challenge id
+     * @param typeCode
+     *            the type code
+     * @return the string
+     */
+    @Transactional
+    public String assignVerificationType(UUID challengeId, String typeCode) {
+        Challenge ch = challengeRepository.findById(challengeId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Challenge not found: " + challengeId));
 
+        String numeric = nextNumericForType(typeCode);
+        ch.setVerificationType(typeCode);
+        ch.setVerificationId(numeric);
+        challengeRepository.save(ch);
+        return typeCode + numeric;
+    }
+
+    /**
+     * Calcula el siguiente ID numérico de cinco dígitos para un prefijo dado.
+     * Ej.: si para "Q" ya existen 00001, 00002, devuelve "00003".
+     *
+     * @param prefix
+     *            the prefix
+     * @return the string
+     */
+    public String nextNumericForType(String prefix) {
+        // Consulta el valor máximo de verificationId para este tipo
+        String maxNumeric =
+                challengeRepository.findMaxVerificationIdByType(prefix);
+        int next = 1;
+        if (maxNumeric != null) {
+            try {
+                next = Integer.parseInt(maxNumeric) + 1;
+            } catch (NumberFormatException e) {
+                // Si algo raro sucede, reiniciamos a 1
+                next = 1;
+            }
+        }
+        return String.format("%05d", next);
+    }
 }

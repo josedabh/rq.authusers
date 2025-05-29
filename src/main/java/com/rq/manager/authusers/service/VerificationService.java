@@ -1,26 +1,16 @@
 package com.rq.manager.authusers.service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.rq.manager.authusers.bean.VerificationResult;
 import com.rq.manager.authusers.bean.admin.AnswerDTO;
+import com.rq.manager.authusers.bean.admin.QuestionsDTO;
 import com.rq.manager.authusers.bean.admin.QuizSubmitRequest;
 import com.rq.manager.authusers.entity.Challenge;
 import com.rq.manager.authusers.entity.QuizAnswer;
 import com.rq.manager.authusers.entity.QuizQuestion;
 import com.rq.manager.authusers.entity.QuizVerification;
-import com.rq.manager.authusers.enumerations.StatesChallengeEnum;
-import com.rq.manager.authusers.exceptions.BusinessException;
-import com.rq.manager.authusers.exceptions.ErrorConstants;
 import com.rq.manager.authusers.repository.ChallengeRepository;
-import com.rq.manager.authusers.repository.QuizAnswerRepository;
-import com.rq.manager.authusers.repository.QuizQuestionRepository;
 import com.rq.manager.authusers.repository.QuizVerificationRepository;
 
 import lombok.AllArgsConstructor;
@@ -34,127 +24,50 @@ public class VerificationService {
 
     /** The challenge repo. */
     private final ChallengeRepository challengeRepo;
-
-    /** The quiz verification repository. */
-    private final QuizVerificationRepository quizVerificationRepository;
-
-    /** The quiz question repository. */
-    private final QuizQuestionRepository quizQuestionRepository;
-
-    /** The quiz answer repository. */
-    private final QuizAnswerRepository quizAnswerRepository;
+    
+    /** The quiz verification repo. */
+    private final QuizVerificationRepository quizVerificationRepo;
 
     /**
-	 * Creates the quiz verification.
-	 *
-	 * @param quizSubmitRequest the quiz submit request
-	 */
-	public void createQuizVerification(QuizSubmitRequest quizSubmitRequest) {
-		QuizVerification quiz = mapQuizRequestToVerification(quizSubmitRequest);
-		List<QuizQuestion> questions = quizSubmitRequest.getQuestions().stream().map(q -> {
-			QuizQuestion question = new QuizQuestion();
-			question.setAnswers(q.getAnswers().stream().map(answer -> {
-				return mapAnswerRequestToEntity(answer);
-			}).collect(Collectors.toList()));
-			return question;
-		}).collect(Collectors.toList());
-		quiz.setQuestions(questions);
-		quizVerificationRepository.save(quiz);
-    }
-	
-	/**
-	 * Map answer request to entity.
-	 *
-	 * @param a the a
-	 * @return the quiz answer
-	 */
-	private QuizAnswer mapAnswerRequestToEntity(AnswerDTO a) {
-		QuizAnswer answer = new QuizAnswer();
-		answer.setCorrect(a.isCorrect());
-		return answer;
-	}
-	
-	/**
-	 * Map quiz request to verification.
-	 *
-	 * @param quizSubmitRequest the quiz submit request
-	 * @return the quiz verification
-	 */
-	private QuizVerification mapQuizRequestToVerification(QuizSubmitRequest quizSubmitRequest) {
-		QuizVerification quiz = new QuizVerification();
-		quiz.setId(quizSubmitRequest.getQuizId());
-		return quiz;
-	}
-
-    /**
-     * Obtiene el quiz completo (preguntas y respuestas) para un reto dado.
+     * Crea un quiz de preguntas/respuestas asociándolo al reto.
+     * Asume que el reto ya tiene su verificationType="Q" y verificationId="00003".
      *
-     * @param challengeId
-     *            the challenge id
-     * @return the quiz for challenge
-     */
-    @Transactional(readOnly = true)
-    public QuizVerification getQuizForChallenge(UUID challengeId) {
-        Challenge ch = challengeRepo.findById(challengeId)
-                .orElseThrow(() -> new BusinessException(
-                        ErrorConstants.CHALLENGE_NOT_FOUND));
-
-        String qId = ch.getVerificationId();
-        return quizVerificationRepository.findById(qId)
-                .orElseThrow(() -> new BusinessException(
-                        ErrorConstants.QUIZ_NOT_FOUND));
-    }
-
-    /**
-     * Recibe las respuestas del usuario (map) y valida frente al quiz, devuelve
-     * el porcentaje de acierto y, en caso de éxito total, marca el reto como
-     * FINALIZADO.
-     *
-     * @param challengeId
-     *            UUID del reto
-     * @param answersMap
-     *            Map<String questionId, Long answerIdSeleccionada>
-     * @return the verification result
+     * @param request the request
+     * @return the string
      */
     @Transactional
-    public VerificationResult submitQuiz(UUID challengeId,
-            Map<String, Long> answersMap) {
-        // 1. Cargar reto y quiz
-        Challenge ch = challengeRepo.findById(challengeId)
-                .orElse(new Challenge());
-        QuizVerification quiz = getQuizForChallenge(challengeId);
-        // 2. Validar que reto esté en estado PENDIENTE o INICIADO
-        if (ch.getState() != StatesChallengeEnum.PENDING &&
-                ch.getState() != StatesChallengeEnum.IN_PROGRESS) {
-            throw new BusinessException(
-                    ErrorConstants.CHALLENGE_DIFFERENT_STATE);
-        }
-        // 3. Recorrer las preguntas y comparar
-        int total = quiz.getQuestions().size();
-//        int correctCount = (int) quiz.getQuestions().stream()
-//        	    .filter(q -> {
-//        	        Long selected = answersMap.get(q.getQuestionId());
-//        	        if (selected == null) return false;
-//
-//        	        return q.getAnswers().stream()
-//        	            .filter(QuizAnswer::isCorrect)
-//        	            .anyMatch(a -> a.getAnswerId() != null && a.getAnswerId().toString().equals(selected.toString()));
-//        	    })
-//        	    .count();
-        int correctCount = 0;
-        // 4. Calcular porcentaje
-        double scorePercent = total > 0
-                ? (correctCount * 100.0) / total
-                : 0.0;
+    public String createQuizVerification(QuizSubmitRequest request) {
+        
+        QuizVerification quizVerification = quizVerificationRepo.findById(request.getQuizId())
+                .orElse(null);
+        // 1) Recuperar reto y ID completo del quiz
+        Challenge ch = quizVerification.getChallenge();
 
-        // 5. Si logra el mínimo requerido (por ejemplo 70%), finalizar el reto
-        boolean passed = scorePercent >= 70.0;
-        if (passed) {
-            ch.setState(StatesChallengeEnum.FINISHED);
-            challengeRepo.save(ch);
+        String fullQuizId = ch.getVerificationType() + ch.getVerificationId(); // e.g. "Q00003"
+
+        // 2) Crear entidad QuizVerification
+        QuizVerification quiz = new QuizVerification();
+        quiz.setId(fullQuizId);
+        quiz.setChallenge(ch);
+
+        // 3) Mapear preguntas y respuestas
+        int qIndex = 1;
+        for (QuestionsDTO qDto : request.getQuestions()) {
+            String qId = fullQuizId + "-P" + String.format("%02d", qIndex++);
+            QuizQuestion qEntity = new QuizQuestion(qId, qDto.getTitle(), quiz);
+
+            int aIndex = 1;
+            for (AnswerDTO aDto : qDto.getAnswers()) {
+                String aId = qId + "-R" + String.format("%02d", aIndex++);
+                QuizAnswer aEntity = new QuizAnswer(aId, aDto.getText(), aDto.isCorrect(), qEntity);
+                qEntity.getAnswers().add(aEntity);
+            }
+            quiz.getQuestions().add(qEntity);
         }
-        // 6. Devolver un objeto con resultado
-        return new VerificationResult(total, correctCount, scorePercent,
-                passed);
-	}
+
+        // 4) Persistir todo en cascada
+        quizVerificationRepo.save(quiz);
+
+        return fullQuizId;
+    }
 }

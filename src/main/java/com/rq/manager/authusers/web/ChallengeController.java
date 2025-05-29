@@ -196,5 +196,29 @@ public class ChallengeController {
     public void joinChallenge(@PathVariable UUID challengeId) {
         challengeService.joinChallenge(challengeId);
     }
+    
+    /**
+     * Assign verification type.
+     *
+     * @param challengeId the challenge id
+     * @param type the type
+     * @return the string
+     */
+    @PostMapping("{idChallenge}/assign-verification/{type}")
+    @Operation(
+            summary = "Asignar validador al reto",
+            description = "Permite a un administrador asigna el tipo de prueba"
+                    + "para pasar")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Validador completado",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = String.class,
+                    example = "F00001")))
+    public String assignVerificationType(UUID challengeId,
+            String type) {
+        return challengeService.assignVerificationType(challengeId, type);
+    }
 
 }

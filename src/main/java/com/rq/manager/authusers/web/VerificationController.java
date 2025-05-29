@@ -29,12 +29,24 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping("/api/v1/verification/challenge")
 @AllArgsConstructor
-@Tag(name = "Verification Challenge", description = "Controller for verification challenge")
-@ApiResponses(value = { @ApiResponse(responseCode = "400", description = ApiConstants.BAD_REQUEST),
-@ApiResponse(responseCode = "401", description = Constants.UNAUTHORIZED),
-@ApiResponse(responseCode = "404", description = ApiConstants.NOT_FOUND),
-   @ApiResponse(responseCode = "500", description = ApiConstants.INTERNAL_SERVER_ERROR)
-})
+@Tag(
+        name = "Verification Challenge",
+        description = "Controller for verification challenge")
+@ApiResponses(
+        value = {
+                @ApiResponse(
+                        responseCode = "400",
+                        description = ApiConstants.BAD_REQUEST),
+                @ApiResponse(
+                        responseCode = "401",
+                        description = Constants.UNAUTHORIZED),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = ApiConstants.NOT_FOUND),
+                @ApiResponse(
+                        responseCode = "500",
+                        description = ApiConstants.INTERNAL_SERVER_ERROR)
+        })
 public class VerificationController {
 
 	/** The verification service. */
