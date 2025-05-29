@@ -1,7 +1,9 @@
 package com.rq.manager.authusers.service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,11 +13,14 @@ import com.rq.manager.authusers.bean.admin.AnswerDTO;
 import com.rq.manager.authusers.bean.admin.QuizSubmitRequest;
 import com.rq.manager.authusers.entity.Challenge;
 import com.rq.manager.authusers.entity.QuizAnswer;
+import com.rq.manager.authusers.entity.QuizQuestion;
 import com.rq.manager.authusers.entity.QuizVerification;
 import com.rq.manager.authusers.enumerations.StatesChallengeEnum;
 import com.rq.manager.authusers.exceptions.BusinessException;
 import com.rq.manager.authusers.exceptions.ErrorConstants;
 import com.rq.manager.authusers.repository.ChallengeRepository;
+import com.rq.manager.authusers.repository.QuizAnswerRepository;
+import com.rq.manager.authusers.repository.QuizQuestionRepository;
 import com.rq.manager.authusers.repository.QuizVerificationRepository;
 
 import lombok.AllArgsConstructor;
@@ -33,28 +38,28 @@ public class VerificationService {
     /** The quiz verification repository. */
     private final QuizVerificationRepository quizVerificationRepository;
 
-//    /** The quiz question repository. */
-//    private final QuizQuestionRepository quizQuestionRepository;
-//
-//    /** The quiz answer repository. */
-//    private final QuizAnswerRepository quizAnswerRepository;
+    /** The quiz question repository. */
+    private final QuizQuestionRepository quizQuestionRepository;
+
+    /** The quiz answer repository. */
+    private final QuizAnswerRepository quizAnswerRepository;
 
     /**
- * Creates the quiz verfication.
- *
- * @param quizSubmitRequest the quiz submit request
- */
-	public void createQuizVerfication(QuizSubmitRequest quizSubmitRequest) {
-//		QuizVerification quiz = mapQuizRequestToVerification(quizSubmitRequest);
-//		List<QuizQuestion> questions = quizSubmitRequest.getQuestions().stream().map(q -> {
-//			QuizQuestion question = new QuizQuestion();
-//			question.setAnswers(q.getAnswers().stream().map(answer -> {
-//				return mapAnswerRequestToEntity(answer);
-//			}).collect(Collectors.toList()));
-//			return question;
-//		}).collect(Collectors.toList());
-//		quiz.setQuestions(questions);
-//		quizVerificationRepository.save(quiz);
+	 * Creates the quiz verification.
+	 *
+	 * @param quizSubmitRequest the quiz submit request
+	 */
+	public void createQuizVerification(QuizSubmitRequest quizSubmitRequest) {
+		QuizVerification quiz = mapQuizRequestToVerification(quizSubmitRequest);
+		List<QuizQuestion> questions = quizSubmitRequest.getQuestions().stream().map(q -> {
+			QuizQuestion question = new QuizQuestion();
+			question.setAnswers(q.getAnswers().stream().map(answer -> {
+				return mapAnswerRequestToEntity(answer);
+			}).collect(Collectors.toList()));
+			return question;
+		}).collect(Collectors.toList());
+		quiz.setQuestions(questions);
+		quizVerificationRepository.save(quiz);
     }
 	
 	/**

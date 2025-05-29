@@ -51,7 +51,7 @@ public class VerificationController {
 	public void createQuizVerification(@Valid @RequestBody
 		@Parameter(description = "Quiz submit request", required = true)
 			QuizSubmitRequest quizSubmitRequest) {
-		verificationService.createQuizVerfication(quizSubmitRequest);
+		verificationService.createQuizVerification(quizSubmitRequest);
 	}
 	
 	/**

@@ -56,4 +56,7 @@ public class ErrorConstants {
 
 	/** The Constant QUIZ_NOT_FOUND. */
 	public static final String QUIZ_NOT_FOUND = "Quiz not found";
+
+	/** The Constant INVALID_VERIFICATION_TYPE. */
+	public static final String INVALID_VERIFICATION_TYPE = "invalid_verification_type";
 }

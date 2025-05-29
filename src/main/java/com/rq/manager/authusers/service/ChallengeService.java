@@ -17,6 +17,7 @@ import com.rq.manager.authusers.constants.Constants;
 import com.rq.manager.authusers.entity.Challenge;
 import com.rq.manager.authusers.entity.User;
 import com.rq.manager.authusers.entity.UserChallenge;
+import com.rq.manager.authusers.enumerations.ChallengeVerificationType;
 import com.rq.manager.authusers.enumerations.StatesChallengeEnum;
 import com.rq.manager.authusers.exceptions.BusinessException;
 import com.rq.manager.authusers.exceptions.CustomException;
@@ -83,7 +84,6 @@ public class ChallengeService {
 
 	/**
 	 * Update challenge.
-	 * Falla crea una de la nada
 	 *
 	 * @param id      the id
 	 * @param request the challenge request
@@ -94,7 +94,7 @@ public class ChallengeService {
 				.orElse(new Challenge());
 		//Mira que el estado del reto está en pendiente
 		if (Constants.PENDING.equals(challenge.getState().getDescription())) {
-			challenge = updateChallenge(challenge, request);
+			challenge = mapRequestToChallenge(challenge, request);
 			challengeRepository.save(challenge);
 			return ChallengeMapper.mapEntityToResponse(challenge);
 		} else {
@@ -104,13 +104,13 @@ public class ChallengeService {
 	}
 	
 	/**
-	 * Update challenge.
+	 * Map request to challenge.
 	 *
 	 * @param challenge the challenge
 	 * @param request the request
 	 * @return the challenge
 	 */
-	private Challenge updateChallenge(Challenge challenge, ChallengeRequest request) {
+	private Challenge mapRequestToChallenge(Challenge challenge, ChallengeRequest request) {
 	    Optional.ofNullable(request.getTitle())
 	            .ifPresent(challenge::setTitle);
 	    Optional.ofNullable(request.getDescription())
@@ -207,6 +207,22 @@ public class ChallengeService {
 		} else {
 			return !currentDate.isBefore(startDate.minusDays(7));
 		}
+	}
+
+	/**
+	 * Assign verification type.
+	 *
+	 * @param challengeId             the challenge id
+	 * @param validationChallengeType the validation challenge type
+	 * @return the string
+	 */
+	public String assignVerificationType(UUID challengeId, String validationChallengeType) {
+		Challenge challenge = challengeRepository.findById(challengeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Challenge not found with id: " + challengeId));
+		ChallengeVerificationType verificationType = ChallengeVerificationType.fromType(validationChallengeType);
+		challenge.setVerificationId(verificationType.getVerificationId());
+		challengeRepository.save(challenge);
+		return challenge.getVerificationId();
 	}
 
 }
