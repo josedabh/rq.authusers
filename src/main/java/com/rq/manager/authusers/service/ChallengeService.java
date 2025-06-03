@@ -182,6 +182,8 @@ public class ChallengeService {
 			UserChallenge userChallenge = new UserChallenge();
 			userChallenge.setUser(user);
 			userChallenge.setChallenge(challenge);
+			userChallenge.setJoinedAt(new Date());
+			userChallenge.setCompleted(false);
 			userChallenge.setCompletedAt(new Date());
 			userChallengeRepository.save(userChallenge);
 		} else {

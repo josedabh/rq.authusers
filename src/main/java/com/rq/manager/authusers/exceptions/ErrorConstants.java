@@ -59,4 +59,10 @@ public class ErrorConstants {
 
 	/** The Constant INVALID_VERIFICATION_TYPE. */
 	public static final String INVALID_VERIFICATION_TYPE = "invalid_verification_type";
+
+    /** The Constant QUESTION_NOT_FOUND. */
+    public static final String QUESTION_NOT_FOUND = "Question Not Found";
+
+    /** The Constant ANSWER_NOT_FOUND. */
+    public static final String ANSWER_NOT_FOUND = "Answer Not Found";
 }

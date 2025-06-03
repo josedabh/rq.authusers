@@ -50,13 +50,21 @@ public class UserChallenge {
     @Column(name = "COMPLETED_AT")
     private Date completedAt;
     
+    /** The joined at. */
+    @Column(name = "JOINED_AT")
+    private Date joinedAt;
+    
     /** The earned points. */
     @Column(name = "EARNED_POINTS")
     private Integer earnedPoints;
     
+    /** The attempts. */
+    @Column(name = "ATTEMPTS")
+    private int attempts;
+    
     /** The progress of the challenges. */
-    @Column(name = "PROGRESS", nullable = false)
-    private int progress;
+    @Column(name = "COMPLETED", nullable = false)
+    private boolean completed;
     
     /** The history of the challenges completed of the user. */
     //Cambiar esto por una entidad
