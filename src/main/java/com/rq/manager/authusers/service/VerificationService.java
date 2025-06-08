@@ -12,6 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.rq.manager.authusers.bean.admin.AnswerDTO;
 import com.rq.manager.authusers.bean.admin.QuestionsDTO;
+import com.rq.manager.authusers.bean.admin.QuizAnswerDetail;
+import com.rq.manager.authusers.bean.admin.QuizDetailResponse;
+import com.rq.manager.authusers.bean.admin.QuizQuestionDetail;
 import com.rq.manager.authusers.bean.admin.QuizSubmitRequest;
 import com.rq.manager.authusers.bean.admin.QuizSubmitResponse;
 import com.rq.manager.authusers.entity.Challenge;
@@ -21,7 +24,6 @@ import com.rq.manager.authusers.entity.QuizVerification;
 import com.rq.manager.authusers.entity.UserChallenge;
 import com.rq.manager.authusers.exceptions.BusinessException;
 import com.rq.manager.authusers.exceptions.ErrorConstants;
-import com.rq.manager.authusers.mapper.VerificationMapper;
 import com.rq.manager.authusers.repository.ChallengeRepository;
 import com.rq.manager.authusers.repository.QuizAnswerRepository;
 import com.rq.manager.authusers.repository.QuizQuestionRepository;
@@ -61,87 +63,122 @@ public class VerificationService {
      */
     @Transactional
     public String createQuizVerification(QuizSubmitRequest request) {
-        QuizVerification quizVerification = quizVerificationRepo.findById(request.getQuizId())
-                .orElseThrow(() -> new BusinessException(ErrorConstants.QUIZ_NOT_FOUND));
+        // 1) Extraer challengeId del quizId  
+        //    ej. quizId = "Q00005" → challenge.getVerificationType()="Q", challenge.getVerificationId()="00005"
+        String quizId = request.getQuizId();
+        String type = quizId.substring(0, 1);
+        String numeric = quizId.substring(1);
 
-        Challenge challenge = quizVerification.getChallenge();
-        String fullQuizId = challenge.getVerificationType() + challenge.getVerificationId();
+        // 2) Recuperar el Challenge por type+numeric
+        Challenge challenge = challengeRepo
+            .findByVerificationTypeAndVerificationId(type, numeric)
+            .orElseThrow(() -> new BusinessException(ErrorConstants.CHALLENGE_NOT_FOUND));
 
+        // 3) Crear el QuizVerification
         QuizVerification quiz = new QuizVerification();
-        quiz.setId(fullQuizId);
+        quiz.setId(quizId);
         quiz.setChallenge(challenge);
 
-        mapQuestionsAndAnswers(request, quiz, fullQuizId);
+        // 4) Mapear preguntas y respuestas
+        mapQuestionsAndAnswers(request, quiz, quizId);
 
+        // 5) Persistir todo en cascada
         quizVerificationRepo.save(quiz);
-        return fullQuizId;
+
+        return quizId;
     }
 
     /**
      * Map questions and answers.
      *
-     * @param request
-     *            the request
-     * @param quiz
-     *            the quiz
-     * @param fullQuizId
-     *            the full quiz id
+     * @param request the request
+     * @param quiz the quiz
+     * @param fullQuizId the full quiz id
      */
-    private void mapQuestionsAndAnswers(QuizSubmitRequest request, QuizVerification quiz, String fullQuizId) {
-        int questionIndex = 1;
-        for (QuestionsDTO questionDto : request.getQuestions()) {
-            String questionId = fullQuizId + "-P" + String.format("%02d", questionIndex++);
+    private void mapQuestionsAndAnswers(QuizSubmitRequest request,
+                                        QuizVerification quiz,
+                                        String fullQuizId) {
+        int qCounter = 1;
+        for (QuestionsDTO qDto : request.getQuestions()) {
+            String qId = (qDto.getQuestionId() != null && !qDto.getQuestionId().isBlank())
+                         ? qDto.getQuestionId()
+                         : fullQuizId + "-P" + String.format("%02d", qCounter++);
             QuizQuestion questionEntity = new QuizQuestion();
-            questionEntity.setId(questionId);
-            questionEntity.setTitle(questionDto.getQuestion());
+            questionEntity.setId(qId);
+            questionEntity.setTitle(qDto.getQuestion());
             questionEntity.setQuiz(quiz);
-            mapAnswers(questionDto, questionEntity, questionId);
+
+            int aCounter = 1;
+            for (AnswerDTO aDto : qDto.getAnswers()) {
+                String aId = (aDto.getAnswerId() != null && !aDto.getAnswerId().isBlank())
+                             ? aDto.getAnswerId()
+                             : qId + "-R" + String.format("%02d", aCounter++);
+                QuizAnswer answerEntity = new QuizAnswer();
+                answerEntity.setId(aId);
+                answerEntity.setText(aDto.getResult());
+                answerEntity.setCorrect(aDto.isCorrect());
+                answerEntity.setQuestion(questionEntity);
+                questionEntity.getAnswers().add(answerEntity);
+            }
+
             quiz.getQuestions().add(questionEntity);
         }
     }
-    
-    /**
-     * Map answers.
-     *
-     * @param questionDto
-     *            the question dto
-     * @param questionEntity
-     *            the question entity
-     * @param questionId
-     *            the question id
-     */
-    private void mapAnswers(QuestionsDTO questionDto, QuizQuestion questionEntity, String questionId) {
-        int answerIndex = 1;
-        for (AnswerDTO answerDto : questionDto.getAnswers()) {
-            String answerId = questionId + "-R" + String.format("%02d", answerIndex++);
-            QuizAnswer answerEntity = new QuizAnswer();
-            answerEntity.setId(answerId);
-            answerEntity.setText(answerDto.getResult());
-            answerEntity.setCorrect(answerDto.isCorrect());
-            answerEntity.setQuestion(questionEntity);
-            questionEntity.getAnswers().add(answerEntity);
-        }
-    }
 
     /**
-     * Gets the quiz for challenge.
+     * Gets the quiz details for challenge.
      *
-     * @param challengeId
-     *            the challenge id
-     * @return the quiz for challenge
+     * @param challengeId the challenge id
+     * @return the quiz details
      */
     @Transactional(readOnly = true)
-    public QuizSubmitResponse getQuizForChallenge(UUID challengeId) {
+    public QuizDetailResponse getQuizDetailsForChallenge(UUID challengeId) {
         Challenge challenge = challengeRepo.findById(challengeId)
                 .orElseThrow(() -> new BusinessException(ErrorConstants.CHALLENGE_NOT_FOUND));
 
-        String quizId = challenge.getVerificationId();
+        // Check if verification type is 'Q'
+        if (!"Q".equals(challenge.getVerificationType())) {
+            throw new BusinessException("Quiz only available for verification type Q");
+        }
+
+        String quizId = challenge.getVerificationType() + challenge.getVerificationId();
         QuizVerification quizVer = quizVerificationRepo.findById(quizId)
-                .orElseThrow(() -> new BusinessException(
-                        ErrorConstants.QUIZ_NOT_FOUND));
-        return VerificationMapper.mapQuizVerificationToSubmitResponse(quizVer);
+                .orElseThrow(() -> new BusinessException(ErrorConstants.QUIZ_NOT_FOUND));
+        
+        return mapQuizVerificationToDetailResponse(quizVer);
     }
 
+    /**
+     * Maps QuizVerification entity to QuizDetailResponse DTO.
+     *
+     * @param quizVer the quiz verification entity
+     * @return the quiz detail response
+     */
+    private QuizDetailResponse mapQuizVerificationToDetailResponse(QuizVerification quizVer) {
+        QuizDetailResponse response = new QuizDetailResponse();
+        response.setQuizId(quizVer.getId());
+        
+        List<QuizQuestionDetail> questionDTOs = new ArrayList<>();
+        for (QuizQuestion question : quizVer.getQuestions()) {
+            QuizQuestionDetail qDetail = new QuizQuestionDetail();
+            qDetail.setQuestionId(question.getId());
+            qDetail.setTitle(question.getTitle());
+            
+            List<QuizAnswerDetail> answerDTOs = new ArrayList<>();
+            for (QuizAnswer answer : question.getAnswers()) {
+                QuizAnswerDetail aDetail = new QuizAnswerDetail();
+                aDetail.setAnswerId(answer.getId());
+                aDetail.setText(answer.getText());
+                answerDTOs.add(aDetail);
+            }
+            
+            qDetail.setAnswers(answerDTOs);
+            questionDTOs.add(qDetail);
+        }
+        
+        response.setQuestions(questionDTOs);
+        return response;
+    }
     /**
      * Update quiz verification.
      *

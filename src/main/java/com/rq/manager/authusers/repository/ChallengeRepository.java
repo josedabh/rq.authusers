@@ -1,5 +1,6 @@
 package com.rq.manager.authusers.repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -33,5 +34,14 @@ public interface ChallengeRepository extends JpaRepository<Challenge, UUID> {
      */
     @Query("SELECT c.verificationId FROM Challenge c WHERE c.verificationType = :typeCode AND c.id = :challengeId")
     String findVerificationIdByTypeAndChallengeId(@Param("typeCode") String typeCode, @Param("challengeId") UUID challengeId);
+
+    /**
+     * Find by verification type and verification id.
+     *
+     * @param type the type
+     * @param verificationId the verification id
+     * @return the optional
+     */
+    Optional<Challenge> findByVerificationTypeAndVerificationId(String type, String verificationId);
 
 }

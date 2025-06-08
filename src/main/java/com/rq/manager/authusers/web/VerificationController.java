@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rq.manager.authusers.bean.admin.AnswerDTO;
+import com.rq.manager.authusers.bean.admin.QuizDetailResponse;
 import com.rq.manager.authusers.bean.admin.QuizSubmitRequest;
-import com.rq.manager.authusers.bean.admin.QuizSubmitResponse;
 import com.rq.manager.authusers.constants.ApiConstants;
 import com.rq.manager.authusers.constants.Constants;
 import com.rq.manager.authusers.service.VerificationService;
@@ -65,26 +65,24 @@ public class VerificationController {
 	@ApiResponse(responseCode = "200", description = "Quiz verification created successfully")
 	@PostMapping("/quiz")
 	public void createQuizVerification(@Valid @RequestBody
-		@Parameter(description = "Quiz submit request", required = true)
 			QuizSubmitRequest quizSubmitRequest) {
 		verificationService.createQuizVerification(quizSubmitRequest);
 	}
 	
     /**
-     * Gets the quiz for challenge.
+     * Gets quiz details for challenge.
      *
-     * @param quizId
-     *            the quiz id
-     * @return the quiz for challenge
+     * @param challengeId the challenge id
+     * @return the quiz details
      */
-	@Operation(summary = "Get quiz for challenge", description = "Get quiz for challenge")
-	@ApiResponse(responseCode = "200", description = "Quiz verification retrieved successfully")
-	@GetMapping("/quiz/{quizId}")
-	public QuizSubmitResponse getQuizForChallenge(@PathVariable 
-			@Parameter(description = "Quiz ID", required = true)
-			UUID quizId) {
-        return verificationService.getQuizForChallenge(quizId);
-	}
+    @Operation(summary = "Get quiz details for challenge", 
+               description = "Get quiz questions and answers (only available if verification type is Q)")
+    @ApiResponse(responseCode = "200", description = "Quiz details retrieved successfully")
+    @GetMapping("/details/{challengeId}")
+    public QuizDetailResponse getQuizDetailsForChallenge(
+            @PathVariable @Parameter(description = "Challenge ID", required = true) UUID challengeId) {
+        return verificationService.getQuizDetailsForChallenge(challengeId);
+    }
 	
     /**
      * Submit quiz.
