@@ -1,6 +1,7 @@
 package com.rq.manager.authusers.service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -110,10 +111,6 @@ public class StoreService {
         if (rewardRequest.getDescription() != null) {
             existingReward.setDescription(rewardRequest.getDescription());
         }
-        if (rewardRequest.getImage() != null) {
-            existingReward.setImage(rewardRequest.getImage());
-        }
-
         // Guardar cambios
         rewardRepository.save(existingReward);
 
@@ -268,4 +265,18 @@ public class StoreService {
 		return purchaseHistoryRepository.findAll().stream()
 				.map(StoreMapper::mapPurchaseHistoryToResponse).toList();
 	}
+
+    /**
+     * Gets the user reward history.
+     *
+     * @return the user reward history
+     */
+    public List<HistoryShopping> getUserRewardHistory() {
+        User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new CustomException(ErrorConstants.NULL_USER));
+        return purchaseHistoryRepository.findByUserId(user.getId()).stream()
+                .map(StoreMapper::mapPurchaseHistoryToResponse)
+                .sorted(Comparator.comparing(HistoryShopping::getTransactionPurchaseDate).reversed()) // Ordenar por fecha descendente
+                .toList();
+    }
 }

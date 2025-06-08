@@ -50,6 +50,8 @@ public class ChallengeMapper {
 				.state(entity.getState() != null ? entity.getState().getDescription() : "NOTSTATE")
 				.startDate(Util.getDate(entity.getStartDate()))
 				.endDate(Util.getDate(entity.getEndDate()))
+				.verificationNumber(entity.getVerificationId())
+				.verificationType(entity.getVerificationType())
 				.points(entity.getPoints()).build();
 	}
 	

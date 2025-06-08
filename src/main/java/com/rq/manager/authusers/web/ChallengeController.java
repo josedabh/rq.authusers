@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -204,7 +205,7 @@ public class ChallengeController {
      * @param type the type
      * @return the string
      */
-    @PostMapping("{idChallenge}/assign-verification/{type}")
+    @PatchMapping("{challengeId}/assign-verification/{type}")
     @Operation(
             summary = "Asignar validador al reto",
             description = "Permite a un administrador asigna el tipo de prueba"
@@ -216,9 +217,53 @@ public class ChallengeController {
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = String.class,
                     example = "F00001")))
-    public String assignVerificationType(UUID challengeId,
-            String type) {
+    public String assignVerificationType(@PathVariable UUID challengeId,
+            @PathVariable String type) {
         return challengeService.assignVerificationType(challengeId, type);
     }
-
+    
+    /**
+     * Gets the next verification id.
+     *
+     * @param type the type
+     * @return the next verification id
+     */
+    @PostMapping("/next-verification-id/{type}")
+    @Operation(
+        summary = "Generar próximo ID numérico para verificación",
+        description = "Devuelve el próximo identificador numérico para el tipo de verificación indicado (por ejemplo, Q para Quiz)"
+    )
+    @ApiResponse(
+        responseCode = "200",
+        description = "ID generado correctamente",
+        content = @Content(
+            mediaType = MediaType.APPLICATION_JSON_VALUE,
+            schema = @Schema(implementation = String.class, example = "00042")
+        )
+    )
+    public String getNextVerificationId(@PathVariable("type") String type) {
+        return challengeService.nextNumericForType(type);
+    }
+    
+    /**
+     * Delete verification type.
+     *
+     * @param challengeId the challenge id
+     */
+    @DeleteMapping("/verification/{challengeId}")
+    @Operation(
+            summary = "Eliminar ID numérico para verificación",
+            description = "Elimina identificador numérico para el tipo de verificación indicado (por ejemplo, Q para Quiz)"
+        )
+        @ApiResponse(
+            responseCode = "200",
+            description = "ID eliminado",
+            content = @Content(
+                mediaType = MediaType.APPLICATION_JSON_VALUE,
+                schema = @Schema(implementation = Void.class)
+            )
+        )
+    public void deleteVerificationType(@PathVariable UUID challengeId) {
+        challengeService.deleteVerificationType(challengeId);
+    }
 }

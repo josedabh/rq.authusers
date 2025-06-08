@@ -17,6 +17,7 @@ import com.rq.manager.authusers.constants.Constants;
 import com.rq.manager.authusers.entity.Challenge;
 import com.rq.manager.authusers.entity.User;
 import com.rq.manager.authusers.entity.UserChallenge;
+import com.rq.manager.authusers.enumerations.CategoryEnum;
 import com.rq.manager.authusers.enumerations.StatesChallengeEnum;
 import com.rq.manager.authusers.exceptions.BusinessException;
 import com.rq.manager.authusers.exceptions.CustomException;
@@ -122,10 +123,13 @@ public class ChallengeService {
 	    Optional.ofNullable(request.getDifficulty())
 	            .ifPresent(challenge::setDifficulty);
 	    Optional.ofNullable(request.getPoints())
-	            .ifPresent(challenge::setPoints);
-	    return challenge;
-	}
-
+                .ifPresent(challenge::setPoints);
+        if (request.getCategory() != null) {
+            challenge.setCategory(
+                    CategoryEnum.setDescription(request.getCategory()));
+        }
+        return challenge;
+    }
 
 	/**
 	 * Delete challenge by id.
@@ -226,15 +230,49 @@ public class ChallengeService {
      */
     @Transactional
     public String assignVerificationType(UUID challengeId, String typeCode) {
-        Challenge ch = challengeRepository.findById(challengeId)
+        Challenge challenge = challengeRepository.findById(challengeId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Challenge not found: " + challengeId));
 
-        String numeric = nextNumericForType(typeCode);
-        ch.setVerificationType(typeCode);
-        ch.setVerificationId(numeric);
+        // Si ya tiene verificación, no se genera una nueva
+        if (challenge.getVerificationType() != null &&
+            challenge.getVerificationType().equals(typeCode) &&
+            challenge.getVerificationId() != null) {
+            return typeCode + challenge.getVerificationId();
+        }
+
+        // Buscar si ya hay un verificationId del mismo tipo para este challenge
+        String existingId = challengeRepository
+            .findVerificationIdByTypeAndChallengeId(typeCode, challengeId); // <-- Este método debe existir en tu repo
+
+        if (existingId != null) {
+            challenge.setVerificationType(typeCode);
+            challenge.setVerificationId(existingId);
+        } else {
+            // Generar nuevo ID
+            String numeric = nextNumericForType(typeCode);
+            challenge.setVerificationType(typeCode);
+            challenge.setVerificationId(numeric);
+        }
+
+        challengeRepository.save(challenge);
+        return typeCode + challenge.getVerificationId();
+    }
+
+    
+    /**
+     * Delete verification type.
+     *
+     * @param challengeId the challenge id
+     * @param typeCode the type code
+     */
+    public void deleteVerificationType(UUID challengeId) {
+        Challenge ch = challengeRepository.findById(challengeId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Challenge not found: " + challengeId));
+        ch.setVerificationType(null);
+        ch.setVerificationId(null);
         challengeRepository.save(ch);
-        return typeCode + numeric;
     }
 
     /**

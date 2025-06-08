@@ -39,10 +39,6 @@ public class Reward {
 	@Column(name = "POINTS")
 	private int points;
 	
-	/** The image. */
-	@Column(name = "IMAGE", length = 200)
-	private String image;
-	
 	/** The active. */
 	@Column(name = "VISIBLE")
 	private boolean visible;

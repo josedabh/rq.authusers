@@ -202,4 +202,23 @@ public class StoreController {
     public List<HistoryShopping> getListPurchaseHistory() {
         return storeService.getListPurchaseHistory();
     }
+    
+    /**
+     * Gets the user reward history.
+     *
+     * @return the user reward history
+     */
+    @Operation(
+            summary = "Lista el historial de compras del usuario",
+            description = "Lista el historial de compras del usuario")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Lista de compras usuario compleatdo",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = HistoryShopping.class)))
+    @GetMapping("/user/purchase-history")
+    public List<HistoryShopping> getUserRewardHistory() {
+        return storeService.getUserRewardHistory();
+    }
 }

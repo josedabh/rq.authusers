@@ -30,10 +30,6 @@ public class RewardResponse {
 	@Schema(description = "Reward points", example = "100")
 	private int points;
 	
-	/** The image. */
-	@Schema(description = "Reward image", example = "reward1.png")
-	private String image;
-	
 	/** The active. */
 	@Schema(description = "Reward active status", example = "true")
 	private boolean visible;

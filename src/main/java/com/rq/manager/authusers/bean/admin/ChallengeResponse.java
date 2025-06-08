@@ -54,5 +54,10 @@ public class ChallengeResponse {
 	/** The points. */
 	@Schema(description = "the points", example = "2")
 	private int points;
-
+	
+	@Schema(description = "the verification type", example = "Q | L | I")
+	private String verificationType;
+	
+	@Schema(description = "the verification number", example = "12345678")
+	private String verificationNumber;
 }

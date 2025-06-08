@@ -115,40 +115,33 @@ public class AuthService {
 		return UserMapper.mapEntityToResponse(user);
 	}
 
-    /**
-     * Change password.
-     *
-     * @param formPassword
-     *            the form password
-     * @return the user response
-     */
-    public UserResponse changePassword(FormPassword formPassword) {
-        UserResponse userResponse = getUser();
-        if (isEqualsPasswords(userResponse, formPassword)) {
-            User user = UserMapper.mapUserResponseToEntity(userResponse);
-            user.setPassword(passwordEncoder.encode(formPassword.getNewPassword()));
-            userRepository.save(user);
-            return UserMapper.mapEntityToResponse(user);
-        }
-        return userResponse;
-    }
+	/**
+	 * Change password.
+	 *
+	 * @param formPassword the form password
+	 * @return the user response
+	 */
+	public void changePassword(FormPassword formPassword) {
+	    // Obtener el usuario autenticado desde la base de datos
+	    User user = userRepository.findByUsername(
+	            SecurityContextHolder.getContext().getAuthentication().getName())
+	        .orElseThrow(() -> new CustomException(ErrorConstants.NULL_USER));
 
-    /**
-     * Checks if is equals passwords.
-     *
-     * @param userResponse
-     *            the user response
-     * @param formPassword
-     *            the form password
-     * @return true, if is equals passwords
-     */
-    private boolean isEqualsPasswords(UserResponse userResponse,
-            FormPassword formPassword) {
-        return passwordEncoder.matches(userResponse.getPassword(),
-                formPassword.getOldPassword())
-                && formPassword.getNewPassword() != formPassword
-                        .getVerifyNewPassword();
-    }
+	    // Validar la contraseña antigua
+	    if (!passwordEncoder.matches(formPassword.getOldPassword(), user.getPassword())) {
+	        throw new CustomException("La contraseña actual es incorrecta");
+	    }
+
+	    // Validar que las nuevas contraseñas coincidan
+	    if (!formPassword.getNewPassword().equals(formPassword.getVerifyNewPassword())) {
+	        throw new CustomException("Las nuevas contraseñas no coinciden");
+	    }
+
+	    // Guardar la nueva contraseña encriptada
+	    user.setPassword(passwordEncoder.encode(formPassword.getNewPassword()));
+	    userRepository.save(user);
+	}
+
 
 //	public void historyChallenges() {
 //		HistoryChallenges historyChallenges =  userChallengeRepository.findAll().stream()

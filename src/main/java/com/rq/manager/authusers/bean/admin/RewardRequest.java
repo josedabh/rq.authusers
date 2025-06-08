@@ -33,10 +33,6 @@ public class RewardRequest {
 	@Schema(description = "Reward points", example = "100")
 	private Integer points;
 	
-	/** The image. */
-	@Schema(description = "Reward image", example = "reward1.png")
-	private String image;
-	
 	/** The active. */
 	@NotBlank
 	@Schema(description = "Reward active status", example = "true")

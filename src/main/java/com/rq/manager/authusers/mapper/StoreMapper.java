@@ -21,7 +21,6 @@ public class StoreMapper {
 		reward.setName(rewardRequest.getName());
 		reward.setDescription(rewardRequest.getDescription());
 		reward.setPoints(rewardRequest.getPoints());
-		reward.setImage(rewardRequest.getImage());
 		reward.setVisible(rewardRequest.isVisible());
 		reward.setStock(rewardRequest.getStock());
 		return reward;
@@ -38,7 +37,7 @@ public class StoreMapper {
 		return RewardResponse.builder().id(reward.getId()).name(reward.getName())
 				.description(reward.getDescription())
 				.points(reward.getPoints())
-				.image(reward.getImage()).visible(reward.isVisible())
+				.visible(reward.isVisible())
 				.stock(reward.getStock())
 				.build();
 	}

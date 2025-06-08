@@ -132,9 +132,9 @@ public class AuthController {
     @ApiResponse(responseCode = "200", 
 	        description = "Contraseña cambiada", 
 	        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, 
-	        schema = @Schema(implementation = UserResponse.class)))
+	        schema = @Schema(implementation = Void.class)))
 	@PutMapping("/change-password")
-	public UserResponse changePassword(@Valid @RequestBody FormPassword formPassword) {
-	    return authService.changePassword(formPassword);
+	public void changePassword(@Valid @RequestBody FormPassword formPassword) {
+	    authService.changePassword(formPassword);
 	}
 }
