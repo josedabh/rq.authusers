@@ -29,6 +29,6 @@ public class AnswerDTO {
 
 	/** The is correct. */
 	@Schema(description = "is the answer correct", example = "false")
-	private boolean isCorrect;
+	private Boolean isCorrect;
 
 }

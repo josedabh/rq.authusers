@@ -37,6 +37,6 @@ public class QuizAnswer {
     private String text;
 
     /** The correct. */
-    @Column(nullable = false)
-    private boolean correct;
+    @Column(name = "correct", columnDefinition = "TINYINT(1)", nullable = false)
+    private Boolean correct;
 }

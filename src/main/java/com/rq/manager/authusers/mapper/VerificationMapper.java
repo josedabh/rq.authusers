@@ -41,7 +41,7 @@ public class VerificationMapper {
         for (QuizQuestion question : quizVer.getQuestions()) {
             for (QuizAnswer answer : question.getAnswers()) {
                 // Aquí se puede agregar lógica para determinar si la respuesta es correcta
-                questionResults.put(question.getId(), answer.isCorrect());
+                questionResults.put(question.getId(), answer.getCorrect());
             }
         }
         quizSubmitResponse.setQuestionResults(questionResults);

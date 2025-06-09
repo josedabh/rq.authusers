@@ -126,7 +126,7 @@ public class VerificationService {
                 QuizAnswer answerEntity = new QuizAnswer();
                 answerEntity.setId(aId);
                 answerEntity.setText(aDto.getResult());
-                answerEntity.setCorrect(aDto.isCorrect());
+                answerEntity.setCorrect(aDto.getIsCorrect());
                 answerEntity.setQuestion(questionEntity);
                 questionEntity.getAnswers().add(answerEntity);
             }
@@ -234,7 +234,7 @@ public class VerificationService {
                     .orElseThrow(() -> new BusinessException(
                             ErrorConstants.ANSWER_NOT_FOUND));
             answer.setText(answerDTO.getResult());
-            answer.setCorrect(answerDTO.isCorrect());
+            answer.setCorrect(answerDTO.getIsCorrect());
             quizAnswerRepo.save(answer);
         }
     }
@@ -263,7 +263,7 @@ public class VerificationService {
             for (QuizAnswer answer : question.getAnswers()) {
                 // Aquí se puede agregar lógica para determinar si la respuesta
                 // es correcta
-                questionResults.put(question.getId(), answer.isCorrect());
+                questionResults.put(question.getId(), answer.getCorrect());
             }
         }
         response.setQuestionResults(questionResults);
@@ -358,7 +358,7 @@ public class VerificationService {
             Set<String> correctIds = new HashSet<>();
             
             for (QuizAnswer answer : question.getAnswers()) {
-                if (answer.isCorrect()) {
+                if (answer.getCorrect()) {
                     correctIds.add(answer.getId());
                 }
             }
