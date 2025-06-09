@@ -1,0 +1,127 @@
+package com.rq.manager.authusers.web;
+
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.rq.manager.authusers.bean.admin.QuizDetailResponse;
+import com.rq.manager.authusers.bean.admin.QuizSubmitRequest;
+import com.rq.manager.authusers.bean.admin.QuizSubmitResponse;
+import com.rq.manager.authusers.bean.admin.UserAnswerDTO;
+import com.rq.manager.authusers.constants.ApiConstants;
+import com.rq.manager.authusers.constants.Constants;
+import com.rq.manager.authusers.service.VerificationService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+
+/**
+ * The Class VerificationController.
+ */
+@RestController
+@RequestMapping("/api/v1/verification/challenge")
+@AllArgsConstructor
+@Tag(
+        name = "Verification Challenge",
+        description = "Controller for verification challenge")
+@ApiResponses(
+        value = {
+                @ApiResponse(
+                        responseCode = "400",
+                        description = ApiConstants.BAD_REQUEST),
+                @ApiResponse(
+                        responseCode = "401",
+                        description = Constants.UNAUTHORIZED),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = ApiConstants.NOT_FOUND),
+                @ApiResponse(
+                        responseCode = "500",
+                        description = ApiConstants.INTERNAL_SERVER_ERROR)
+        })
+public class VerificationController {
+
+	/** The verification service. */
+	private VerificationService verificationService;
+	
+    /**
+     * Creates the quiz verification.
+     *
+     * @param quizSubmitRequest
+     *            the quiz submit request
+     */
+    @Operation(summary = "Crea un nuevo quiz de preguntas", description = "Crea un nuevo quiz de preguntas")
+	@ApiResponse(responseCode = "200", description = "Quiz verification created successfully")
+	@PostMapping("/quiz")
+	public void createQuizVerification(@Valid @RequestBody
+			QuizSubmitRequest quizSubmitRequest) {
+		verificationService.createQuizVerification(quizSubmitRequest);
+	}
+	
+    /**
+     * Gets quiz details for challenge.
+     *
+     * @param challengeId the challenge id
+     * @return the quiz details
+     */
+    @Operation(summary = "Get quiz details for challenge", 
+               description = "Get quiz questions and answers (only available if verification type is Q)")
+    @ApiResponse(responseCode = "200", description = "Quiz details retrieved successfully")
+    @GetMapping("/details/{challengeId}")
+    public QuizDetailResponse getQuizDetailsForChallenge(
+            @PathVariable @Parameter(description = "Challenge ID", required = true) UUID challengeId) {
+        return verificationService.getQuizDetailsForChallenge(challengeId);
+    }
+
+    /**
+     * Update quiz verification.
+     *
+     * @param quizSubmitRequest the quiz submit request
+     * @return the quiz submit response
+     */
+    @Operation(
+            summary = "Actualiza un quiz existente",
+            description = "Actualiza un quiz existente con nuevas preguntas/respuestas")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Quiz actualizado exitosamente")
+    @PutMapping("/quiz")
+    public QuizSubmitResponse updateQuizVerification(
+            @Valid @RequestBody QuizSubmitRequest quizSubmitRequest) {
+        return verificationService.updateQuizVerification(quizSubmitRequest);
+    }
+
+    /**
+     * Submit quiz.
+     *
+     * @param challengeId
+     *            the challenge id
+     * @param userId
+     *            the user id
+     * @param answers
+     *            the answers
+     */
+    @Operation(summary = "Submit quiz for challenge", description = "Submit quiz for challenge")
+	@ApiResponse(responseCode = "200", description = "Quiz verification submitted successfully")
+	@PostMapping("/submit-quiz")
+    public void submitQuiz(
+            @RequestParam UUID challengeId,
+            @RequestBody List<UserAnswerDTO> userAnswers) {
+
+        verificationService.attemptChallenge(challengeId, userAnswers);
+    }
+	
+}

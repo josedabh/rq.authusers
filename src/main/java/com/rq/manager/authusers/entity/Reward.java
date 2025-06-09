@@ -11,6 +11,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * The Class Reward.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,25 +22,28 @@ import lombok.Setter;
 @Table(name = "REWARD")
 public class Reward {
 	
+	/** The id. */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
+	/** The name. */
 	@Column(name = "NAME", length = 80)
 	private String name;
 	
+	/** The description. */
 	@Column(name = "DESCRIPTION", length = 200)
 	private String description;
 	
+	/** The points. */
 	@Column(name = "POINTS")
 	private int points;
 	
-	@Column(name = "IMAGE", length = 200)
-	private String image;
+	/** The active. */
+	@Column(name = "VISIBLE")
+	private boolean visible;
 	
-	@Column(name = "ACTIVE")
-	private boolean active;
-	
+	/** The stock. */
 	@Column(name = "STOCK")
 	private int stock;
 

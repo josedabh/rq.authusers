@@ -26,7 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	
 	/** The jwt util. */
 	@Autowired
-    private JwtUtil jwtUtil;
+    private JwtService jwtService;
     
     /** The user service. */
     @Autowired
@@ -51,13 +51,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		
 		if(authorizationHeader != null && authorizationHeader.startsWith(Constants.BEARER)) {
 			jwt = authorizationHeader.substring(7);
-			userName = jwtUtil.extractUserName(jwt);
+			userName = jwtService.extractUserName(jwt);
 		}
 		
 		if(userName != null && 
 				SecurityContextHolder.getContext().getAuthentication() == null) {
 			UserDetails userDetails = userService.loadUserByUsername(userName);
-				if(jwtUtil.validateToken(jwt,userDetails)) {
+				if(jwtService.validateToken(jwt,userDetails)) {
 					UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = 
 							new UsernamePasswordAuthenticationToken(userDetails,null, userDetails.getAuthorities());
 					usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

@@ -18,12 +18,13 @@ import lombok.Setter;
 @NotBlank
 public class Login {
 
-    @Size(max = 100, message = "El identificador no puede exceder los 100 caracteres")
-    @Schema(description = "El identificador: email, teléfono o nombre de usuario", example = "usuario@example.com")
+    /** The identifier. */
+    @Size(max = 100)
+    @Schema(description = "the identifier: email, number phone or username", example = "exampleperez")
     private String identifier;
 	
 	/** The password. */
 	@Size(min = 8, max = 50)
-	@Schema(description = "the password", example = "pepito1234")
+	@Schema(description = "the password", example = "example1234")
 	private String password;
 }

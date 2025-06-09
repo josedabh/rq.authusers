@@ -1,8 +1,4 @@
-package com.rq.manager.authusers.bean;
-
-import java.util.UUID;
-
-import com.rq.manager.authusers.entity.Rol;
+package com.rq.manager.authusers.bean.admin;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -23,7 +19,7 @@ public class UserResponse {
 
 	/** The id. */
 	@Schema(description = "the uuid", example = "123e4567-e89b-12d3-a456-426655440000")
-	private UUID id;
+	private String id;
 	
 	/** The email. */
 	@Schema(description = "the email", example = "example@exapmle.com")
@@ -49,7 +45,11 @@ public class UserResponse {
 	@Schema(description = "the number phone", example = "623456789")
 	private String numPhone;
 	
+	/** The points. */
+	@Schema(description = "the points", example = "100")
+	private int points;
+	
 	/** The rol. */
 	@Schema(description = "the rol", example = "normal")
-	private Rol rol;
+	private String rol;
 }

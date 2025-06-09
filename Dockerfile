@@ -1,11 +1,17 @@
 # Usar una imagen base de Java
-FROM openjdk:21
+FROM openjdk:21-jdk-slim
 
-# Copiar el archivo jar de la aplicación al contenedor
+# Crear directorio de la aplicación
+RUN mkdir -p /app
+
+# Copiar el JAR de la aplicación
 COPY target/authusers-0.0.1-SNAPSHOT.jar /app/authusers.jar
 
-# Exponer el puerto en el que se ejecuta la aplicación
+# Establecer el directorio de trabajo
+WORKDIR /app
+
+# Exponer el puerto de la aplicación
 EXPOSE 8080
 
-# Comando para ejecutar la aplicación
-ENTRYPOINT ["java", "-jar", "/app/authusers.jar"]
+# Comando de inicio
+ENTRYPOINT ["java", "-jar", "authusers.jar"]

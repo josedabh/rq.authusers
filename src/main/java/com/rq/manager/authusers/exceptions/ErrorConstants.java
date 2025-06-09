@@ -38,4 +38,43 @@ public class ErrorConstants {
 	
 	/** The Constant INTERNAL_CODE. */
 	public static final String INTERNAL_CODE = ".internalCode";
+
+	/** The Constant USER_NOT_FOUND. */
+	public static final String USER_NOT_FOUND = "user_not_found";
+
+	/** The Constant USER_ALREADY_JOINED_CHALLENGE. */
+	public static final String USER_ALREADY_JOINED_CHALLENGE = "user_already_joined_challenge";
+
+	/** The Constant NOT_STATUS_CHALLENGE. */
+	public static final String NOT_STATUS_CHALLENGE = "not_status_challenge";
+
+	/** The Constant CHALLENGE_DIFFERENT_STATE. */
+	public static final String CHALLENGE_DIFFERENT_STATE = "challenge_different_state";
+
+	/** The Constant CHALLENGE_NOT_FOUND. */
+	public static final String CHALLENGE_NOT_FOUND = "Challenge not found";
+
+	/** The Constant QUIZ_NOT_FOUND. */
+	public static final String QUIZ_NOT_FOUND = "Quiz not found";
+
+	/** The Constant INVALID_VERIFICATION_TYPE. */
+	public static final String INVALID_VERIFICATION_TYPE = "invalid_verification_type";
+
+    /** The Constant QUESTION_NOT_FOUND. */
+    public static final String QUESTION_NOT_FOUND = "Question Not Found";
+
+    /** The Constant ANSWER_NOT_FOUND. */
+    public static final String ANSWER_NOT_FOUND = "Answer Not Found";
+
+    /** The Constant EMAIL_ALREADY_IN_USE. */
+    public static final String EMAIL_ALREADY_IN_USE = "email_already_in_use";
+
+    /** The Constant USERNAME_ALREADY_IN_USE. */
+    public static final String USERNAME_ALREADY_IN_USE = "username_already_in_use";
+
+    /** The Constant PHONE_ALREADY_IN_USE. */
+    public static final String PHONE_ALREADY_IN_USE = "phone_already_in_use";
+
+    /** The Constant CHALLENGE_CANNOT_BE_STARTED. */
+    public static final String CHALLENGE_CANNOT_BE_STARTED = "challenge_cannot_be_started";
 }

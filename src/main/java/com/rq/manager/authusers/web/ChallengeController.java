@@ -1,22 +1,30 @@
 package com.rq.manager.authusers.web;
 
 import java.util.List;
+import java.util.UUID;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.rq.manager.authusers.bean.ChallengeHistoryResponse;
 import com.rq.manager.authusers.bean.ChallengeRequest;
-import com.rq.manager.authusers.bean.ChallengeResponse;
-import com.rq.manager.authusers.bean.ChallengeSummary;
+import com.rq.manager.authusers.bean.admin.ChallengeResponse;
+import com.rq.manager.authusers.constants.ApiConstants;
+import com.rq.manager.authusers.constants.Constants;
+import com.rq.manager.authusers.exceptions.ErrorResponse;
 import com.rq.manager.authusers.service.ChallengeService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,70 +34,296 @@ import lombok.AllArgsConstructor;
  * The Class ChallengeController.
  */
 @RestController
-@RequestMapping("/api/admin/challenge")
+@RequestMapping("/api/v1/challenge")
 @AllArgsConstructor
-@Tag(name = "ChallengeController", 
-description = "Controlador que maneja los usuarios")
+@Tag(name = "Challenge Controller",
+    description = "Controlador de los retos")
 @ApiResponses(value = {
-		@ApiResponse(responseCode = "400", description = "BAD REQUEST")
+@ApiResponse(
+    responseCode = "400",
+    description = ApiConstants.BAD_REQUEST,
+    content = @Content(
+        mediaType = MediaType.APPLICATION_JSON_VALUE,
+        schema = @Schema(
+            implementation = ErrorResponse.class))),
+@ApiResponse(
+    responseCode = "401",
+    description = Constants.UNAUTHORIZED,
+    content = @Content(
+        mediaType = MediaType.APPLICATION_JSON_VALUE,
+        schema = @Schema(
+            implementation = ErrorResponse.class)))
 })
 public class ChallengeController {
-	
-	/** The challenge service. */
-	private ChallengeService challengeService;
-	
-	/**
-	 * List challenges.
-	 *
-	 * @return the list
-	 */
-	@GetMapping("/list-challenges")
-	public List<ChallengeResponse> listChallenges() {
-		return challengeService.listChallenges();
-	}
-	
-	/**
-	 * Creates the challenge.
-	 *
-	 * @param challengeRequest the challenge request
-	 * @return the challenge response
-	 */
-	@PostMapping("/create-challenge")
-	public ChallengeResponse createChallenge(@RequestBody ChallengeRequest challengeRequest) {
-		return challengeService.createChallenge(challengeRequest);
-	}
-	
-	/**
-	 * Delete challenge.
-	 *
-	 * @param id the id
-	 */
-	@DeleteMapping("/delete-challenge/{id}")
-	public void deleteChallenge(@PathVariable int id) {
-		challengeService.deleteChallenge(id);
-	}
-	
-	/**
-	 * Update challenge.
-	 *
-	 * @param id the id
-	 * @param challengeRequest the challenge request
-	 * @return the challenge response
-	 */
-	@PutMapping("/update-challenge/{id}")
-	public ChallengeResponse updateChallenge(@PathVariable int id, @RequestBody ChallengeRequest challengeRequest) {
-		return challengeService.updateChallenge(id, challengeRequest);
-	}
-	
-	/**
-	 * Search challenges.
-	 *
-	 * @param title the title
-	 * @return the list
-	 */
-	@GetMapping("/search-challenge")
-	public List<ChallengeSummary> searchChallenges(@RequestParam(defaultValue = "", required = true) String title) {
-		return challengeService.searchChallenge(title);
-	}
 
+    /** The challenge service. */
+    private ChallengeService challengeService;
+
+    /**
+     * List challenges.
+     *
+     * @return the list
+     */
+    @Operation(summary = "Listar retos", description = "Lees todos los retos")
+    @ApiResponse(responseCode = "200",
+    description = "Lista encontrada",
+    content = @Content(
+            mediaType = MediaType.APPLICATION_JSON_VALUE,
+            schema = @Schema(implementation = ChallengeResponse.class)))
+    @GetMapping("/admin/list-challenges")
+    public List<ChallengeResponse> adminListChallenges() {
+        return challengeService.listChallenges();
+    }
+
+    /**
+     * Gets the challenge by id.
+     *
+     * @param id
+     *            the id
+     * @return the challenge by id
+     */
+    @Operation(
+            summary = "Encontrar reto por id",
+            description = "Busca un reto por id")
+    @ApiResponse(
+            responseCode = "200",
+            description = "El reto ha sido encontrado",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ChallengeResponse.class)))
+    @GetMapping("/find-challenge/{id}")
+    public ChallengeResponse getChallengeById(@PathVariable UUID id) {
+        return challengeService.getChallengeById(id);
+    }
+
+    /**
+     * Creates the challenge.
+     *
+     * @param challengeRequest
+     *            the challenge request
+     * @return the challenge response
+     */
+    @Operation(summary = "Crear nuevo reto", description = "Crea un nuevo reto")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Creación del reto exitosamente",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ChallengeResponse.class)))
+    @PostMapping("/create-challenge")
+    public ChallengeResponse createChallenge(
+            @RequestBody ChallengeRequest challengeRequest) {
+        return challengeService.createChallenge(challengeRequest);
+    }
+
+    /**
+     * Cancel challenge.
+     *
+     * @param id
+     *            the id
+     */
+    @Operation(
+            summary = "Cancelar reto por id",
+            description = "Cancela un reto por id")
+    @ApiResponse(
+            responseCode = "200",
+            description = "El reto ha sido cancelado",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ChallengeResponse.class)))
+    @PutMapping("/cancel-challenge/{id}")
+    public ChallengeResponse cancelChallenge(@PathVariable UUID id) {
+        return challengeService.cancelChallenge(id);
+    }
+
+    /**
+     * Delete challenge.
+     *
+     * @param id
+     *            the id
+     */
+    @Operation(
+            summary = "Eliminar reto por id",
+            description = "Elimina un reto por id")
+    @ApiResponse(
+            responseCode = "200",
+            description = "El reto ha sido eliminado",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = Void.class)))
+    @DeleteMapping("/delete-challenge/{id}")
+    public void deleteChallenge(@PathVariable UUID id) {
+        challengeService.deleteChallenge(id);
+    }
+
+    /**
+     * Update challenge.
+     *
+     * @param id
+     *            the id
+     * @param challengeRequest
+     *            the challenge request
+     * @return the challenge response
+     */
+    @Operation(
+            summary = "Actualizar reto por id",
+            description = "Actualiza un reto por id")
+    @ApiResponse(
+            responseCode = "200",
+            description = "El reto ha sido actualizado",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ChallengeResponse.class)))
+    @PutMapping("/update-challenge/{id}")
+    public ChallengeResponse updateChallenge(@PathVariable UUID id,
+            @RequestBody ChallengeRequest challengeRequest) {
+        return challengeService.updateChallenge(id, challengeRequest);
+    }
+
+    /**
+     * Join challenge.
+     *
+     * @param userId
+     *            the user id
+     * @param challengeId
+     *            the challenge id
+     */
+    @PostMapping("/join/{challengeId}")
+    @Operation(
+            summary = "Unirse a un reto",
+            description = "Permite a un usuario unirse a un reto específico")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Usuario unido al reto exitosamente")
+    public void joinChallenge(@PathVariable UUID challengeId) {
+        challengeService.joinChallenge(challengeId);
+    }
+    
+    /**
+     * List challenges for user.
+     *
+     * @return the list
+     */
+    @GetMapping("/user/list-challenges")
+    @Operation(summary = "Listar retos visibles para usuario", 
+               description = "Muestra retos según reglas de visibilidad por estado")
+    @ApiResponse(responseCode = "200", 
+                 content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                 schema = @Schema(implementation = ChallengeResponse.class)))
+    public List<ChallengeResponse> listChallengesForUser() {
+        return challengeService.listChallengesForUser();
+    }
+    
+    /**
+     * Start challenge.
+     *
+     * @param challengeId the challenge id
+     * @return the challenge response
+     */
+    @PatchMapping("/start/{challengeId}")
+    @Operation(
+        summary = "Iniciar un reto pendiente",
+        description = "Cambia el estado del reto a EN_PROGRESO y establece la fecha de inicio actual"
+    )
+    @ApiResponse(
+        responseCode = "200",
+        description = "Reto iniciado exitosamente",
+        content = @Content(
+            mediaType = MediaType.APPLICATION_JSON_VALUE,
+            schema = @Schema(implementation = ChallengeResponse.class)
+    ))
+    public ChallengeResponse startChallenge(@PathVariable UUID challengeId) {
+        return challengeService.startChallenge(challengeId);
+    }
+        
+    /**
+     * Assign verification type.
+     *
+     * @param challengeId the challenge id
+     * @param type the type
+     * @return the string
+     */
+    @PatchMapping("{challengeId}/assign-verification/{type}")
+    @Operation(
+            summary = "Asignar validador al reto",
+            description = "Permite a un administrador asigna el tipo de prueba"
+                    + "para pasar")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Validador completado",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = String.class,
+                    example = "F00001")))
+    public String assignVerificationType(@PathVariable UUID challengeId,
+            @PathVariable String type) {
+        return challengeService.assignVerificationType(challengeId, type);
+    }
+    
+    /**
+     * Gets the next verification id.
+     *
+     * @param type the type
+     * @return the next verification id
+     */
+    @PostMapping("/next-verification-id/{type}")
+    @Operation(
+        summary = "Generar próximo ID numérico para verificación",
+        description = "Devuelve el próximo identificador numérico para el tipo de verificación indicado (por ejemplo, Q para Quiz)"
+    )
+    @ApiResponse(
+        responseCode = "200",
+        description = "ID generado correctamente",
+        content = @Content(
+            mediaType = MediaType.APPLICATION_JSON_VALUE,
+            schema = @Schema(implementation = String.class, example = "00042")
+        )
+    )
+    public String getNextVerificationId(@PathVariable("type") String type) {
+        return challengeService.nextNumericForType(type);
+    }
+    
+    /**
+     * Delete verification type.
+     *
+     * @param challengeId the challenge id
+     */
+    @DeleteMapping("/verification/{challengeId}")
+    @Operation(
+            summary = "Eliminar ID numérico para verificación",
+            description = "Elimina identificador numérico para el tipo de verificación indicado (por ejemplo, Q para Quiz)"
+        )
+        @ApiResponse(
+            responseCode = "200",
+            description = "ID eliminado",
+            content = @Content(
+                mediaType = MediaType.APPLICATION_JSON_VALUE,
+                schema = @Schema(implementation = Void.class)
+            )
+        )
+    public void deleteVerificationType(@PathVariable UUID challengeId) {
+        challengeService.deleteVerificationType(challengeId);
+    }
+    
+    /**
+     * Get the list of completed challenges for the authenticated user.
+     * 
+     * @return List of ChallengeHistoryResponse objects representing completion history
+     */
+    @GetMapping("/history-challenges")
+    @Operation(
+            summary = "Historial de retos cumplidos",
+            description = "Historial de retos cumplidos"
+        )
+        @ApiResponse(
+            responseCode = "200",
+            description = "Historial mostrado",
+            content = @Content(
+                mediaType = MediaType.APPLICATION_JSON_VALUE,
+                schema = @Schema(implementation = ChallengeHistoryResponse.class)
+            )
+        )
+    public List<ChallengeHistoryResponse> getCompletedChallengesHistory() {
+        return challengeService.listCompletedChallengesForUser();
+    }
 }

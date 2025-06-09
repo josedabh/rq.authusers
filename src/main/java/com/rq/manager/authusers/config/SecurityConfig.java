@@ -17,6 +17,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.rq.manager.authusers.constants.ApiConstants;
 import com.rq.manager.authusers.constants.Constants;
 import com.rq.manager.authusers.jwt.JwtAuthenticationFilter;
 import com.rq.manager.authusers.jwt.JwtEntryPoint;
@@ -41,13 +42,14 @@ public class SecurityConfig {
 	 * @return the security filter chain
 	 * @throws Exception the exception
 	 */
+	//Quitar el metodo hello
 	@Bean
 	protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.csrf(AbstractHttpConfigurer::disable)
 				.cors(Customizer.withDefaults())
 				.authorizeHttpRequests(auth -> 
 				auth.requestMatchers(Constants.REQUEST_LOGIN , Constants.REQUEST_REGISTER,
-						Constants.SWAGGER_UI, Constants.API_DOCS)
+						ApiConstants.SWAGGER_UI, ApiConstants.API_DOCS, "/api/v1/auth/hello")
 						.permitAll()
 						.anyRequest().authenticated())
 				.httpBasic(Customizer.withDefaults())
@@ -55,6 +57,15 @@ public class SecurityConfig {
 				.addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
+//	@Bean
+//	protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//	    http.csrf(AbstractHttpConfigurer::disable)
+//	        .cors(Customizer.withDefaults())
+//	        .authorizeHttpRequests(auth -> auth
+//	            .anyRequest().permitAll())
+//	        .httpBasic(Customizer.withDefaults());
+//	    return http.build();
+//	}
 	
 	/**
 	 * Jwt token filter.
@@ -95,9 +106,11 @@ public class SecurityConfig {
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 
-		configuration.setAllowedOrigins(List.of("http://localhost:4200"));
-		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-		configuration.setAllowedHeaders(List.of(Constants.AUTHORIZATION, Constants.CONTENT_TYPE));
+		//Cambiar esto a la url del front si n o me falla
+		configuration.setAllowedOrigins(List.of("http://localhost:8081"));
+		//Cambiar esto si hago mas metodos
+		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH"));
+		configuration.setAllowedHeaders(List.of(Constants.AUTHORIZATION, ApiConstants.CONTENT_TYPE));
 		configuration.setAllowCredentials(true);
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

@@ -2,6 +2,8 @@ package com.rq.manager.authusers.entity;
 
 import java.util.UUID;
 
+import com.rq.manager.authusers.enumerations.RolEnum;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -23,13 +25,12 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Table(name = "USER")
-//Mejorar la clase de rol en base de datos
 public class User {
 
 	/** The id. */
 	@Id
 	@GeneratedValue(generator = "UUID")
-	@Column(name = "UUID", unique = true)
+	@Column(name = "ID")
 	private UUID id;
 	
 	/** The email. */
@@ -60,7 +61,11 @@ public class User {
 			unique = true)
 	private String numPhone;
 	
+	/** The points. */
+	@Column(name = "POINTS")
+	private int points;
+	
 	/** The rol. */
 	@Enumerated(EnumType.STRING)
-	private Rol rol;
+	private RolEnum rol;
 }

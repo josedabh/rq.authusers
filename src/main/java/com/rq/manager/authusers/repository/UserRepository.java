@@ -31,6 +31,14 @@ public interface UserRepository extends JpaRepository<User, UUID>{
 	boolean existsByUsername(String username);
 	
 	/**
+	 * Exists by num phone.
+	 *
+	 * @param numPhone the num phone
+	 * @return true, if successful
+	 */
+	boolean existsByNumPhone(String numPhone);
+	
+	/**
 	 * Find by username.
 	 *
 	 * @param username the username

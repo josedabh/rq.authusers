@@ -2,43 +2,44 @@ package com.rq.manager.authusers.constants;
 
 /**
  * The Class Constants.
+ * Cambiar lo swager por ApiConstants
  */
 public class Constants {
 	
 	/**
 	 * Instantiates a new constants.
 	 */
-	public Constants() {
-		
+	private Constants() {
+		// Default constructor
 	}
 	
 	/** The Constant REQUEST_LOGIN. */
-	public static final String REQUEST_LOGIN = "/api/user/auth/login";
+	public static final String REQUEST_LOGIN = "/api/v1/auth/login";
 	
 	/** The Constant REQUEST_REGISTER. */
-	public static final String REQUEST_REGISTER = "/api/user/auth/register";
-	
-	/** The Constant SWAGGER_UI. */
-	public static final String SWAGGER_UI = "/swagger-ui/**";
-	
-	/** The Constant API_DOCS. */
-	public static final String API_DOCS = "/v3/api-docs/**";
-	
+	public static final String REQUEST_REGISTER = "/api/v1/auth/register";
+
+	/** The Constant BEARER. */
+	public static final String BEARER = "Bearer ";
+
 	/** The Constant AUTHORIZATION. */
 	public static final String AUTHORIZATION = "Authorization";
 	
-	/** The Constant CONTENT_TYPE. */
-	public static final String CONTENT_TYPE = "Content-Type";
-	
 	/** The Constant UNAUTHORIZED. */
-	public static final String UNAUTHORIZED = "Unathorized";
+	public static final String UNAUTHORIZED = "Unauthorized";
 	
-	/** The Constant BAD_REQUEST. */
-	public static final String BAD_REQUEST = "Bad Request";
+	/** The Constant PENDING. */
+	public static final String PENDING = "PENDIENTE";
 	
-	/** The Constant MEDIA_TYPE. */
-	public static final String MEDIA_TYPE = "application/json";
+	/** The Constant IN_PROGRESS. */
+	public static final String IN_PROGRESS = "EN_PROGRESO";
 	
-	/** The Constant BEARER. */
-	public static final String BEARER = "Bearer ";
+	/** The Constant FINISHED. */
+	public static final String FINISHED = "FINALIZADO";
+
+	/** The Constant CANCELLED. */
+	public static final String CANCELLED = "CANCELADO";
+	
+	/** The Constant FORMAT_VERIFICATION_CHALLENGE. */
+	public static final String FORMAT_VERIFICATION_CHALLENGE = "%07d";
 }

@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.rq.manager.authusers.entity.User;
+import com.rq.manager.authusers.exceptions.CustomException;
+import com.rq.manager.authusers.exceptions.ErrorConstants;
 import com.rq.manager.authusers.repository.UserRepository;
 
 import lombok.NoArgsConstructor;
@@ -34,12 +36,14 @@ public class UserService implements UserDetailsService {
 	 */
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		User user = userRepository.findByUsername(username)
-				.orElseThrow(() -> new UsernameNotFoundException("Username"));
+		User user = userRepository.findByIdentifier(username)
+				.orElseThrow(() -> new CustomException(ErrorConstants.USER_NOT_FOUND));
 		SimpleGrantedAuthority authority = new SimpleGrantedAuthority(user.getRol().toString());
-		return new org.springframework.security.core.userdetails.User(
-				user.getName(),
-				user.getPassword(),
-				Collections.singleton(authority));
+		return org.springframework.security.core.userdetails.User
+				.withUsername(user.getUsername())
+				.password(user.getPassword())
+				.authorities(Collections.singleton(authority))
+				.accountExpired(false)
+				.build();
 	}
 }

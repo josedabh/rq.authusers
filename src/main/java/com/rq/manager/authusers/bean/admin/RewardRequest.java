@@ -1,5 +1,6 @@
-package com.rq.manager.authusers.bean;
+package com.rq.manager.authusers.bean.admin;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -19,22 +20,26 @@ public class RewardRequest {
 	
 	/** The name. */
 	@Size(min = 1, max = 80)
+	@Schema(description = "Reward name", example = "Reward 1")
 	private String name;
 	
 	/** The description. */
 	@Size(min = 1, max = 200)
+	@Schema(description = "Reward description", example = "Reward 1 description")
 	private String description;
 	
 	/** The points. */
-	private int points;
-	
-	/** The image. */
-	private String image;
+	@NotBlank
+	@Schema(description = "Reward points", example = "100")
+	private Integer points;
 	
 	/** The active. */
-	private boolean active;
+	@NotBlank
+	@Schema(description = "Reward active status", example = "true")
+	private boolean visible;
 	
 	/** The stock. */
-	private int stock;
-
+	@NotBlank
+	@Schema(description = "Reward stock", example = "2")
+	private Integer stock;
 }
