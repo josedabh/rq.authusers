@@ -1,17 +1,26 @@
-# Usar una imagen base de Java
-FROM openjdk:21-jdk-slim
+# === Etapa 1: build con Maven y Java 21 ===
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 
-# Crear directorio de la aplicación
-RUN mkdir -p /app
-
-# Copiar el JAR de la aplicación
-COPY target/authusers-0.0.1-SNAPSHOT.jar /app/authusers.jar
-
-# Establecer el directorio de trabajo
 WORKDIR /app
 
-# Exponer el puerto de la aplicación
+# Copia pom.xml y descarga dependencias primero (cache)
+COPY pom.xml ./
+COPY .mvn .mvn
+COPY mvnw ./
+RUN ./mvnw dependency:go-offline
+
+# Copia el resto del proyecto y compila
+COPY src ./src
+RUN ./mvnw clean package -DskipTests
+
+# === Etapa 2: imagen final solo con el JAR ===
+FROM openjdk:21-jdk-slim
+
+WORKDIR /app
+
+# Copia el JAR desde la etapa anterior
+COPY --from=build /app/target/authusers-0.0.1-SNAPSHOT.jar /app/authusers.jar
+
 EXPOSE 8080
 
-# Comando de inicio
 ENTRYPOINT ["java", "-jar", "authusers.jar"]
