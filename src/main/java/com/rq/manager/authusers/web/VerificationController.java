@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.rq.manager.authusers.bean.admin.QuizDetailResponse;
 import com.rq.manager.authusers.bean.admin.QuizSubmitRequest;
+import com.rq.manager.authusers.bean.admin.QuizSubmitResponse;
 import com.rq.manager.authusers.bean.admin.UserAnswerDTO;
 import com.rq.manager.authusers.constants.ApiConstants;
 import com.rq.manager.authusers.constants.Constants;
@@ -83,7 +85,25 @@ public class VerificationController {
             @PathVariable @Parameter(description = "Challenge ID", required = true) UUID challengeId) {
         return verificationService.getQuizDetailsForChallenge(challengeId);
     }
-	
+
+    /**
+     * Update quiz verification.
+     *
+     * @param quizSubmitRequest the quiz submit request
+     * @return the quiz submit response
+     */
+    @Operation(
+            summary = "Actualiza un quiz existente",
+            description = "Actualiza un quiz existente con nuevas preguntas/respuestas")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Quiz actualizado exitosamente")
+    @PutMapping("/quiz")
+    public QuizSubmitResponse updateQuizVerification(
+            @Valid @RequestBody QuizSubmitRequest quizSubmitRequest) {
+        return verificationService.updateQuizVerification(quizSubmitRequest);
+    }
+
     /**
      * Submit quiz.
      *

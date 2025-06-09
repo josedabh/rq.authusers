@@ -189,6 +189,7 @@ public class VerificationService {
         response.setQuestions(questionDTOs);
         return response;
     }
+    
     /**
      * Update quiz verification.
      *
@@ -250,13 +251,11 @@ public class VerificationService {
         QuizSubmitResponse response = new QuizSubmitResponse();
         response.setQuizId(quizVerification.getId());
         response.setTotalQuestions(quizVerification.getQuestions().size());
-
         // Inicializar correctAnswers y score
         response.setCorrectAnswers(0); // Inicialmente 0, se puede calcular más
                                        // adelante
         response.setScore(0.0); // Inicialmente 0.0, se puede calcular más
                                 // adelante
-
         // Crear un mapa para los resultados de las preguntas
         Map<String, Boolean> questionResults = new HashMap<>();
         for (QuizQuestion question : quizVerification.getQuestions()) {
@@ -300,6 +299,8 @@ public class VerificationService {
             userChallenge.setCompleted(true);
             userChallenge.setCompletedAt(new Date());
             userChallenge.setEarnedPoints(userChallenge.getChallenge().getPoints());
+            int pointTotal = user.getPoints() + userChallenge.getChallenge().getPoints();
+            user.setPoints(pointTotal);
             // Aquí puedes agregar lógica para recompensar al usuario si es necesario
         } else {
             userChallenge.setAttempts(userChallenge.getAttempts() + 1);

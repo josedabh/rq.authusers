@@ -72,18 +72,25 @@ public class AuthService {
      * @return the key
      */
     private Credentials createToken(String username, String password) {
-        // Creamos el token al encontrar el usuario
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                username, password);
-        Authentication authentication = authenticationManagerBuilder.getObject()
-                .authenticate(authenticationToken);
+        // 1) Autenticación
+        UsernamePasswordAuthenticationToken authenticationToken =
+            new UsernamePasswordAuthenticationToken(username, password);
+        Authentication authentication =
+            authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        // Generamos el token
+        // 2) Generar el JWT
         Credentials credentials = new Credentials();
         credentials.setToken(jwtService.generarToken(authentication));
-        credentials.setAdmin(false);
+        // 3) Determinar si es admin
+        //    Cargamos el usuario de la base de datos por su username
+        User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new CustomException(ErrorConstants.NULL_USER));
+        //    Comparamos su rol con el enum de administrador
+        boolean isAdmin = user.getRol() == RolEnum.ADMIN;  
+        credentials.setAdmin(isAdmin);
         return credentials;
     }
+
 
     /**
      * Authenticate user in the login.
