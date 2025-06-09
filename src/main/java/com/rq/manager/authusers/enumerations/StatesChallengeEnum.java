@@ -2,7 +2,6 @@ package com.rq.manager.authusers.enumerations;
 
 import com.rq.manager.authusers.constants.Constants;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Enum StatesChallengeEnum.
  */

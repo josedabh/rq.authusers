@@ -25,6 +25,7 @@ import com.rq.manager.authusers.exceptions.ErrorConstants;
 import com.rq.manager.authusers.exceptions.ResourceNotFoundException;
 import com.rq.manager.authusers.mapper.ChallengeMapper;
 import com.rq.manager.authusers.repository.ChallengeRepository;
+import com.rq.manager.authusers.repository.QuizVerificationRepository;
 import com.rq.manager.authusers.repository.UserChallengeRepository;
 import com.rq.manager.authusers.repository.UserRepository;
 import com.rq.manager.authusers.util.Util;
@@ -46,6 +47,9 @@ public class ChallengeService {
 	
 	/** The user repository. */
 	private UserRepository userRepository;
+	
+	/** The quiz verification repository. */
+	private QuizVerificationRepository quizVerificationRepository;
 
 	/**
 	 * Creates the challenge.
@@ -259,22 +263,6 @@ public class ChallengeService {
         return typeCode + challenge.getVerificationId();
     }
 
-    
-    /**
-     * Delete verification type.
-     *
-     * @param challengeId the challenge id
-     * @param typeCode the type code
-     */
-    public void deleteVerificationType(UUID challengeId) {
-        Challenge ch = challengeRepository.findById(challengeId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Challenge not found: " + challengeId));
-        ch.setVerificationType(null);
-        ch.setVerificationId(null);
-        challengeRepository.save(ch);
-    }
-
     /**
      * Calcula el siguiente ID numérico de cinco dígitos para un prefijo dado.
      * Ej.: si para "Q" ya existen 00001, 00002, devuelve "00003".
@@ -297,5 +285,34 @@ public class ChallengeService {
             }
         }
         return String.format("%05d", next);
+    }
+    
+    /**
+     * Delete verification type.
+     *
+     * @param challengeId the challenge id
+     * @param typeCode the type code
+     */
+    @Transactional
+    public void deleteVerificationType(UUID challengeId) {
+        Challenge challenge = challengeRepository.findById(challengeId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Challenge not found: " + challengeId));
+        
+        // Eliminar entidades relacionadas si existen
+        if (challenge.getVerificationType() != null && challenge.getVerificationId() != null) {
+            String fullVerificationId = challenge.getVerificationType() + challenge.getVerificationId();
+            
+            // Eliminar QuizVerification y sus dependencias en cascada
+            quizVerificationRepository.findById(fullVerificationId)
+                .ifPresent(quizVerification -> {
+                    quizVerificationRepository.delete(quizVerification);
+                });
+        }
+        
+        // Limpiar campos en Challenge
+        challenge.setVerificationType(null);
+        challenge.setVerificationId(null);
+        challengeRepository.save(challenge);
     }
 }

@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.rq.manager.authusers.bean.admin.AnswerDTO;
 import com.rq.manager.authusers.bean.admin.QuizDetailResponse;
 import com.rq.manager.authusers.bean.admin.QuizSubmitRequest;
+import com.rq.manager.authusers.bean.admin.UserAnswerDTO;
 import com.rq.manager.authusers.constants.ApiConstants;
 import com.rq.manager.authusers.constants.Constants;
 import com.rq.manager.authusers.service.VerificationService;
@@ -99,10 +99,9 @@ public class VerificationController {
 	@PostMapping("/submit-quiz")
     public void submitQuiz(
             @RequestParam UUID challengeId,
-            @RequestParam UUID userId,
-            @RequestBody List<AnswerDTO> answers) {
+            @RequestBody List<UserAnswerDTO> userAnswers) {
 
-        verificationService.attemptChallenge(challengeId, userId, answers);
+        verificationService.attemptChallenge(challengeId, userAnswers);
     }
 	
 }

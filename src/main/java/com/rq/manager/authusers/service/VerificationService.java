@@ -3,10 +3,13 @@ package com.rq.manager.authusers.service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,18 +20,22 @@ import com.rq.manager.authusers.bean.admin.QuizDetailResponse;
 import com.rq.manager.authusers.bean.admin.QuizQuestionDetail;
 import com.rq.manager.authusers.bean.admin.QuizSubmitRequest;
 import com.rq.manager.authusers.bean.admin.QuizSubmitResponse;
+import com.rq.manager.authusers.bean.admin.UserAnswerDTO;
 import com.rq.manager.authusers.entity.Challenge;
 import com.rq.manager.authusers.entity.QuizAnswer;
 import com.rq.manager.authusers.entity.QuizQuestion;
 import com.rq.manager.authusers.entity.QuizVerification;
+import com.rq.manager.authusers.entity.User;
 import com.rq.manager.authusers.entity.UserChallenge;
 import com.rq.manager.authusers.exceptions.BusinessException;
+import com.rq.manager.authusers.exceptions.CustomException;
 import com.rq.manager.authusers.exceptions.ErrorConstants;
 import com.rq.manager.authusers.repository.ChallengeRepository;
 import com.rq.manager.authusers.repository.QuizAnswerRepository;
 import com.rq.manager.authusers.repository.QuizQuestionRepository;
 import com.rq.manager.authusers.repository.QuizVerificationRepository;
 import com.rq.manager.authusers.repository.UserChallengeRepository;
+import com.rq.manager.authusers.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
 
@@ -53,6 +60,9 @@ public class VerificationService {
     
     /** The user challenge repository. */
     private UserChallengeRepository userChallengeRepository;
+    
+    /** The user repository. */
+    private UserRepository userRepository;
 
     /**
      * Creates the quiz verification.
@@ -268,9 +278,12 @@ public class VerificationService {
      * @param answers the answers
      */
     @Transactional
-    public void attemptChallenge(UUID challengeId, UUID userId, List<AnswerDTO> answers) {
+    public void attemptChallenge(UUID challengeId, List<UserAnswerDTO> userAnswers) {
+        User user = userRepository.findByUsername(
+                SecurityContextHolder.getContext().getAuthentication().getName())
+            .orElseThrow(() -> new CustomException(ErrorConstants.NULL_USER));
         // Buscar el UserChallenge por userId y challengeId
-        UserChallenge userChallenge = userChallengeRepository.findByUserIdAndChallengeId(userId, challengeId)
+        UserChallenge userChallenge = userChallengeRepository.findByUserIdAndChallengeId(user.getId(), challengeId)
                 .orElseThrow(() -> new BusinessException("User challenge not found"));
 
         // Verificar si ha pasado un día desde que se unió
@@ -280,8 +293,8 @@ public class VerificationService {
             }
         }
         // Lógica para evaluar las respuestas
-        int correctAnswers = evaluateAnswers(answers, userChallenge.getChallenge());
-        double scorePercentage = (double) correctAnswers / answers.size();
+        int correctAnswers = evaluateAnswers(userAnswers, userChallenge.getChallenge());
+        double scorePercentage = (double) correctAnswers / userChallenge.getChallenge().getQuestionsCount();
 
         if (scorePercentage >= 0.7) {
             userChallenge.setCompleted(true);
@@ -298,58 +311,46 @@ public class VerificationService {
         userChallengeRepository.save(userChallenge);
     }
 
-    /**
-     * Evaluate answers.
-     *
-     * @param answers the answers
-     * @return the int
-     */
-    private int evaluateAnswers(List<AnswerDTO> answers, Challenge challenge) {
-        // Implementa la lógica para contar las respuestas correctas
+    private int evaluateAnswers(List<UserAnswerDTO> userAnswers, Challenge challenge) {
+        // Obtener respuestas correctas del quiz
+        Map<String, Set<String>> correctAnswers = getCorrectAnswersByQuestion(
+                challenge.getVerificationType(), 
+                challenge.getVerificationId()
+        );
+        
         int correctCount = 0;
-        List<QuizAnswer> correctAnswers = getCorrectAnswers(
-                challenge.getVerificationType(), challenge.getVerificationId());
-        // Comparar las respuestas del usuario con las respuestas correctas
-        for (AnswerDTO userAnswer : answers) {
-            for (QuizAnswer correctAnswer : correctAnswers) {
-                if (userAnswer.getAnswerId().equals(correctAnswer.getId())
-                        && userAnswer.isCorrect() == correctAnswer
-                                .isCorrect()) {
-                    correctCount++;
-                }
+        
+        for (UserAnswerDTO userAnswer : userAnswers) {
+            Set<String> correctForQuestion = correctAnswers.get(userAnswer.getQuestionId());
+            
+            if (correctForQuestion != null && correctForQuestion.contains(userAnswer.getAnswerId())) {
+                correctCount++;
             }
         }
+        
         return correctCount;
     }
 
-    /**
-     * Gets the correct answers.
-     *
-     * @param challengeType
-     *            the challenge type
-     * @param verificationNumber
-     *            the verification number
-     * @return the correct answers
-     */
-    private List<QuizAnswer> getCorrectAnswers(String challengeType,
-            String verificationNumber) {
-        // Combinar el tipo de verificación y el número de verificación
-        String fullVerificationId = challengeType + verificationNumber;
-        // Obtener el QuizVerification correspondiente
-        QuizVerification quizVerification = quizVerificationRepo
-                .findById(fullVerificationId)
+    private Map<String, Set<String>> getCorrectAnswersByQuestion(String type, String number) {
+        String fullId = type + number;
+        QuizVerification quiz = quizVerificationRepo.findById(fullId)
                 .orElseThrow(() -> new BusinessException("Quiz not found"));
-        // Obtener las preguntas del quiz
-        List<QuizQuestion> questions = quizVerification.getQuestions();
-        // Obtener todas las respuestas correctas
-        List<QuizAnswer> correctAnswers = new ArrayList<>();
-        for (QuizQuestion question : questions) {
+        
+        Map<String, Set<String>> correctAnswersMap = new HashMap<>();
+        
+        for (QuizQuestion question : quiz.getQuestions()) {
+            Set<String> correctIds = new HashSet<>();
+            
             for (QuizAnswer answer : question.getAnswers()) {
                 if (answer.isCorrect()) {
-                    correctAnswers.add(answer);
+                    correctIds.add(answer.getId());
                 }
             }
+            
+            correctAnswersMap.put(question.getId(), correctIds);
         }
-        return correctAnswers;
+        
+        return correctAnswersMap;
     }
+
 }

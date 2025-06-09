@@ -73,4 +73,8 @@ public class Challenge {
      */
     @Column(name = "VERIFICATION_ID")
     private String verificationId;
+    
+    /** The questions count. */
+    @Transient // O persistirlo si es necesario
+    private int questionsCount;
 }
