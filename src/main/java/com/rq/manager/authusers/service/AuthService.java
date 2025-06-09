@@ -6,11 +6,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.rq.manager.authusers.bean.Credentials;
 import com.rq.manager.authusers.bean.FormPassword;
 import com.rq.manager.authusers.bean.Login;
 import com.rq.manager.authusers.bean.Register;
+import com.rq.manager.authusers.bean.UpdateUserInfoRequest;
 import com.rq.manager.authusers.bean.admin.UserResponse;
 import com.rq.manager.authusers.entity.User;
 import com.rq.manager.authusers.enumerations.RolEnum;
@@ -142,11 +144,57 @@ public class AuthService {
 	    userRepository.save(user);
 	}
 
+	/**
+     * Actualiza los datos personales del usuario autenticado
+     * (email, name, lastname, username, numPhone). 
+     * No modifica puntos ni contraseña.
+     */
+    @Transactional
+    public UserResponse updateMyInfo(UpdateUserInfoRequest req) {
+        // 1) Cargar usuario actual
+        User user = userRepository.findByUsername(
+                SecurityContextHolder.getContext()
+                        .getAuthentication()
+                        .getName())
+                .orElseThrow(
+                        () -> new CustomException(ErrorConstants.NULL_USER));
+        // 2) Email
+        if (req.getEmail() != null && !req.getEmail().isBlank()
+                && !req.getEmail().equals(user.getEmail())) {
+            if (userRepository.existsByEmail(req.getEmail())) {
+                throw new CustomException(ErrorConstants.EMAIL_ALREADY_IN_USE);
+            }
+            user.setEmail(req.getEmail());
+        }
 
-//	public void historyChallenges() {
-//		HistoryChallenges historyChallenges =  userChallengeRepository.findAll().stream()
-//			.map(userChallenge -> UserChallengeMapper.mapEntityToResponse(userChallenge))
-//				.collect(Collectors.toList());
-//	}
+        // 3) Username
+        if (req.getUsername() != null && !req.getUsername().isBlank()
+                && !req.getUsername().equals(user.getUsername())) {
+            if (userRepository.existsByUsername(req.getUsername())) {
+                throw new CustomException(
+                        ErrorConstants.USERNAME_ALREADY_IN_USE);
+            }
+            user.setUsername(req.getUsername());
+        }
+
+        // 4) Número de teléfono
+        if (req.getNumPhone() != null && !req.getNumPhone().isBlank()
+                && !req.getNumPhone().equals(user.getNumPhone())) {
+            if (userRepository.existsByNumPhone(req.getNumPhone())) {
+                throw new CustomException(ErrorConstants.PHONE_ALREADY_IN_USE);
+            }
+            user.setNumPhone(req.getNumPhone());
+        }
+        if (req.getName() != null && !req.getName().isBlank()) {
+            user.setName(req.getName());
+        }
+        if (req.getLastname() != null && !req.getLastname().isBlank()) {
+            user.setLastname(req.getLastname());
+        }
+        // 3) Guardar cambios
+        userRepository.save(user);
+        // 4) Devolver DTO
+        return UserMapper.mapEntityToResponse(user);
+    }
 
 }

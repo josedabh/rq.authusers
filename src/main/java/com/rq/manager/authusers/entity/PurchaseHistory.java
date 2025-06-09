@@ -49,15 +49,21 @@ public class PurchaseHistory {
     private Reward reward;
 
     /**
-     * Puntos que el usuario gastó en esta compra (normalmente = reward.getPoints()).
-     */
-    @Column(name = "points_spent", nullable = false)
-    private Integer pointsSpent;
-
-    /**
      * Fecha y hora exacta de la compra.
      * Puedes usar @CreationTimestamp si quieres que Hibernate lo pueble automáticamente.
      */
     @Column(name = "purchase_date", nullable = false)
     private LocalDateTime purchaseDate;
+
+    /**
+     * Puntos del usuario antes de la compra.
+     */
+    @Column(name = "points_before", nullable = false)
+    private Integer pointsBefore;
+
+    /**
+     * Puntos del usuario después de la compra.
+     */
+    @Column(name = "points_after", nullable = false)
+    private Integer pointsAfter;
 }

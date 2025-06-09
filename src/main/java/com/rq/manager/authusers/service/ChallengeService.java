@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.rq.manager.authusers.bean.ChallengeHistoryResponse;
 import com.rq.manager.authusers.bean.ChallengeRequest;
 import com.rq.manager.authusers.bean.admin.ChallengeResponse;
 import com.rq.manager.authusers.constants.Constants;
@@ -24,6 +25,7 @@ import com.rq.manager.authusers.exceptions.CustomException;
 import com.rq.manager.authusers.exceptions.ErrorConstants;
 import com.rq.manager.authusers.exceptions.ResourceNotFoundException;
 import com.rq.manager.authusers.mapper.ChallengeMapper;
+import com.rq.manager.authusers.mapper.UserChallengeMapper;
 import com.rq.manager.authusers.repository.ChallengeRepository;
 import com.rq.manager.authusers.repository.QuizVerificationRepository;
 import com.rq.manager.authusers.repository.UserChallengeRepository;
@@ -176,51 +178,154 @@ public class ChallengeService {
 	 */
 	@Transactional
 	public void joinChallenge(UUID challengeId) {
-		Challenge challenge = challengeRepository.findById(challengeId)
-				.orElseThrow(() -> new ResourceNotFoundException("Challenge not found with id: " + challengeId));
-		//Comprueba que el reto está en progreso o pendiente
-		if (Constants.IN_PROGRESS.equals(challenge.getState().getDescription())
-				|| Constants.PENDING.equals(challenge.getState().getDescription())) {
-			User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
-					.orElseThrow(() -> new CustomException(ErrorConstants.NULL_USER));
-			//Comprueba que el usuario no haya participado en el reto
-			if (userChallengeRepository.existsByUserAndChallenge(user, challenge)) {
-				throw new BusinessException(ErrorConstants.USER_ALREADY_JOINED_CHALLENGE);
-			}
-			UserChallenge userChallenge = new UserChallenge();
-			userChallenge.setUser(user);
-			userChallenge.setChallenge(challenge);
-			userChallenge.setJoinedAt(new Date());
-			userChallenge.setCompleted(false);
-			userChallenge.setCompletedAt(new Date());
-			userChallengeRepository.save(userChallenge);
-		} else {
-            throw new BusinessException(ErrorConstants.NOT_STATUS_CHALLENGE);
-        }
+	    // 1) Cargar reto y validar estado
+	    Challenge challenge = challengeRepository.findById(challengeId)
+	        .orElseThrow(() -> new ResourceNotFoundException(
+	            "Challenge not found with id: " + challengeId));
+	    if (challenge.getState() != StatesChallengeEnum.PENDING
+	        && challenge.getState() != StatesChallengeEnum.IN_PROGRESS) {
+	        throw new BusinessException(ErrorConstants.NOT_STATUS_CHALLENGE);
+	    }
+	    // 2) Cargar usuario autenticado
+	    User user = userRepository.findByUsername(
+	            SecurityContextHolder.getContext().getAuthentication().getName())
+	        .orElseThrow(() -> new CustomException(ErrorConstants.NULL_USER));
+	    // 3) Verificar duplicados
+	    if (userChallengeRepository.existsByUserAndChallenge(user, challenge)) {
+	        throw new BusinessException(ErrorConstants.USER_ALREADY_JOINED_CHALLENGE);
+	    }
+	    // 4) Crear UserChallenge
+	    UserChallenge uc = new UserChallenge();
+	    uc.setUser(user);
+	    uc.setChallenge(challenge);
+	    uc.setJoinedAt(new Date());
+	    uc.setAttempts(0);
+	    uc.setCompleted(false);
+	    // 5) Persistir
+	    userChallengeRepository.save(uc);
+	}
+
+	
+	/**
+	 * List challenges for user.
+	 *
+	 * @return the list challenge
+	 */
+	public List<ChallengeResponse> listChallengesForUser() {
+	    LocalDateTime currentDate = LocalDateTime.now();
+	    List<Challenge> allChallenges = challengeRepository.findAll();
+	    
+	    return allChallenges.stream()
+	        .filter(challenge -> isChallengeVisible(challenge, currentDate))
+	        .map(ChallengeMapper::mapEntityToResponse)
+	        .collect(Collectors.toList());
+	}
+
+	/**
+	 * Comprueba si el reto debe mostrarse al usuario en la fecha dada.
+	 *
+	 * @param challenge the challenge
+	 * @param currentDate the current date
+	 * @return true, if is challenge visible
+	 */
+	private boolean isChallengeVisible(Challenge challenge, LocalDateTime currentDate) {
+	    StatesChallengeEnum state = challenge.getState();
+	    LocalDateTime startDate = challenge.getStartDate();
+	    LocalDateTime endDate   = challenge.getEndDate();
+
+	    if (state == null || startDate == null || endDate == null) {
+	        return false;
+	    }
+
+	    switch (state) {
+	        case PENDING:
+	            return isWithinTwoWeeksBeforeStart(currentDate, startDate);
+
+	        case IN_PROGRESS:
+	            // Visible desde startDate hasta endDate, ambos inclusive
+	            return isBetweenInclusive(currentDate, startDate, endDate);
+
+	        case FINISHED:
+	        case CANCELLED:
+	            return isWithinTwoWeeksAfterEnd(currentDate, endDate);
+
+	        default:
+	            return false;
+	    }
+	}
+
+	/**
+	 * Devuelve true si current ∈ [start, end].
+	 *
+	 * @param current the current
+	 * @param start the start
+	 * @param end the end
+	 * @return true, if is between inclusive
+	 */
+	private boolean isBetweenInclusive(LocalDateTime current, LocalDateTime start, LocalDateTime end) {
+	    return !current.isBefore(start) && !current.isAfter(end);
+	}
+
+	/**
+	 * Checks if is within two weeks before start.
+	 *
+	 * @param current the current
+	 * @param startDate the start date
+	 * @return true, if is within two weeks before start
+	 */
+	private boolean isWithinTwoWeeksBeforeStart(LocalDateTime current, LocalDateTime startDate) {
+	    LocalDateTime twoWeeksBefore = startDate.minusWeeks(2);
+	    // current ∈ [twoWeeksBefore, startDate)
+	    return !current.isBefore(twoWeeksBefore) && current.isBefore(startDate);
+	}
+
+	/**
+	 * Checks if is within two weeks after end.
+	 *
+	 * @param current the current
+	 * @param endDate the end date
+	 * @return true, if is within two weeks after end
+	 */
+	private boolean isWithinTwoWeeksAfterEnd(LocalDateTime current, LocalDateTime endDate) {
+	    LocalDateTime twoWeeksAfter = endDate.plusWeeks(2);
+	    // current ∈ (endDate, twoWeeksAfter]
+	    return current.isAfter(endDate) && !current.isAfter(twoWeeksAfter);
 	}
 	
-    /**
-     * Verifica si un usuario puede ver el reto antes de la fecha de inicio. -
-     * Si es un evento instantáneo, solo se puede ver a partir de `startDate`. -
-     * Si se permite verlo una semana antes, se puede acceder desde `startDate -
-     * 7 días`.
-     *
-     * @param currentDate
-     *            the current date
-     * @param isInstantEvent
-     *            the is instant event
-     * @param startDate
-     *            the start date
-     * @return true, if successful
-     */
-    public boolean canUserSeeChallenge(LocalDateTime currentDate,
-            boolean isInstantEvent, LocalDateTime startDate) {
-        if (isInstantEvent) {
-            return !currentDate.isBefore(startDate);
-        } else {
-            return !currentDate.isBefore(startDate.minusDays(7));
-        }
-    }
+	/**
+	 * Start challenge.
+	 *
+	 * @param challengeId the challenge id
+	 * @return the challenge response
+	 */
+	@Transactional
+	public ChallengeResponse startChallenge(UUID challengeId) {
+	    Challenge challenge = challengeRepository.findById(challengeId)
+	        .orElseThrow(() -> new ResourceNotFoundException(
+	            "Challenge not found with id: " + challengeId));
+
+	    // Usamos el helper en lugar de repetir el chequeo manual
+	    if (!isChallengeStartable(challenge)) {
+	        throw new BusinessException(ErrorConstants.CHALLENGE_CANNOT_BE_STARTED);
+	    }
+
+	    // Actualizar estado y fecha
+	    challenge.setState(StatesChallengeEnum.IN_PROGRESS);
+	    challenge.setStartDate(LocalDateTime.now());
+
+	    challengeRepository.save(challenge);
+	    return ChallengeMapper.mapEntityToResponse(challenge);
+	}
+
+	/**
+	 * Checks if is challenge startable.
+	 *
+	 * @param challenge the challenge
+	 * @return true, if is challenge startable
+	 */
+	private boolean isChallengeStartable(Challenge challenge) {
+	    return challenge.getState() == StatesChallengeEnum.PENDING;
+	}
 
     /**
      * Genera el ID completo (prefijo + cinco dígitos) y se lo asigna al reto.
@@ -314,5 +419,27 @@ public class ChallengeService {
         challenge.setVerificationType(null);
         challenge.setVerificationId(null);
         challengeRepository.save(challenge);
+    }
+    
+    /**
+     * List completed challenges history for the authenticated user.
+     * 
+     * @return List of ChallengeHistoryResponse beans with snapshot data.
+     */
+    public List<ChallengeHistoryResponse> listCompletedChallengesForUser() {
+        // Get current authenticated username
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        // Find user entity
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
+
+        // Query UserChallenge entities where completed=true for user
+        List<UserChallenge> completedChallenges = userChallengeRepository.findByUserAndCompletedTrue(user);
+
+        // Map using the mapper method
+        return completedChallenges.stream()
+                .map(UserChallengeMapper::mapUserChallengeToResponse) // <- usa tu mapper aquí
+                .collect(Collectors.toList());
     }
 }

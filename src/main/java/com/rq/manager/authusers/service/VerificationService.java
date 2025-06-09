@@ -298,6 +298,8 @@ public class VerificationService {
 
         if (scorePercentage >= 0.7) {
             userChallenge.setCompleted(true);
+            userChallenge.setCompletedAt(new Date());
+            userChallenge.setEarnedPoints(userChallenge.getChallenge().getPoints());
             // Aquí puedes agregar lógica para recompensar al usuario si es necesario
         } else {
             userChallenge.setAttempts(userChallenge.getAttempts() + 1);
@@ -311,6 +313,13 @@ public class VerificationService {
         userChallengeRepository.save(userChallenge);
     }
 
+    /**
+     * Evaluate answers.
+     *
+     * @param userAnswers the user answers
+     * @param challenge the challenge
+     * @return the int
+     */
     private int evaluateAnswers(List<UserAnswerDTO> userAnswers, Challenge challenge) {
         // Obtener respuestas correctas del quiz
         Map<String, Set<String>> correctAnswers = getCorrectAnswersByQuestion(
@@ -331,6 +340,13 @@ public class VerificationService {
         return correctCount;
     }
 
+    /**
+     * Gets the correct answers by question.
+     *
+     * @param type the type
+     * @param number the number
+     * @return the correct answers by question
+     */
     private Map<String, Set<String>> getCorrectAnswersByQuestion(String type, String number) {
         String fullId = type + number;
         QuizVerification quiz = quizVerificationRepo.findById(fullId)

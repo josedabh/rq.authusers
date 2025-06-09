@@ -58,12 +58,11 @@ public class StoreMapper {
     public static HistoryShopping mapToHistoryShopping(PurchaseHistory ph,
             User user, Reward reward) {
         return HistoryShopping.builder().transactionId(ph.getId())
-                .userId(user.getId().toString()).userName(user.getName())
-                .userLastname(user.getLastname()).userApodo(user.getUsername())
-                .userNumPhone(user.getNumPhone())
-                .userPoints(user.getPoints())
-                .transactionPurchaseDate(ph.getPurchaseDate().toString())
-                .rewardId(reward.getId()).rewardName(reward.getName())
+                .userName(user.getName())
+                .userLastname(user.getLastname()).userUsername(user.getUsername())
+                .pointsAfter(ph.getPointsAfter())
+                .purchaseDate(ph.getPurchaseDate().toString())
+                .rewardName(reward.getName())
                 .rewardDescription(reward.getDescription())
                 .rewardPoints(reward.getPoints()).build();
     }
@@ -75,19 +74,19 @@ public class StoreMapper {
      *            the ph
      * @return the history shopping
      */
-    public static HistoryShopping mapPurchaseHistoryToResponse(
-            PurchaseHistory ph) {
-        return HistoryShopping.builder().transactionId(ph.getId())
-                .userId(ph.getUser().getId().toString())
-                .userName(ph.getUser().getName())
-                .userLastname(ph.getUser().getLastname())
-                .userApodo(ph.getUser().getUsername())
-                .userNumPhone(ph.getUser().getNumPhone())
-                .userPoints(ph.getUser().getPoints())
-                .transactionPurchaseDate(ph.getPurchaseDate().toString())
-                .rewardId(ph.getReward().getId())
-                .rewardName(ph.getReward().getName())
-                .rewardDescription(ph.getReward().getDescription())
-                .rewardPoints(ph.getReward().getPoints()).build();
+    public static HistoryShopping mapPurchaseHistoryToResponse(PurchaseHistory ph) {
+        return HistoryShopping.builder()
+            .transactionId(ph.getId())
+            .userName(ph.getUser().getName())
+            .userLastname(ph.getUser().getLastname())
+            .userUsername(ph.getUser().getUsername()) 
+            .purchaseDate(ph.getPurchaseDate().toString())
+            .rewardName(ph.getReward().getName())
+            .rewardDescription(ph.getReward().getDescription())
+            .rewardPoints(ph.getReward().getPoints())
+            .pointsBefore(ph.getPointsBefore())
+            .pointsAfter(ph.getPointsAfter())
+            .build();
     }
+
 }

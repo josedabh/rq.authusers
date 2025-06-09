@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.rq.manager.authusers.bean.ChallengeHistoryResponse;
 import com.rq.manager.authusers.bean.ChallengeRequest;
 import com.rq.manager.authusers.bean.admin.ChallengeResponse;
 import com.rq.manager.authusers.constants.ApiConstants;
@@ -199,6 +200,43 @@ public class ChallengeController {
     }
     
     /**
+     * List challenges for user.
+     *
+     * @return the list
+     */
+    @GetMapping("/user/list-challenges")
+    @Operation(summary = "Listar retos visibles para usuario", 
+               description = "Muestra retos según reglas de visibilidad por estado")
+    @ApiResponse(responseCode = "200", 
+                 content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                 schema = @Schema(implementation = ChallengeResponse.class)))
+    public List<ChallengeResponse> listChallengesForUser() {
+        return challengeService.listChallengesForUser();
+    }
+    
+    /**
+     * Start challenge.
+     *
+     * @param challengeId the challenge id
+     * @return the challenge response
+     */
+    @PatchMapping("/start/{challengeId}")
+    @Operation(
+        summary = "Iniciar un reto pendiente",
+        description = "Cambia el estado del reto a EN_PROGRESO y establece la fecha de inicio actual"
+    )
+    @ApiResponse(
+        responseCode = "200",
+        description = "Reto iniciado exitosamente",
+        content = @Content(
+            mediaType = MediaType.APPLICATION_JSON_VALUE,
+            schema = @Schema(implementation = ChallengeResponse.class)
+    ))
+    public ChallengeResponse startChallenge(@PathVariable UUID challengeId) {
+        return challengeService.startChallenge(challengeId);
+    }
+        
+    /**
      * Assign verification type.
      *
      * @param challengeId the challenge id
@@ -265,5 +303,27 @@ public class ChallengeController {
         )
     public void deleteVerificationType(@PathVariable UUID challengeId) {
         challengeService.deleteVerificationType(challengeId);
+    }
+    
+    /**
+     * Get the list of completed challenges for the authenticated user.
+     * 
+     * @return List of ChallengeHistoryResponse objects representing completion history
+     */
+    @GetMapping("/history-challenges")
+    @Operation(
+            summary = "Historial de retos cumplidos",
+            description = "Historial de retos cumplidos"
+        )
+        @ApiResponse(
+            responseCode = "200",
+            description = "Historial mostrado",
+            content = @Content(
+                mediaType = MediaType.APPLICATION_JSON_VALUE,
+                schema = @Schema(implementation = ChallengeHistoryResponse.class)
+            )
+        )
+    public List<ChallengeHistoryResponse> getCompletedChallengesHistory() {
+        return challengeService.listCompletedChallengesForUser();
     }
 }

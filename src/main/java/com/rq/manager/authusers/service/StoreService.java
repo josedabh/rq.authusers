@@ -185,22 +185,22 @@ public class StoreService {
      *            the points spent
      * @return the purchase history
      */
-    
-    private PurchaseHistory createPurchaseHistory(String userId, Long rewardId,
-            Integer pointsSpent) {
+    private PurchaseHistory createPurchaseHistory(String userId, Long rewardId, Integer pointsSpent) {
         User user = userRepository.findById(UUID.fromString(userId)).orElse(null);
         Reward reward = rewardRepository.findById(rewardId).orElse(null);
         if(user != null && reward != null) {
             PurchaseHistory purchase = new PurchaseHistory();
             purchase.setUser(user);
             purchase.setReward(reward);
-            purchase.setPointsSpent(pointsSpent);
+            purchase.setPointsBefore(user.getPoints() + pointsSpent); // Assuming points were already deducted
+            purchase.setPointsAfter(user.getPoints()); // After deduction in buyReward
             purchase.setPurchaseDate(LocalDateTime.now());
             return purchase;
         } else {
             throw new ResourceNotFoundException("Usuario o recompensa no encontrada");
         }
-	}
+    }
+
 
 	/**
 	 * Gets the top rewards based on purchase count.
@@ -276,7 +276,7 @@ public class StoreService {
                 .orElseThrow(() -> new CustomException(ErrorConstants.NULL_USER));
         return purchaseHistoryRepository.findByUserId(user.getId()).stream()
                 .map(StoreMapper::mapPurchaseHistoryToResponse)
-                .sorted(Comparator.comparing(HistoryShopping::getTransactionPurchaseDate).reversed()) // Ordenar por fecha descendente
+                .sorted(Comparator.comparing(HistoryShopping::getPurchaseDate).reversed()) // Ordenar por fecha descendente
                 .toList();
     }
 }

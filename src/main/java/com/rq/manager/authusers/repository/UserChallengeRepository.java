@@ -1,5 +1,6 @@
 package com.rq.manager.authusers.repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -49,5 +50,13 @@ public interface UserChallengeRepository extends JpaRepository<UserChallenge, Lo
      */
     Optional<UserChallenge> findByUserIdAndChallengeId(UUID userId,
             UUID challengeId);
+    
+    /**
+     * Finds all UserChallenge entries for given user that are marked as completed.
+     *
+     * @param user the user entity
+     * @return list of UserChallenge completed for the user
+     */
+    List<UserChallenge> findByUserAndCompletedTrue(User user);
 
 }

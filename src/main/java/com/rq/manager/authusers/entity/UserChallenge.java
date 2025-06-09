@@ -1,7 +1,6 @@
 package com.rq.manager.authusers.entity;
 
 import java.util.Date;
-import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,8 +9,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,7 +25,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "USERCHALLENGE")
+@Table(name = "USERCHALLENGE",
+uniqueConstraints = @UniqueConstraint(columnNames = {"USER_ID", "CHALLENGE_ID"}))
 public class UserChallenge {
 
     /** The id. */
@@ -65,10 +65,5 @@ public class UserChallenge {
     /** The progress of the challenges. */
     @Column(name = "COMPLETED", nullable = false)
     private boolean completed;
-    
-    /** The history of the challenges completed of the user. */
-    //Cambiar esto por una entidad
-    @OneToMany(mappedBy = "userChallenge")
-    private List<ChallengeHistory> history;
 
 }

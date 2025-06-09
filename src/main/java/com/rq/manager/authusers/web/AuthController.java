@@ -2,6 +2,7 @@ package com.rq.manager.authusers.web;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +13,7 @@ import com.rq.manager.authusers.bean.Credentials;
 import com.rq.manager.authusers.bean.FormPassword;
 import com.rq.manager.authusers.bean.Login;
 import com.rq.manager.authusers.bean.Register;
+import com.rq.manager.authusers.bean.UpdateUserInfoRequest;
 import com.rq.manager.authusers.bean.admin.UserResponse;
 import com.rq.manager.authusers.constants.ApiConstants;
 import com.rq.manager.authusers.constants.Constants;
@@ -137,4 +139,23 @@ public class AuthController {
 	public void changePassword(@Valid @RequestBody FormPassword formPassword) {
 	    authService.changePassword(formPassword);
 	}
+    
+    /**
+     * Update my info.
+     *
+     * @param req the req
+     * @return the user response
+     */
+    @PatchMapping("/info-user")
+    @Operation(
+        summary = "Actualizar datos del usuario",
+        description = "Permite al usuario autenticado modificar su email, nombre, apellido, username y teléfono"
+    )
+    @ApiResponse(responseCode = "200", description = "Usuario actualizado",
+        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                           schema = @Schema(implementation = UserResponse.class)))
+    public UserResponse updateMyInfo(
+            @RequestBody UpdateUserInfoRequest req) {
+        return authService.updateMyInfo(req);
+    }
 }
