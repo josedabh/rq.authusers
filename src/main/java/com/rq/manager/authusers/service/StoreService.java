@@ -70,7 +70,8 @@ public class StoreService {
      * @return the list reward response
      */
     public List<RewardResponse> listRewardsUsers() {
-        return rewardRepository.findAllVisible().stream()
+        return rewardRepository.findAll().stream()
+                .filter(r -> r.isVisible() == true)
                 .map(StoreMapper::mapRewardEntityToResponse).toList();
     }
 
