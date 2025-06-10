@@ -1,7 +1,5 @@
 package com.rq.manager.authusers.config;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,9 +11,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.rq.manager.authusers.constants.ApiConstants;
 import com.rq.manager.authusers.constants.Constants;
@@ -102,20 +97,20 @@ public class SecurityConfig {
 	 *
 	 * @return the cors configuration source
 	 */
-	@Bean
-	CorsConfigurationSource corsConfigurationSource() {
-		CorsConfiguration configuration = new CorsConfiguration();
-
-		//Cambiar esto a la url del front si n o me falla
-		configuration.setAllowedOrigins(List.of("*"));
-		//Cambiar esto si hago mas metodos
-		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH"));
-		configuration.setAllowedHeaders(List.of(Constants.AUTHORIZATION, ApiConstants.CONTENT_TYPE));
-		configuration.setAllowCredentials(true);
-
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", configuration);
-		return source;
-	}
+//	@Bean
+//	CorsConfigurationSource corsConfigurationSource() {
+//		CorsConfiguration configuration = new CorsConfiguration();
+//
+//		//Cambiar esto a la url del front si n o me falla
+//		configuration.setAllowedOrigins(List.of("*"));
+//		//Cambiar esto si hago mas metodos
+//		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+//		configuration.setAllowedHeaders(List.of(Constants.AUTHORIZATION, ApiConstants.CONTENT_TYPE));
+//		configuration.setAllowCredentials(true);
+//
+//		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//		source.registerCorsConfiguration("/**", configuration);
+//		return source;
+//	}
 
 }

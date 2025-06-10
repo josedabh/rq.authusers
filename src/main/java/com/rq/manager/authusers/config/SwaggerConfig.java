@@ -61,7 +61,7 @@ public class SwaggerConfig {
     private ExternalDocumentation apiDocumentation() {
         return new ExternalDocumentation()
                 .description("Documentación completa")
-                .url("https://localhost:" + port + "/index.html");
+                .url("http://vps-5060784-x.dattaweb.com:8080/" + port + "/index.html");
     }
 
     /**
@@ -72,7 +72,10 @@ public class SwaggerConfig {
     private List<Server> apiServers() {
         return List.of(new Server()
                 .url("http://localhost:" + port)
-                .description("Servidor Local"));
+                .description("Servidor Local"),
+                new Server()
+                .url("http://vps-5060784-x.dattaweb.com:8080")
+                .description("Servidor en produccion"));
     }
 
     /**
