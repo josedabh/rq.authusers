@@ -190,9 +190,20 @@ public class ChallengeService {
 	    User user = userRepository.findByUsername(
 	            SecurityContextHolder.getContext().getAuthentication().getName())
 	        .orElseThrow(() -> new CustomException(ErrorConstants.NULL_USER));
-	    // 3) Verificar duplicados
-	    if (userChallengeRepository.existsByUserAndChallenge(user, challenge)) {
-	        throw new BusinessException(ErrorConstants.USER_ALREADY_JOINED_CHALLENGE);
+	    // 3) Verificar si ya existe una relación UserChallenge
+	    Optional<UserChallenge> existingUc = userChallengeRepository.findByUserAndChallenge(user, challenge);
+	    
+	    if (existingUc.isPresent()) {
+	        UserChallenge userChallenge = existingUc.get();
+	        // 3.1) Verificar si puede re-unirse al reto (0 intentos y no completado)
+	        if (canRejoinChallenge(userChallenge)) {
+	            // Actualizar fecha de unión
+	            userChallenge.setJoinedAt(new Date());
+	            userChallengeRepository.save(userChallenge);
+	            return; // Salir después de actualizar
+	        } else {
+	            throw new BusinessException(ErrorConstants.USER_ALREADY_JOINED_CHALLENGE);
+	        }
 	    }
 	    // 4) Crear UserChallenge
 	    UserChallenge uc = new UserChallenge();
@@ -203,6 +214,17 @@ public class ChallengeService {
 	    uc.setCompleted(false);
 	    // 5) Persistir
 	    userChallengeRepository.save(uc);
+	}
+	
+	/**
+	 * Can rejoin challenge.
+	 *
+	 * @param userChallenge the user challenge
+	 * @return true, if successful
+	 */
+	// Método privado para verificar si el usuario puede re-unirse al reto
+	private boolean canRejoinChallenge(UserChallenge userChallenge) {
+	    return userChallenge.getAttempts() == 0 && !userChallenge.isCompleted();
 	}
 
 	
@@ -324,7 +346,8 @@ public class ChallengeService {
 	 * @return true, if is challenge startable
 	 */
 	private boolean isChallengeStartable(Challenge challenge) {
-	    return challenge.getState() == StatesChallengeEnum.PENDING;
+	    return challenge.getState() == StatesChallengeEnum.PENDING
+	            && challenge.getVerificationType() != null;
 	}
 
     /**
