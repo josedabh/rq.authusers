@@ -434,7 +434,7 @@ public class ChallengeService {
         
         // Eliminar entidades relacionadas si existen
         if (challenge.getVerificationType() != null && challenge.getVerificationId() != null) {
-            String fullVerificationId = challenge.getVerificationType().getVerificationId() + challenge.getVerificationId();
+            String fullVerificationId = challenge.getVerificationType().getCode() + challenge.getVerificationId();
             
             // Eliminar QuizVerification y sus dependencias en cascada
             quizVerificationRepository.findById(fullVerificationId)

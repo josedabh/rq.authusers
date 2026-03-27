@@ -53,7 +53,7 @@ public class ChallengeMapper {
 				.endDate(Util.getDate(entity.getEndDate()))
 				.verificationNumber(entity.getVerificationId())
 				.verificationType(entity.getVerificationType() != null
-						? entity.getVerificationType().getVerificationId()
+						? entity.getVerificationType().getCode()
 						: null)
 				.points(entity.getPoints()).build();
 	}

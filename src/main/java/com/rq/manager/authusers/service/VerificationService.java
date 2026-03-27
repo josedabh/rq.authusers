@@ -154,7 +154,7 @@ public class VerificationService {
             throw new BusinessException("Quiz only available for verification type Q");
         }
 
-        String quizId = challenge.getVerificationType().getVerificationId() + challenge.getVerificationId();
+        String quizId = challenge.getVerificationType().getCode() + challenge.getVerificationId();
         QuizVerification quizVer = quizVerificationRepo.findById(quizId)
                 .orElseThrow(() -> new BusinessException(ErrorConstants.QUIZ_NOT_FOUND));
         
@@ -328,7 +328,7 @@ public class VerificationService {
     private int evaluateAnswers(List<UserAnswerDTO> userAnswers, Challenge challenge) {
         // Obtener respuestas correctas del quiz
         Map<String, Set<String>> correctAnswers = getCorrectAnswersByQuestion(
-                challenge.getVerificationType().getVerificationId(), 
+                challenge.getVerificationType().getCode(), 
                 challenge.getVerificationId()
         );
         

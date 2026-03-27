@@ -24,7 +24,6 @@ public class Login {
     private String identifier;
 	
 	/** The password. */
-	@Size(min = 8, max = 50)
 	@NotBlank
 	@Schema(description = "the password", example = "example1234")
 	private String password;
