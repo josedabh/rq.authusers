@@ -8,12 +8,12 @@ public enum ChallengeVerificationType {
 	IMAGE("I", "IMAGE"),
 	LOCATION("L", "LOCATION");
 	
-	private String verificationId;
+	private String code;
 	
 	private String type;
 	
-	private ChallengeVerificationType(String verificationId, String type) {
-		this.verificationId = verificationId;
+	private ChallengeVerificationType(String code, String type) {
+		this.code = code;
 		this.type = type;
 	}
 
@@ -21,13 +21,22 @@ public enum ChallengeVerificationType {
 		return type;
 	}
 
-	public String getVerificationId() {
-		return verificationId;
+	public String getCode() {
+		return code;
 	}
 
 	public static ChallengeVerificationType fromType(String type) {
 		for (ChallengeVerificationType verificationType : values()) {
 			if (verificationType.getType().equals(type)) {
+				return verificationType;
+			}
+		}
+		throw new BusinessException(ErrorConstants.INVALID_VERIFICATION_TYPE);
+	}
+
+	public static ChallengeVerificationType fromCode(String code) {
+		for (ChallengeVerificationType verificationType : values()) {
+			if (verificationType.getCode().equals(code)) {
 				return verificationType;
 			}
 		}

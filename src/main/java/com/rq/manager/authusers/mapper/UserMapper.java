@@ -53,7 +53,7 @@ public class UserMapper {
     public static UserResponse mapEntityToResponse(User user) {
         return UserResponse.builder().id(user.getId().toString())
                 .email(user.getEmail()).name(user.getName())
-                .lastname(user.getLastname()).password(user.getPassword())
+                .lastname(user.getLastname())
                 .username(user.getUsername()).numPhone(user.getNumPhone())
                 .points(user.getPoints()).rol(user.getRol().getCodigo())
                 .build();

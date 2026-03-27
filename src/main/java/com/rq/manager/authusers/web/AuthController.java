@@ -155,7 +155,7 @@ public class AuthController {
         content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                            schema = @Schema(implementation = UserResponse.class)))
     public UserResponse updateMyInfo(
-            @RequestBody UpdateUserInfoRequest req) {
+            @Valid @RequestBody UpdateUserInfoRequest req) {
         return authService.updateMyInfo(req);
     }
 }

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import com.rq.manager.authusers.enumerations.CategoryEnum;
+import com.rq.manager.authusers.enumerations.ChallengeVerificationType;
 import com.rq.manager.authusers.enumerations.StatesChallengeEnum;
 
 import jakarta.persistence.*;
@@ -64,8 +65,9 @@ public class Challenge {
     private int points;
 
     /** Tipo de verificación: I = Image, L = Location, Q = Quiz. */
-    @Column(name = "VERIFICATION_TYPE", length = 1)
-    private String verificationType;
+    @Column(name = "VERIFICATION_TYPE", length = 20)
+    @Enumerated(EnumType.STRING)
+    private ChallengeVerificationType verificationType;
 
     /**
      * Identificador de la entidad de verificación

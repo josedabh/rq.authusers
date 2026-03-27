@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.rq.manager.authusers.entity.Challenge;
+import com.rq.manager.authusers.enumerations.ChallengeVerificationType;
 
 /**
  * The Interface ChallengeRepository.
@@ -23,7 +24,7 @@ public interface ChallengeRepository extends JpaRepository<Challenge, UUID> {
 	 * @return the string
 	 */
     @Query("SELECT MAX(c.verificationId) FROM Challenge c WHERE c.verificationType = :type")
-    String findMaxVerificationIdByType(@Param("type") String type);
+    String findMaxVerificationIdByType(@Param("type") ChallengeVerificationType type);
     
     /**
      * Find verification id by type and challenge id.
@@ -33,7 +34,7 @@ public interface ChallengeRepository extends JpaRepository<Challenge, UUID> {
      * @return the string
      */
     @Query("SELECT c.verificationId FROM Challenge c WHERE c.verificationType = :typeCode AND c.id = :challengeId")
-    String findVerificationIdByTypeAndChallengeId(@Param("typeCode") String typeCode, @Param("challengeId") UUID challengeId);
+    String findVerificationIdByTypeAndChallengeId(@Param("typeCode") ChallengeVerificationType typeCode, @Param("challengeId") UUID challengeId);
 
     /**
      * Find by verification type and verification id.
@@ -42,6 +43,6 @@ public interface ChallengeRepository extends JpaRepository<Challenge, UUID> {
      * @param verificationId the verification id
      * @return the optional
      */
-    Optional<Challenge> findByVerificationTypeAndVerificationId(String type, String verificationId);
+    Optional<Challenge> findByVerificationTypeAndVerificationId(ChallengeVerificationType type, String verificationId);
 
 }
