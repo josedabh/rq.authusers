@@ -1,7 +1,8 @@
 package com.rq.manager.authusers.service;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +28,7 @@ import com.rq.manager.authusers.entity.QuizQuestion;
 import com.rq.manager.authusers.entity.QuizVerification;
 import com.rq.manager.authusers.entity.User;
 import com.rq.manager.authusers.entity.UserChallenge;
+import com.rq.manager.authusers.enumerations.ChallengeVerificationType;
 import com.rq.manager.authusers.exceptions.BusinessException;
 import com.rq.manager.authusers.exceptions.CustomException;
 import com.rq.manager.authusers.exceptions.ErrorConstants;
@@ -78,10 +80,11 @@ public class VerificationService {
         String quizId = request.getQuizId();
         String type = quizId.substring(0, 1);
         String numeric = quizId.substring(1);
+        ChallengeVerificationType verificationType = ChallengeVerificationType.fromCode(type);
 
         // 2) Recuperar el Challenge por type+numeric
         Challenge challenge = challengeRepo
-            .findByVerificationTypeAndVerificationId(type, numeric)
+            .findByVerificationTypeAndVerificationId(verificationType, numeric)
             .orElseThrow(() -> new BusinessException(ErrorConstants.CHALLENGE_NOT_FOUND));
 
         // 3) Crear el QuizVerification
@@ -147,11 +150,11 @@ public class VerificationService {
                 .orElseThrow(() -> new BusinessException(ErrorConstants.CHALLENGE_NOT_FOUND));
 
         // Check if verification type is 'Q'
-        if (!"Q".equals(challenge.getVerificationType())) {
+        if (challenge.getVerificationType() != ChallengeVerificationType.QUIZ) {
             throw new BusinessException("Quiz only available for verification type Q");
         }
 
-        String quizId = challenge.getVerificationType() + challenge.getVerificationId();
+        String quizId = challenge.getVerificationType().getVerificationId() + challenge.getVerificationId();
         QuizVerification quizVer = quizVerificationRepo.findById(quizId)
                 .orElseThrow(() -> new BusinessException(ErrorConstants.QUIZ_NOT_FOUND));
         
@@ -286,7 +289,8 @@ public class VerificationService {
                 .orElseThrow(() -> new BusinessException("User challenge not found"));
 
         // Verificar si ha pasado un día desde que se unió
-        if (new Date().getTime() - userChallenge.getJoinedAt().getTime() > 86400000) {
+        if (userChallenge.getJoinedAt() != null
+                && Duration.between(userChallenge.getJoinedAt(), LocalDateTime.now()).toMillis() > 86400000) {
             if (userChallenge.getAttempts() >= 2) {
                 throw new BusinessException("No more attempts allowed");
             }
@@ -297,7 +301,7 @@ public class VerificationService {
 
         if (scorePercentage >= 0.7) {
             userChallenge.setCompleted(true);
-            userChallenge.setCompletedAt(new Date());
+            userChallenge.setCompletedAt(LocalDateTime.now());
             userChallenge.setEarnedPoints(userChallenge.getChallenge().getPoints());
             int pointTotal = user.getPoints() + userChallenge.getChallenge().getPoints();
             user.setPoints(pointTotal);
@@ -324,7 +328,7 @@ public class VerificationService {
     private int evaluateAnswers(List<UserAnswerDTO> userAnswers, Challenge challenge) {
         // Obtener respuestas correctas del quiz
         Map<String, Set<String>> correctAnswers = getCorrectAnswersByQuestion(
-                challenge.getVerificationType(), 
+                challenge.getVerificationType().getVerificationId(), 
                 challenge.getVerificationId()
         );
         

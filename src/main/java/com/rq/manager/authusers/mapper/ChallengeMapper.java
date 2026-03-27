@@ -4,6 +4,7 @@ import com.rq.manager.authusers.bean.ChallengeRequest;
 import com.rq.manager.authusers.bean.admin.ChallengeResponse;
 import com.rq.manager.authusers.entity.Challenge;
 import com.rq.manager.authusers.enumerations.CategoryEnum;
+import com.rq.manager.authusers.enumerations.ChallengeVerificationType;
 import com.rq.manager.authusers.util.Util;
 
 /**
@@ -51,7 +52,9 @@ public class ChallengeMapper {
 				.startDate(Util.getDate(entity.getStartDate()))
 				.endDate(Util.getDate(entity.getEndDate()))
 				.verificationNumber(entity.getVerificationId())
-				.verificationType(entity.getVerificationType())
+				.verificationType(entity.getVerificationType() != null
+						? entity.getVerificationType().getVerificationId()
+						: null)
 				.points(entity.getPoints()).build();
 	}
 	

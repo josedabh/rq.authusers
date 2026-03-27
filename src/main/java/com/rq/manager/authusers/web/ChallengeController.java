@@ -28,6 +28,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 /**
@@ -112,7 +113,7 @@ public class ChallengeController {
                     schema = @Schema(implementation = ChallengeResponse.class)))
     @PostMapping("/create-challenge")
     public ChallengeResponse createChallenge(
-            @RequestBody ChallengeRequest challengeRequest) {
+            @Valid @RequestBody ChallengeRequest challengeRequest) {
         return challengeService.createChallenge(challengeRequest);
     }
 
@@ -176,7 +177,7 @@ public class ChallengeController {
                     schema = @Schema(implementation = ChallengeResponse.class)))
     @PutMapping("/update-challenge/{id}")
     public ChallengeResponse updateChallenge(@PathVariable UUID id,
-            @RequestBody ChallengeRequest challengeRequest) {
+            @Valid @RequestBody ChallengeRequest challengeRequest) {
         return challengeService.updateChallenge(id, challengeRequest);
     }
 

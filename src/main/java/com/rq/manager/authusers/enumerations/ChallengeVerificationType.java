@@ -33,4 +33,13 @@ public enum ChallengeVerificationType {
 		}
 		throw new BusinessException(ErrorConstants.INVALID_VERIFICATION_TYPE);
 	}
+
+	public static ChallengeVerificationType fromCode(String code) {
+		for (ChallengeVerificationType verificationType : values()) {
+			if (verificationType.getVerificationId().equals(code)) {
+				return verificationType;
+			}
+		}
+		throw new BusinessException(ErrorConstants.INVALID_VERIFICATION_TYPE);
+	}
 }

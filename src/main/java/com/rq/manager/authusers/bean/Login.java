@@ -15,16 +15,17 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@NotBlank
 public class Login {
 
     /** The identifier. */
     @Size(max = 100)
+    @NotBlank
     @Schema(description = "the identifier: email, number phone or username", example = "exampleperez")
     private String identifier;
 	
 	/** The password. */
 	@Size(min = 8, max = 50)
+	@NotBlank
 	@Schema(description = "the password", example = "example1234")
 	private String password;
 }
