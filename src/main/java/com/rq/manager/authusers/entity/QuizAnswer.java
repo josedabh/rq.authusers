@@ -2,6 +2,7 @@ package com.rq.manager.authusers.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -28,7 +29,7 @@ public class QuizAnswer {
     private String id;
 
     /** The question. */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "QUESTION_ID", nullable = false)
     private QuizQuestion question;
 

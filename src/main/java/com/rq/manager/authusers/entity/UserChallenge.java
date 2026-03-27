@@ -1,6 +1,6 @@
 package com.rq.manager.authusers.entity;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.FetchType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,23 +37,23 @@ public class UserChallenge {
     private Long id;
 
     /** The user. */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
     /** The challenge. */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CHALLENGE_ID", nullable = false)
     private Challenge challenge;
     
     /** The completed at. */
     // Fecha y hora en que se completó el reto (si aún está en curso, puede ser nulo)
     @Column(name = "COMPLETED_AT")
-    private Date completedAt;
+    private LocalDateTime completedAt;
     
     /** The joined at. */
     @Column(name = "JOINED_AT")
-    private Date joinedAt;
+    private LocalDateTime joinedAt;
     
     /** The earned points. */
     @Column(name = "EARNED_POINTS")

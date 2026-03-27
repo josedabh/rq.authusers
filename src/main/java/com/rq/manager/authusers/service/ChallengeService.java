@@ -1,7 +1,6 @@
 package com.rq.manager.authusers.service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,6 +18,7 @@ import com.rq.manager.authusers.entity.Challenge;
 import com.rq.manager.authusers.entity.User;
 import com.rq.manager.authusers.entity.UserChallenge;
 import com.rq.manager.authusers.enumerations.CategoryEnum;
+import com.rq.manager.authusers.enumerations.ChallengeVerificationType;
 import com.rq.manager.authusers.enumerations.StatesChallengeEnum;
 import com.rq.manager.authusers.exceptions.BusinessException;
 import com.rq.manager.authusers.exceptions.CustomException;
@@ -197,10 +197,10 @@ public class ChallengeService {
 	        UserChallenge userChallenge = existingUc.get();
 	        // 3.1) Verificar si puede re-unirse al reto (0 intentos y no completado)
 	        if (canRejoinChallenge(userChallenge)) {
-	            // Actualizar fecha de unión
-	            userChallenge.setJoinedAt(new Date());
-	            userChallengeRepository.save(userChallenge);
-	            return; // Salir después de actualizar
+            // Actualizar fecha de unión
+            userChallenge.setJoinedAt(LocalDateTime.now());
+            userChallengeRepository.save(userChallenge);
+            return; // Salir después de actualizar
 	        } else {
 	            throw new BusinessException(ErrorConstants.USER_ALREADY_JOINED_CHALLENGE);
 	        }
@@ -209,7 +209,7 @@ public class ChallengeService {
 	    UserChallenge uc = new UserChallenge();
 	    uc.setUser(user);
 	    uc.setChallenge(challenge);
-	    uc.setJoinedAt(new Date());
+	    uc.setJoinedAt(LocalDateTime.now());
 	    uc.setAttempts(0);
 	    uc.setCompleted(false);
 	    // 5) Persistir
@@ -365,25 +365,26 @@ public class ChallengeService {
         Challenge challenge = challengeRepository.findById(challengeId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Challenge not found: " + challengeId));
+        ChallengeVerificationType verificationType = ChallengeVerificationType.fromCode(typeCode);
 
         // Si ya tiene verificación, no se genera una nueva
         if (challenge.getVerificationType() != null &&
-            challenge.getVerificationType().equals(typeCode) &&
+            challenge.getVerificationType() == verificationType &&
             challenge.getVerificationId() != null) {
             return typeCode + challenge.getVerificationId();
         }
 
         // Buscar si ya hay un verificationId del mismo tipo para este challenge
         String existingId = challengeRepository
-            .findVerificationIdByTypeAndChallengeId(typeCode, challengeId); // <-- Este método debe existir en tu repo
+            .findVerificationIdByTypeAndChallengeId(verificationType, challengeId); // <-- Este método debe existir en tu repo
 
         if (existingId != null) {
-            challenge.setVerificationType(typeCode);
+            challenge.setVerificationType(verificationType);
             challenge.setVerificationId(existingId);
         } else {
             // Generar nuevo ID
-            String numeric = nextNumericForType(typeCode);
-            challenge.setVerificationType(typeCode);
+            String numeric = nextNumericForType(verificationType);
+            challenge.setVerificationType(verificationType);
             challenge.setVerificationId(numeric);
         }
 
@@ -400,9 +401,13 @@ public class ChallengeService {
      * @return the string
      */
     public String nextNumericForType(String prefix) {
+        return nextNumericForType(ChallengeVerificationType.fromCode(prefix));
+    }
+
+    private String nextNumericForType(ChallengeVerificationType type) {
         // Consulta el valor máximo de verificationId para este tipo
         String maxNumeric =
-                challengeRepository.findMaxVerificationIdByType(prefix);
+                challengeRepository.findMaxVerificationIdByType(type);
         int next = 1;
         if (maxNumeric != null) {
             try {
@@ -429,7 +434,7 @@ public class ChallengeService {
         
         // Eliminar entidades relacionadas si existen
         if (challenge.getVerificationType() != null && challenge.getVerificationId() != null) {
-            String fullVerificationId = challenge.getVerificationType() + challenge.getVerificationId();
+            String fullVerificationId = challenge.getVerificationType().getCode() + challenge.getVerificationId();
             
             // Eliminar QuizVerification y sus dependencias en cascada
             quizVerificationRepository.findById(fullVerificationId)

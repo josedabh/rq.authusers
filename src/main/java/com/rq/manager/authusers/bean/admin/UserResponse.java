@@ -25,10 +25,6 @@ public class UserResponse {
 	@Schema(description = "the email", example = "example@exapmle.com")
 	private String email;
 	
-	/** The password. */
-	@Schema(description = "the password", example = "qwerty1234")
-	private String password;
-	
 	/** The name. */
 	@Schema(description = "the name", example = "mario")
 	private String name;
