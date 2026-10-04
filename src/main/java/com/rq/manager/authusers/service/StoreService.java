@@ -3,7 +3,6 @@ package com.rq.manager.authusers.service;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -12,9 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.rq.manager.authusers.bean.HistoryShopping;
 import com.rq.manager.authusers.bean.admin.RewardRequest;
 import com.rq.manager.authusers.bean.admin.RewardResponse;
-import com.rq.manager.authusers.entity.PurchaseHistory;
-import com.rq.manager.authusers.entity.Reward;
-import com.rq.manager.authusers.entity.User;
 import com.rq.manager.authusers.exceptions.BusinessException;
 import com.rq.manager.authusers.exceptions.CustomException;
 import com.rq.manager.authusers.exceptions.ErrorConstants;
@@ -23,6 +19,9 @@ import com.rq.manager.authusers.mapper.StoreMapper;
 import com.rq.manager.authusers.repository.PurchaseHistoryRepository;
 import com.rq.manager.authusers.repository.RewardRepository;
 import com.rq.manager.authusers.repository.UserRepository;
+import com.rq.manager.authusers.repository.entity.PurchaseHistory;
+import com.rq.manager.authusers.repository.entity.Reward;
+import com.rq.manager.authusers.repository.entity.User;
 
 import lombok.AllArgsConstructor;
 
@@ -166,7 +165,7 @@ public class StoreService {
         reward.setStock(reward.getStock() - 1);
         user.setPoints(user.getPoints() - reward.getPoints());
         // 4. Registrar la transacción
-        PurchaseHistory purchase = createPurchaseHistory(String.valueOf(user.getId()), rewardId,
+        PurchaseHistory purchase = createPurchaseHistory(user.getId(), rewardId,
                 reward.getPoints());
         // 5. Guardar cambios en la base de datos
         rewardRepository.save(reward);
@@ -186,8 +185,8 @@ public class StoreService {
      *            the points spent
      * @return the purchase history
      */
-    private PurchaseHistory createPurchaseHistory(String userId, Long rewardId, Integer pointsSpent) {
-        User user = userRepository.findById(UUID.fromString(userId)).orElse(null);
+    private PurchaseHistory createPurchaseHistory(Long userId, Long rewardId, Integer pointsSpent) {
+        User user = userRepository.findById(userId).orElse(null);
         Reward reward = rewardRepository.findById(rewardId).orElse(null);
         if(user != null && reward != null) {
             PurchaseHistory purchase = new PurchaseHistory();

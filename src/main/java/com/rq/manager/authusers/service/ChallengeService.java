@@ -3,7 +3,6 @@ package com.rq.manager.authusers.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,13 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.rq.manager.authusers.bean.ChallengeHistoryResponse;
 import com.rq.manager.authusers.bean.ChallengeRequest;
 import com.rq.manager.authusers.bean.admin.ChallengeResponse;
-import com.rq.manager.authusers.constants.Constants;
-import com.rq.manager.authusers.entity.Challenge;
-import com.rq.manager.authusers.entity.User;
-import com.rq.manager.authusers.entity.UserChallenge;
 import com.rq.manager.authusers.enumerations.CategoryEnum;
 import com.rq.manager.authusers.enumerations.ChallengeVerificationType;
+import com.rq.manager.authusers.enumerations.DifficultyEnum;
 import com.rq.manager.authusers.enumerations.StatesChallengeEnum;
+import com.rq.manager.authusers.enumerations.UserChallengeStateEnum;
 import com.rq.manager.authusers.exceptions.BusinessException;
 import com.rq.manager.authusers.exceptions.CustomException;
 import com.rq.manager.authusers.exceptions.ErrorConstants;
@@ -30,7 +27,10 @@ import com.rq.manager.authusers.repository.ChallengeRepository;
 import com.rq.manager.authusers.repository.QuizVerificationRepository;
 import com.rq.manager.authusers.repository.UserChallengeRepository;
 import com.rq.manager.authusers.repository.UserRepository;
-import com.rq.manager.authusers.util.Util;
+import com.rq.manager.authusers.repository.entity.Challenge;
+import com.rq.manager.authusers.repository.entity.User;
+import com.rq.manager.authusers.repository.entity.UserChallenge;
+import com.rq.manager.authusers.util.DateUtil;
 
 import lombok.AllArgsConstructor;
 
@@ -43,13 +43,13 @@ public class ChallengeService {
 
 	/** The challenge repository. */
 	private ChallengeRepository challengeRepository;
-	
+
 	/** The user challenge repository. */
 	private UserChallengeRepository userChallengeRepository;
-	
+
 	/** The user repository. */
 	private UserRepository userRepository;
-	
+
 	/** The quiz verification repository. */
 	private QuizVerificationRepository quizVerificationRepository;
 
@@ -72,18 +72,20 @@ public class ChallengeService {
 	 * @return the list challenges
 	 */
 	public List<ChallengeResponse> listChallenges() {
-		return challengeRepository.findAll().stream().map(challenge -> ChallengeMapper.mapEntityToResponse(challenge))
+		return challengeRepository.findAll().stream()
+				.map(ChallengeMapper::mapEntityToResponse)
 				.collect(Collectors.toList());
 	}
-	
+
 	/**
 	 * Gets the challenge by id.
 	 *
 	 * @param id the id
 	 * @return the challenge by id
 	 */
-	public ChallengeResponse getChallengeById(UUID id) {
-		Challenge challenge = challengeRepository.findById(id).orElse(new Challenge());
+	public ChallengeResponse getChallengeById(Long id) {
+		Challenge challenge = challengeRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException(ErrorConstants.CHALLENGE_NOT_FOUND));
 		return ChallengeMapper.mapEntityToResponse(challenge);
 	}
 
@@ -94,22 +96,20 @@ public class ChallengeService {
 	 * @param request the challenge request
 	 * @return the challenge response
 	 */
-	public ChallengeResponse updateChallenge(UUID id, ChallengeRequest request) {
+	public ChallengeResponse updateChallenge(Long id, ChallengeRequest request) {
 		Challenge challenge = challengeRepository.findById(id)
-				.orElse(new Challenge());
-		//Mira que el estado del reto está en pendiente
-		if (Constants.PENDING.equals(challenge.getState().getDescription())) {
+				.orElseThrow(() -> new ResourceNotFoundException(ErrorConstants.CHALLENGE_NOT_FOUND));
+		if (challenge.getState() == StatesChallengeEnum.PENDING) {
 			challenge = mapRequestToChallenge(challenge, request);
 			challengeRepository.save(challenge);
 			return ChallengeMapper.mapEntityToResponse(challenge);
 		} else {
 			throw new BusinessException(ErrorConstants.CHALLENGE_DIFFERENT_STATE);
 		}
-		
 	}
-	
+
 	/**
-	 * Map request to challenge.
+	 * Map request to challenge (partial update).
 	 *
 	 * @param challenge the challenge
 	 * @param request the request
@@ -121,18 +121,18 @@ public class ChallengeService {
 	    Optional.ofNullable(request.getDescription())
 	            .ifPresent(challenge::setDescription);
 	    Optional.ofNullable(request.getStartDate())
-	            .map(Util::getLocalDateTime)
+	            .map(DateUtil::parse)
 	            .ifPresent(challenge::setStartDate);
 	    Optional.ofNullable(request.getEndDate())
-	            .map(Util::getLocalDateTime)
+	            .map(DateUtil::parse)
 	            .ifPresent(challenge::setEndDate);
 	    Optional.ofNullable(request.getDifficulty())
+	            .map(DifficultyEnum::fromDescription)
 	            .ifPresent(challenge::setDifficulty);
 	    Optional.ofNullable(request.getPoints())
                 .ifPresent(challenge::setPoints);
         if (request.getCategory() != null) {
-            challenge.setCategory(
-                    CategoryEnum.setDescription(request.getCategory()));
+            challenge.setCategory(CategoryEnum.setDescription(request.getCategory()));
         }
         return challenge;
     }
@@ -142,11 +142,11 @@ public class ChallengeService {
 	 *
 	 * @param id the id challenge
 	 */
-	public void deleteChallenge(UUID id) {
+	public void deleteChallenge(Long id) {
 		Challenge challenge = challengeRepository.findById(id)
-				.orElse(new Challenge());
-		if (Constants.PENDING.equals(challenge.getState().getDescription())
-				|| Constants.CANCELLED.equals(challenge.getState().getDescription())) {
+				.orElseThrow(() -> new ResourceNotFoundException(ErrorConstants.CHALLENGE_NOT_FOUND));
+		if (challenge.getState() == StatesChallengeEnum.PENDING
+				|| challenge.getState() == StatesChallengeEnum.CANCELLED) {
 			challengeRepository.deleteById(id);
 		} else {
 			throw new BusinessException(ErrorConstants.CHALLENGE_DIFFERENT_STATE);
@@ -159,10 +159,10 @@ public class ChallengeService {
 	 * @param id the id
 	 * @return the challenge response
 	 */
-	public ChallengeResponse cancelChallenge(UUID id) {
-		Challenge challenge = challengeRepository.findById(id).orElse(new Challenge());
-		//Comprueba que el reto está en progreso
-		if (Constants.IN_PROGRESS.equals(challenge.getState().getDescription())) {
+	public ChallengeResponse cancelChallenge(Long id) {
+		Challenge challenge = challengeRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException(ErrorConstants.CHALLENGE_NOT_FOUND));
+		if (challenge.getState() == StatesChallengeEnum.IN_PROGRESS) {
 			challenge.setState(StatesChallengeEnum.CANCELLED);
 			challengeRepository.save(challenge);
 			return ChallengeMapper.mapEntityToResponse(challenge);
@@ -177,79 +177,60 @@ public class ChallengeService {
 	 * @param challengeId the challenge id
 	 */
 	@Transactional
-	public void joinChallenge(UUID challengeId) {
-	    // 1) Cargar reto y validar estado
+	public void joinChallenge(Long challengeId) {
 	    Challenge challenge = challengeRepository.findById(challengeId)
-	        .orElseThrow(() -> new ResourceNotFoundException(
-	            "Challenge not found with id: " + challengeId));
+	        .orElseThrow(() -> new ResourceNotFoundException(ErrorConstants.CHALLENGE_NOT_FOUND));
 	    if (challenge.getState() != StatesChallengeEnum.PENDING
 	        && challenge.getState() != StatesChallengeEnum.IN_PROGRESS) {
 	        throw new BusinessException(ErrorConstants.NOT_STATUS_CHALLENGE);
 	    }
-	    // 2) Cargar usuario autenticado
 	    User user = userRepository.findByUsername(
 	            SecurityContextHolder.getContext().getAuthentication().getName())
 	        .orElseThrow(() -> new CustomException(ErrorConstants.NULL_USER));
-	    // 3) Verificar si ya existe una relación UserChallenge
+
 	    Optional<UserChallenge> existingUc = userChallengeRepository.findByUserAndChallenge(user, challenge);
-	    
+
 	    if (existingUc.isPresent()) {
 	        UserChallenge userChallenge = existingUc.get();
-	        // 3.1) Verificar si puede re-unirse al reto (0 intentos y no completado)
 	        if (canRejoinChallenge(userChallenge)) {
-            // Actualizar fecha de unión
-            userChallenge.setJoinedAt(LocalDateTime.now());
-            userChallengeRepository.save(userChallenge);
-            return; // Salir después de actualizar
+	            userChallenge.setJoinedAt(LocalDateTime.now());
+	            userChallengeRepository.save(userChallenge);
+	            return;
 	        } else {
 	            throw new BusinessException(ErrorConstants.USER_ALREADY_JOINED_CHALLENGE);
 	        }
 	    }
-	    // 4) Crear UserChallenge
 	    UserChallenge uc = new UserChallenge();
 	    uc.setUser(user);
 	    uc.setChallenge(challenge);
 	    uc.setJoinedAt(LocalDateTime.now());
 	    uc.setAttempts(0);
-	    uc.setCompleted(false);
-	    // 5) Persistir
+	    uc.setState(UserChallengeStateEnum.JOINED);
 	    userChallengeRepository.save(uc);
 	}
-	
+
 	/**
-	 * Can rejoin challenge.
-	 *
-	 * @param userChallenge the user challenge
-	 * @return true, if successful
+	 * Checks whether a user can re-join a challenge (no attempts and not finished).
 	 */
-	// Método privado para verificar si el usuario puede re-unirse al reto
 	private boolean canRejoinChallenge(UserChallenge userChallenge) {
-	    return userChallenge.getAttempts() == 0 && !userChallenge.isCompleted();
+	    return userChallenge.getAttempts() == 0
+	        && userChallenge.getState() != UserChallengeStateEnum.COMPLETED
+	        && userChallenge.getState() != UserChallengeStateEnum.FAILED;
 	}
 
-	
 	/**
-	 * List challenges for user.
+	 * List challenges visible to the authenticated user.
 	 *
 	 * @return the list challenge
 	 */
 	public List<ChallengeResponse> listChallengesForUser() {
 	    LocalDateTime currentDate = LocalDateTime.now();
-	    List<Challenge> allChallenges = challengeRepository.findAll();
-	    
-	    return allChallenges.stream()
+	    return challengeRepository.findAll().stream()
 	        .filter(challenge -> isChallengeVisible(challenge, currentDate))
 	        .map(ChallengeMapper::mapEntityToResponse)
 	        .collect(Collectors.toList());
 	}
 
-	/**
-	 * Comprueba si el reto debe mostrarse al usuario en la fecha dada.
-	 *
-	 * @param challenge the challenge
-	 * @param currentDate the current date
-	 * @return true, if is challenge visible
-	 */
 	private boolean isChallengeVisible(Challenge challenge, LocalDateTime currentDate) {
 	    StatesChallengeEnum state = challenge.getState();
 	    LocalDateTime startDate = challenge.getStartDate();
@@ -262,127 +243,82 @@ public class ChallengeService {
 	    switch (state) {
 	        case PENDING:
 	            return isWithinTwoWeeksBeforeStart(currentDate, startDate);
-
 	        case IN_PROGRESS:
-	            // Visible desde startDate hasta endDate, ambos inclusive
 	            return isBetweenInclusive(currentDate, startDate, endDate);
-
 	        case FINISHED:
 	        case CANCELLED:
 	            return isWithinTwoWeeksAfterEnd(currentDate, endDate);
-
 	        default:
 	            return false;
 	    }
 	}
 
-	/**
-	 * Devuelve true si current ∈ [start, end].
-	 *
-	 * @param current the current
-	 * @param start the start
-	 * @param end the end
-	 * @return true, if is between inclusive
-	 */
 	private boolean isBetweenInclusive(LocalDateTime current, LocalDateTime start, LocalDateTime end) {
 	    return !current.isBefore(start) && !current.isAfter(end);
 	}
 
-	/**
-	 * Checks if is within two weeks before start.
-	 *
-	 * @param current the current
-	 * @param startDate the start date
-	 * @return true, if is within two weeks before start
-	 */
 	private boolean isWithinTwoWeeksBeforeStart(LocalDateTime current, LocalDateTime startDate) {
 	    LocalDateTime twoWeeksBefore = startDate.minusWeeks(2);
-	    // current ∈ [twoWeeksBefore, startDate)
 	    return !current.isBefore(twoWeeksBefore) && current.isBefore(startDate);
 	}
 
-	/**
-	 * Checks if is within two weeks after end.
-	 *
-	 * @param current the current
-	 * @param endDate the end date
-	 * @return true, if is within two weeks after end
-	 */
 	private boolean isWithinTwoWeeksAfterEnd(LocalDateTime current, LocalDateTime endDate) {
 	    LocalDateTime twoWeeksAfter = endDate.plusWeeks(2);
-	    // current ∈ (endDate, twoWeeksAfter]
 	    return current.isAfter(endDate) && !current.isAfter(twoWeeksAfter);
 	}
-	
+
 	/**
-	 * Start challenge.
+	 * Start challenge (PENDING → IN_PROGRESS).
 	 *
 	 * @param challengeId the challenge id
 	 * @return the challenge response
 	 */
 	@Transactional
-	public ChallengeResponse startChallenge(UUID challengeId) {
+	public ChallengeResponse startChallenge(Long challengeId) {
 	    Challenge challenge = challengeRepository.findById(challengeId)
-	        .orElseThrow(() -> new ResourceNotFoundException(
-	            "Challenge not found with id: " + challengeId));
+	        .orElseThrow(() -> new ResourceNotFoundException(ErrorConstants.CHALLENGE_NOT_FOUND));
 
-	    // Usamos el helper en lugar de repetir el chequeo manual
 	    if (!isChallengeStartable(challenge)) {
 	        throw new BusinessException(ErrorConstants.CHALLENGE_CANNOT_BE_STARTED);
 	    }
 
-	    // Actualizar estado y fecha
 	    challenge.setState(StatesChallengeEnum.IN_PROGRESS);
 	    challenge.setStartDate(LocalDateTime.now());
-
 	    challengeRepository.save(challenge);
 	    return ChallengeMapper.mapEntityToResponse(challenge);
 	}
 
-	/**
-	 * Checks if is challenge startable.
-	 *
-	 * @param challenge the challenge
-	 * @return true, if is challenge startable
-	 */
 	private boolean isChallengeStartable(Challenge challenge) {
 	    return challenge.getState() == StatesChallengeEnum.PENDING
 	            && challenge.getVerificationType() != null;
 	}
 
     /**
-     * Genera el ID completo (prefijo + cinco dígitos) y se lo asigna al reto.
-     * Devuelve el ID completo, p.ej. "Q00003".
+     * Assigns a verification type to a challenge and generates its verification ID.
      *
-     * @param challengeId
-     *            the challenge id
-     * @param typeCode
-     *            the type code
-     * @return the string
+     * @param challengeId the challenge id
+     * @param typeCode    the type code (Q, I, L)
+     * @return the full verification ID (e.g. "Q00003")
      */
     @Transactional
-    public String assignVerificationType(UUID challengeId, String typeCode) {
+    public String assignVerificationType(Long challengeId, String typeCode) {
         Challenge challenge = challengeRepository.findById(challengeId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Challenge not found: " + challengeId));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorConstants.CHALLENGE_NOT_FOUND));
         ChallengeVerificationType verificationType = ChallengeVerificationType.fromCode(typeCode);
 
-        // Si ya tiene verificación, no se genera una nueva
         if (challenge.getVerificationType() != null &&
             challenge.getVerificationType() == verificationType &&
             challenge.getVerificationId() != null) {
             return typeCode + challenge.getVerificationId();
         }
 
-        // Buscar si ya hay un verificationId del mismo tipo para este challenge
         String existingId = challengeRepository
-            .findVerificationIdByTypeAndChallengeId(verificationType, challengeId); // <-- Este método debe existir en tu repo
+            .findVerificationIdByTypeAndChallengeId(verificationType, challengeId);
 
         if (existingId != null) {
             challenge.setVerificationType(verificationType);
             challenge.setVerificationId(existingId);
         } else {
-            // Generar nuevo ID
             String numeric = nextNumericForType(verificationType);
             challenge.setVerificationType(verificationType);
             challenge.setVerificationId(numeric);
@@ -393,81 +329,62 @@ public class ChallengeService {
     }
 
     /**
-     * Calcula el siguiente ID numérico de cinco dígitos para un prefijo dado.
-     * Ej.: si para "Q" ya existen 00001, 00002, devuelve "00003".
+     * Returns the next five-digit numeric string for a given verification type prefix.
      *
-     * @param prefix
-     *            the prefix
-     * @return the string
+     * @param prefix the single-character type prefix (Q, I, L)
+     * @return next numeric string (e.g. "00003")
      */
     public String nextNumericForType(String prefix) {
         return nextNumericForType(ChallengeVerificationType.fromCode(prefix));
     }
 
     private String nextNumericForType(ChallengeVerificationType type) {
-        // Consulta el valor máximo de verificationId para este tipo
-        String maxNumeric =
-                challengeRepository.findMaxVerificationIdByType(type);
+        String maxNumeric = challengeRepository.findMaxVerificationIdByType(type);
         int next = 1;
         if (maxNumeric != null) {
             try {
                 next = Integer.parseInt(maxNumeric) + 1;
             } catch (NumberFormatException e) {
-                // Si algo raro sucede, reiniciamos a 1
                 next = 1;
             }
         }
         return String.format("%05d", next);
     }
-    
+
     /**
-     * Delete verification type.
+     * Removes the verification type from a challenge and deletes the associated quiz.
      *
      * @param challengeId the challenge id
-     * @param typeCode the type code
      */
     @Transactional
-    public void deleteVerificationType(UUID challengeId) {
+    public void deleteVerificationType(Long challengeId) {
         Challenge challenge = challengeRepository.findById(challengeId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Challenge not found: " + challengeId));
-        
-        // Eliminar entidades relacionadas si existen
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorConstants.CHALLENGE_NOT_FOUND));
+
         if (challenge.getVerificationType() != null && challenge.getVerificationId() != null) {
             String fullVerificationId = challenge.getVerificationType().getCode() + challenge.getVerificationId();
-            
-            // Eliminar QuizVerification y sus dependencias en cascada
             quizVerificationRepository.findById(fullVerificationId)
-                .ifPresent(quizVerification -> {
-                    quizVerificationRepository.delete(quizVerification);
-                });
+                .ifPresent(quizVerificationRepository::delete);
         }
-        
-        // Limpiar campos en Challenge
+
         challenge.setVerificationType(null);
         challenge.setVerificationId(null);
         challengeRepository.save(challenge);
     }
-    
+
     /**
-     * List completed challenges history for the authenticated user.
-     * 
-     * @return List of ChallengeHistoryResponse beans with snapshot data.
+     * Returns the completed challenge history for the authenticated user.
+     *
+     * @return list of completed challenge history responses
      */
     public List<ChallengeHistoryResponse> listCompletedChallengesForUser() {
-        // Get current authenticated username
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        // Find user entity
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
-
-        // Query UserChallenge entities where completed=true for user
-        List<UserChallenge> completedChallenges = userChallengeRepository.findByUserAndCompletedTrue(user);
-
-        // Map using the mapper method
-        return completedChallenges.stream()
-                .map(UserChallengeMapper::mapUserChallengeToResponse) // <- usa tu mapper aquí
-                .collect(Collectors.toList());
+        User user = userRepository.findByUsername(
+                SecurityContextHolder.getContext().getAuthentication().getName())
+            .orElseThrow(() -> new CustomException(ErrorConstants.NULL_USER));
+        return userChallengeRepository
+            .findByUserAndState(user, UserChallengeStateEnum.COMPLETED)
+            .stream()
+            .map(UserChallengeMapper::mapUserChallengeToResponse)
+            .collect(Collectors.toList());
     }
 }

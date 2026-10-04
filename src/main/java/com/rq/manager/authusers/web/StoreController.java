@@ -74,7 +74,7 @@ public class StoreController {
 		content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
 		schema = @Schema(implementation = RewardResponse.class)))
 	@PutMapping("/update-reward/{id}")
-	public RewardResponse updateReward(@PathVariable long id, @Valid @RequestBody RewardRequest rewardRequest) {
+	public RewardResponse updateReward(@PathVariable Long id, @Valid @RequestBody RewardRequest rewardRequest) {
 		return storeService.updateReward(id, rewardRequest);
 	}
 	
@@ -119,7 +119,7 @@ public class StoreController {
 		content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
 		schema = @Schema(implementation = Void.class)))
 	@DeleteMapping("/delete-product/{id}")
-	public void deleteProduct(@PathVariable long id) {
+	public void deleteProduct(@PathVariable Long id) {
 		storeService.deleteReward(id);
 	}
 	
@@ -140,7 +140,7 @@ public class StoreController {
                     schema = @Schema(implementation = RewardResponse.class)))
     @GetMapping("/reward/{id}")
     public RewardResponse getRewardById(
-            @PathVariable @Parameter(description = "the id product") long id) {
+            @PathVariable @Parameter(description = "the id product") Long id) {
         return storeService.getRewardById(id);
     }
 	
@@ -160,7 +160,7 @@ public class StoreController {
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = Void.class)))
     @PostMapping("/buy-reward/{id}")
-    public void buyReward(@PathVariable long id) {
+    public void buyReward(@PathVariable Long id) {
         storeService.buyReward(id);
     }
 	
@@ -180,7 +180,7 @@ public class StoreController {
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = Void.class)))
 	@PatchMapping("/change-visibility/{id}")
-	public void canSeeUserReward(@PathVariable long id) {
+	public void canSeeUserReward(@PathVariable Long id) {
         storeService.toggleRewardVisibility(id);
     }
     

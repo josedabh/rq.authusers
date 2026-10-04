@@ -2,16 +2,16 @@ package com.rq.manager.authusers.mapper;
 
 import com.rq.manager.authusers.bean.ChallengeRequest;
 import com.rq.manager.authusers.bean.admin.ChallengeResponse;
-import com.rq.manager.authusers.entity.Challenge;
 import com.rq.manager.authusers.enumerations.CategoryEnum;
-import com.rq.manager.authusers.enumerations.ChallengeVerificationType;
-import com.rq.manager.authusers.util.Util;
+import com.rq.manager.authusers.enumerations.DifficultyEnum;
+import com.rq.manager.authusers.repository.entity.Challenge;
+import com.rq.manager.authusers.util.DateUtil;
 
 /**
  * The Class ChallengeMapper.
  */
 public class ChallengeMapper {
-	
+
 	/**
 	 * Instantiates a new challenge mapper.
 	 */
@@ -29,9 +29,9 @@ public class ChallengeMapper {
 		Challenge challenge = new Challenge();
 		challenge.setTitle(request.getTitle());
 		challenge.setDescription(request.getDescription());
-		challenge.setStartDate(Util.getLocalDateTime(request.getStartDate()));
-		challenge.setEndDate(Util.getLocalDateTime(request.getEndDate()));
-		challenge.setDifficulty(request.getDifficulty());
+		challenge.setStartDate(DateUtil.parse(request.getStartDate()));
+		challenge.setEndDate(DateUtil.parse(request.getEndDate()));
+		challenge.setDifficulty(DifficultyEnum.fromDescription(request.getDifficulty()));
 		challenge.setPoints(request.getPoints());
 		challenge.setCategory(CategoryEnum.setDescription(request.getCategory()));
 		return challenge;
@@ -44,18 +44,21 @@ public class ChallengeMapper {
 	 * @return the challenge response
 	 */
 	public static ChallengeResponse mapEntityToResponse(Challenge entity) {
-		return ChallengeResponse.builder().id(entity.getId())
-				.title(entity.getTitle()).description(entity.getDescription())
-				.difficulty(entity.getDifficulty())
-				.category(entity.getCategory().getDescription())
+		return ChallengeResponse.builder()
+				.id(entity.getId() != null ? entity.getId().toString() : null)
+				.title(entity.getTitle())
+				.description(entity.getDescription())
+				.difficulty(entity.getDifficulty() != null ? entity.getDifficulty().getDescription() : null)
+				.category(entity.getCategory() != null ? entity.getCategory().getDescription() : null)
 				.state(entity.getState() != null ? entity.getState().getDescription() : "NOTSTATE")
-				.startDate(Util.getDate(entity.getStartDate()))
-				.endDate(Util.getDate(entity.getEndDate()))
+				.startDate(DateUtil.format(entity.getStartDate()))
+				.endDate(DateUtil.format(entity.getEndDate()))
 				.verificationNumber(entity.getVerificationId())
 				.verificationType(entity.getVerificationType() != null
 						? entity.getVerificationType().getCode()
 						: null)
-				.points(entity.getPoints()).build();
+				.points(entity.getPoints())
+				.build();
 	}
-	
+
 }

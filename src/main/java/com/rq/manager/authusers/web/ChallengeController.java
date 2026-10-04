@@ -1,7 +1,6 @@
 package com.rq.manager.authusers.web;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -93,7 +92,7 @@ public class ChallengeController {
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = ChallengeResponse.class)))
     @GetMapping("/find-challenge/{id}")
-    public ChallengeResponse getChallengeById(@PathVariable UUID id) {
+    public ChallengeResponse getChallengeById(@PathVariable Long id) {
         return challengeService.getChallengeById(id);
     }
 
@@ -133,7 +132,7 @@ public class ChallengeController {
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = ChallengeResponse.class)))
     @PutMapping("/cancel-challenge/{id}")
-    public ChallengeResponse cancelChallenge(@PathVariable UUID id) {
+    public ChallengeResponse cancelChallenge(@PathVariable Long id) {
         return challengeService.cancelChallenge(id);
     }
 
@@ -153,7 +152,7 @@ public class ChallengeController {
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = Void.class)))
     @DeleteMapping("/delete-challenge/{id}")
-    public void deleteChallenge(@PathVariable UUID id) {
+    public void deleteChallenge(@PathVariable Long id) {
         challengeService.deleteChallenge(id);
     }
 
@@ -176,7 +175,7 @@ public class ChallengeController {
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = ChallengeResponse.class)))
     @PutMapping("/update-challenge/{id}")
-    public ChallengeResponse updateChallenge(@PathVariable UUID id,
+    public ChallengeResponse updateChallenge(@PathVariable Long id,
             @Valid @RequestBody ChallengeRequest challengeRequest) {
         return challengeService.updateChallenge(id, challengeRequest);
     }
@@ -196,7 +195,7 @@ public class ChallengeController {
     @ApiResponse(
             responseCode = "200",
             description = "Usuario unido al reto exitosamente")
-    public void joinChallenge(@PathVariable UUID challengeId) {
+    public void joinChallenge(@PathVariable Long challengeId) {
         challengeService.joinChallenge(challengeId);
     }
     
@@ -233,7 +232,7 @@ public class ChallengeController {
             mediaType = MediaType.APPLICATION_JSON_VALUE,
             schema = @Schema(implementation = ChallengeResponse.class)
     ))
-    public ChallengeResponse startChallenge(@PathVariable UUID challengeId) {
+    public ChallengeResponse startChallenge(@PathVariable Long challengeId) {
         return challengeService.startChallenge(challengeId);
     }
         
@@ -256,7 +255,7 @@ public class ChallengeController {
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = String.class,
                     example = "F00001")))
-    public String assignVerificationType(@PathVariable UUID challengeId,
+    public String assignVerificationType(@PathVariable Long challengeId,
             @PathVariable String type) {
         return challengeService.assignVerificationType(challengeId, type);
     }
@@ -302,7 +301,7 @@ public class ChallengeController {
                 schema = @Schema(implementation = Void.class)
             )
         )
-    public void deleteVerificationType(@PathVariable UUID challengeId) {
+    public void deleteVerificationType(@PathVariable Long challengeId) {
         challengeService.deleteVerificationType(challengeId);
     }
     

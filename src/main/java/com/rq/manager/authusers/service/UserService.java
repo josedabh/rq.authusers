@@ -2,29 +2,27 @@ package com.rq.manager.authusers.service;
 
 import java.util.Collections;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.rq.manager.authusers.entity.User;
 import com.rq.manager.authusers.exceptions.CustomException;
 import com.rq.manager.authusers.exceptions.ErrorConstants;
 import com.rq.manager.authusers.repository.UserRepository;
+import com.rq.manager.authusers.repository.entity.User;
 
-import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 /**
  * The Class UserService that manage the tokens.
  */
 @Service
-@NoArgsConstructor
+@AllArgsConstructor
 public class UserService implements UserDetailsService {
 	
 	/** The user repository. */
-	@Autowired
 	private UserRepository userRepository;
 	
 	/**

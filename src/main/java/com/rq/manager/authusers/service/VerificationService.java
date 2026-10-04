@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -22,13 +21,8 @@ import com.rq.manager.authusers.bean.admin.QuizQuestionDetail;
 import com.rq.manager.authusers.bean.admin.QuizSubmitRequest;
 import com.rq.manager.authusers.bean.admin.QuizSubmitResponse;
 import com.rq.manager.authusers.bean.admin.UserAnswerDTO;
-import com.rq.manager.authusers.entity.Challenge;
-import com.rq.manager.authusers.entity.QuizAnswer;
-import com.rq.manager.authusers.entity.QuizQuestion;
-import com.rq.manager.authusers.entity.QuizVerification;
-import com.rq.manager.authusers.entity.User;
-import com.rq.manager.authusers.entity.UserChallenge;
 import com.rq.manager.authusers.enumerations.ChallengeVerificationType;
+import com.rq.manager.authusers.enumerations.UserChallengeStateEnum;
 import com.rq.manager.authusers.exceptions.BusinessException;
 import com.rq.manager.authusers.exceptions.CustomException;
 import com.rq.manager.authusers.exceptions.ErrorConstants;
@@ -38,6 +32,12 @@ import com.rq.manager.authusers.repository.QuizQuestionRepository;
 import com.rq.manager.authusers.repository.QuizVerificationRepository;
 import com.rq.manager.authusers.repository.UserChallengeRepository;
 import com.rq.manager.authusers.repository.UserRepository;
+import com.rq.manager.authusers.repository.entity.Challenge;
+import com.rq.manager.authusers.repository.entity.QuizAnswer;
+import com.rq.manager.authusers.repository.entity.QuizQuestion;
+import com.rq.manager.authusers.repository.entity.QuizVerification;
+import com.rq.manager.authusers.repository.entity.User;
+import com.rq.manager.authusers.repository.entity.UserChallenge;
 
 import lombok.AllArgsConstructor;
 
@@ -145,7 +145,7 @@ public class VerificationService {
      * @return the quiz details
      */
     @Transactional(readOnly = true)
-    public QuizDetailResponse getQuizDetailsForChallenge(UUID challengeId) {
+    public QuizDetailResponse getQuizDetailsForChallenge(Long challengeId) {
         Challenge challenge = challengeRepo.findById(challengeId)
                 .orElseThrow(() -> new BusinessException(ErrorConstants.CHALLENGE_NOT_FOUND));
 
@@ -280,7 +280,7 @@ public class VerificationService {
      * @param answers the answers
      */
     @Transactional
-    public void attemptChallenge(UUID challengeId, List<UserAnswerDTO> userAnswers) {
+    public void attemptChallenge(Long challengeId, List<UserAnswerDTO> userAnswers) {
         User user = userRepository.findByUsername(
                 SecurityContextHolder.getContext().getAuthentication().getName())
             .orElseThrow(() -> new CustomException(ErrorConstants.NULL_USER));
@@ -300,18 +300,19 @@ public class VerificationService {
         double scorePercentage = (double) correctAnswers / userChallenge.getChallenge().getQuestionsCount();
 
         if (scorePercentage >= 0.7) {
-            userChallenge.setCompleted(true);
+            userChallenge.setState(UserChallengeStateEnum.COMPLETED);
             userChallenge.setCompletedAt(LocalDateTime.now());
             userChallenge.setEarnedPoints(userChallenge.getChallenge().getPoints());
             int pointTotal = user.getPoints() + userChallenge.getChallenge().getPoints();
             user.setPoints(pointTotal);
-            // Aquí puedes agregar lógica para recompensar al usuario si es necesario
         } else {
             userChallenge.setAttempts(userChallenge.getAttempts() + 1);
             if (userChallenge.getAttempts() >= 2) {
-                // Penalizar al usuario
+                userChallenge.setState(UserChallengeStateEnum.FAILED);
                 int newScore = userChallenge.getUser().getPoints() - 100;
-                userChallenge.getUser().setPoints(Math.max(newScore, 0)); // No permitir que los puntos sean negativos
+                userChallenge.getUser().setPoints(Math.max(newScore, 0));
+            } else {
+                userChallenge.setState(UserChallengeStateEnum.IN_PROGRESS);
             }
         }
 

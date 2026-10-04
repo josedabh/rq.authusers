@@ -34,7 +34,18 @@ public class ErrorMessageService {
      * @return the error message
      */
     public String getErrorMessage(String errorKey) {
-        return messageSource.getMessage(errorKey + ErrorConstants.MESSAGE, null, Locale.getDefault());
+        return getErrorMessage(errorKey, Locale.getDefault());
+    }
+
+    /**
+     * Gets the error message for the given locale, falling back to default.
+     *
+     * @param errorKey the error key
+     * @param locale   the desired locale
+     * @return the error message
+     */
+    public String getErrorMessage(String errorKey, Locale locale) {
+        return messageSource.getMessage(errorKey + ErrorConstants.MESSAGE, null, locale);
     }
 
     /**
@@ -44,7 +55,18 @@ public class ErrorMessageService {
      * @return the error description
      */
     public String getErrorDescription(String errorKey) {
-        return messageSource.getMessage(errorKey + ErrorConstants.DESCRIPTION, null, Locale.getDefault());
+        return getErrorDescription(errorKey, Locale.getDefault());
+    }
+
+    /**
+     * Gets the error description for the given locale.
+     *
+     * @param errorKey the error key
+     * @param locale   the desired locale
+     * @return the error description
+     */
+    public String getErrorDescription(String errorKey, Locale locale) {
+        return messageSource.getMessage(errorKey + ErrorConstants.DESCRIPTION, null, locale);
     }
 
     /**

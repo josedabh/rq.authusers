@@ -1,4 +1,4 @@
-package com.rq.manager.authusers.entity;
+package com.rq.manager.authusers.repository.entity;
 
 import java.util.ArrayList;
 import java.util.List;

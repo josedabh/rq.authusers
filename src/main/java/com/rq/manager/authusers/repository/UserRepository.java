@@ -1,18 +1,17 @@
 package com.rq.manager.authusers.repository;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.rq.manager.authusers.entity.User;
+import com.rq.manager.authusers.repository.entity.User;
 
 /**
  * The Interface UserRepository.
  */
-public interface UserRepository extends JpaRepository<User, UUID>{
+public interface UserRepository extends JpaRepository<User, Long>{
 
 	/**
 	 * Exists by email.

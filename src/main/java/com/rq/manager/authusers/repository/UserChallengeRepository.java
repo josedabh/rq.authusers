@@ -2,13 +2,13 @@ package com.rq.manager.authusers.repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.rq.manager.authusers.entity.Challenge;
-import com.rq.manager.authusers.entity.User;
-import com.rq.manager.authusers.entity.UserChallenge;
+import com.rq.manager.authusers.enumerations.UserChallengeStateEnum;
+import com.rq.manager.authusers.repository.entity.Challenge;
+import com.rq.manager.authusers.repository.entity.User;
+import com.rq.manager.authusers.repository.entity.UserChallenge;
 
 /**
  * The Interface UserChallengeRepository.
@@ -24,9 +24,9 @@ public interface UserChallengeRepository extends JpaRepository<UserChallenge, Lo
      *            the challenge
      * @return the optional
      */
-    // Permite verificar si un usuario ya se ha unido a un reto.
-    Optional<UserChallenge> findByUserAndChallenge(User user,
-            Challenge challenge);
+    // Permite verificar si un usuario ya se ha unido a un
+    // reto.
+    Optional<UserChallenge> findByUserAndChallenge(User user, Challenge challenge);
 
     /**
      * Exists by user and challenge.
@@ -38,7 +38,7 @@ public interface UserChallengeRepository extends JpaRepository<UserChallenge, Lo
      * @return true, if successful
      */
     boolean existsByUserAndChallenge(User user, Challenge challenge);
-    
+
     /**
      * Find by user id and challenge id.
      *
@@ -48,15 +48,17 @@ public interface UserChallengeRepository extends JpaRepository<UserChallenge, Lo
      *            the challenge id
      * @return the optional
      */
-    Optional<UserChallenge> findByUserIdAndChallengeId(UUID userId,
-            UUID challengeId);
-    
-    /**
-     * Finds all UserChallenge entries for given user that are marked as completed.
-     *
-     * @param user the user entity
-     * @return list of UserChallenge completed for the user
-     */
-    List<UserChallenge> findByUserAndCompletedTrue(User user);
+    Optional<UserChallenge> findByUserIdAndChallengeId(Long userId, Long challengeId);
 
+    /**
+     * Finds all UserChallenge entries for a given user
+     * filtered by state.
+     *
+     * @param user
+     *            the user entity
+     * @param state
+     *            the desired state
+     * @return list of UserChallenges with that state
+     */
+    List<UserChallenge> findByUserAndState(User user, UserChallengeStateEnum state);
 }

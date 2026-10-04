@@ -1,4 +1,4 @@
-package com.rq.manager.authusers.entity;
+package com.rq.manager.authusers.repository.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

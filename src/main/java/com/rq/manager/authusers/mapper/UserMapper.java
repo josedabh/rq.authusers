@@ -1,13 +1,11 @@
 package com.rq.manager.authusers.mapper;
 
-import java.util.UUID;
-
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.rq.manager.authusers.bean.Register;
 import com.rq.manager.authusers.bean.admin.UserResponse;
-import com.rq.manager.authusers.entity.User;
 import com.rq.manager.authusers.enumerations.RolEnum;
+import com.rq.manager.authusers.repository.entity.User;
 
 /**
  * The Class UserMapper.
@@ -67,7 +65,7 @@ public class UserMapper {
 	 */
 	public static User mapUserResponseToEntity(UserResponse user) {
 		User userEntity = new User();
-		userEntity.setId(UUID.fromString(user.getId()));
+		userEntity.setId(Long.parseLong(user.getId()));
 		userEntity.setEmail(user.getEmail());
 		userEntity.setName(user.getName());
 		userEntity.setLastname(user.getLastname());

@@ -3,9 +3,9 @@ package com.rq.manager.authusers.mapper;
 import com.rq.manager.authusers.bean.HistoryShopping;
 import com.rq.manager.authusers.bean.admin.RewardRequest;
 import com.rq.manager.authusers.bean.admin.RewardResponse;
-import com.rq.manager.authusers.entity.PurchaseHistory;
-import com.rq.manager.authusers.entity.Reward;
-import com.rq.manager.authusers.entity.User;
+import com.rq.manager.authusers.repository.entity.PurchaseHistory;
+import com.rq.manager.authusers.repository.entity.Reward;
+import com.rq.manager.authusers.repository.entity.User;
 
 public class StoreMapper {
 	
@@ -34,7 +34,7 @@ public class StoreMapper {
      * @return the reward response
      */
 	public static RewardResponse mapRewardEntityToResponse(Reward reward) {
-		return RewardResponse.builder().id(reward.getId()).name(reward.getName())
+		return RewardResponse.builder().id(reward.getId() != null ? reward.getId().toString() : null).name(reward.getName())
 				.description(reward.getDescription())
 				.points(reward.getPoints())
 				.visible(reward.isVisible())

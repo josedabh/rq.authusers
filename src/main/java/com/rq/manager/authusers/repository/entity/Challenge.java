@@ -1,13 +1,21 @@
-package com.rq.manager.authusers.entity;
+package com.rq.manager.authusers.repository.entity;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import com.rq.manager.authusers.enumerations.CategoryEnum;
 import com.rq.manager.authusers.enumerations.ChallengeVerificationType;
+import com.rq.manager.authusers.enumerations.DifficultyEnum;
 import com.rq.manager.authusers.enumerations.StatesChallengeEnum;
+import com.rq.manager.authusers.util.TsidUtil;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,11 +32,10 @@ import lombok.Setter;
 @Table(name = "CHALLENGE")
 public class Challenge {
 
-    /** The id. */
+    /** The id (TSID — time-sorted Long). */
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "ID")
-    private UUID id;
+    private Long id;
 
     /** The title. */
     @Column(name = "TITLE", nullable = false)
@@ -39,16 +46,17 @@ public class Challenge {
     private String description;
 
     /** The difficulty. */
-    @Column(name = "DIFFICULTY", nullable = false)
-    private String difficulty;
+    @Column(name = "DIFFICULTY", nullable = false, length = 20)
+    @Enumerated(EnumType.STRING)
+    private DifficultyEnum difficulty;
 
     /** The category. */
-    @Column(name = "CATEGORY", nullable = true, length = 20)
+    @Column(name = "CATEGORY", length = 20)
     @Enumerated(EnumType.STRING)
     private CategoryEnum category;
 
     /** The state. */
-    @Column(name = "STATE")
+    @Column(name = "STATE", nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
     private StatesChallengeEnum state;
 
@@ -64,19 +72,25 @@ public class Challenge {
     @Column(name = "POINTS", nullable = false)
     private int points;
 
-    /** Tipo de verificación: I = Image, L = Location, Q = Quiz. */
+    /** Tipo de verificacion: I = Image, L = Location, Q = Quiz. */
     @Column(name = "VERIFICATION_TYPE", length = 20)
     @Enumerated(EnumType.STRING)
     private ChallengeVerificationType verificationType;
 
     /**
-     * Identificador de la entidad de verificación
-     * (p.ej. 00001, 00002, 00003)
+     * Identificador de la entidad de verificacion (p.ej. 00001, 00002, 00003).
      */
     @Column(name = "VERIFICATION_ID")
     private String verificationId;
-    
-    /** The questions count. */
-    @Transient // O persistirlo si es necesario
+
+    /** Number of quiz questions — calculated in service, not stored in DB. */
+    @Transient
     private int questionsCount;
+
+    @PrePersist
+    public void generateId() {
+        if (this.id == null) {
+            this.id = TsidUtil.generate();
+        }
+    }
 }

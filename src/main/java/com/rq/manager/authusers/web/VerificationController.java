@@ -1,7 +1,6 @@
 package com.rq.manager.authusers.web;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -82,7 +81,7 @@ public class VerificationController {
     @ApiResponse(responseCode = "200", description = "Quiz details retrieved successfully")
     @GetMapping("/details/{challengeId}")
     public QuizDetailResponse getQuizDetailsForChallenge(
-            @PathVariable @Parameter(description = "Challenge ID", required = true) UUID challengeId) {
+            @PathVariable @Parameter(description = "Challenge ID", required = true) Long challengeId) {
         return verificationService.getQuizDetailsForChallenge(challengeId);
     }
 
@@ -118,7 +117,7 @@ public class VerificationController {
 	@ApiResponse(responseCode = "200", description = "Quiz verification submitted successfully")
 	@PostMapping("/submit-quiz")
     public void submitQuiz(
-            @RequestParam UUID challengeId,
+            @RequestParam Long challengeId,
             @RequestBody List<UserAnswerDTO> userAnswers) {
 
         verificationService.attemptChallenge(challengeId, userAnswers);

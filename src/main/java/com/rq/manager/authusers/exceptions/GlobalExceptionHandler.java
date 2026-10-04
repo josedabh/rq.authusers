@@ -1,13 +1,20 @@
 package com.rq.manager.authusers.exceptions;
 
+import java.time.Instant;
+import java.util.Locale;
+import java.util.stream.Collectors;
+
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 /**
  * The Class GlobalExceptionHandler.
- * No se pueden sobrescribir excepcions que ya existen
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -25,51 +32,82 @@ public class GlobalExceptionHandler {
 	}
 
 	/**
-	 * Handle custom exception.
-	 * This method there is it write HttpStatus
-	 * @param ex the exception
-	 * @return the response entity
-	 */
-	@ExceptionHandler(CustomException.class)
-	public ResponseEntity<ErrorResponse> handleCustomException(CustomException ex) {
-		return buildErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
-	}
-	
-	/**
-	 * Handle business exception.
+	 * Handle any AppException subclass using its own HTTP status and error key.
 	 *
-	 * @param ex the ex
+	 * @param ex      the exception
+	 * @param request the HTTP request
 	 * @return the response entity
 	 */
-	@ExceptionHandler(BusinessException.class)
-	public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException ex) {
-		return buildErrorResponse(ex.getMessage(), HttpStatus.EXPECTATION_FAILED);
+	@ExceptionHandler(AppException.class)
+	public ResponseEntity<ErrorResponse> handleAppException(AppException ex, HttpServletRequest request) {
+		Locale locale = resolveLocale(request);
+		return buildErrorResponse(ex.getErrorKey(), ex.getStatus(), request.getRequestURI(), locale);
 	}
-	
+
 	/**
-	 * Handle resource not found exception.
+	 * Handle bean validation errors (@Valid on @RequestBody).
 	 *
-	 * @param ex the ex
+	 * @param ex      the exception
+	 * @param request the HTTP request
 	 * @return the response entity
 	 */
-	@ExceptionHandler(ResourceNotFoundException.class)
-	public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex) {
-		return buildErrorResponse(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex,
+			HttpServletRequest request) {
+		Locale locale = resolveLocale(request);
+		String fieldErrors = ex.getBindingResult().getFieldErrors().stream()
+				.map(fe -> fe.getField() + ": " + fe.getDefaultMessage())
+				.collect(Collectors.joining("; "));
+		ErrorResponse errorResponse = new ErrorResponse(
+				errorMessageService.getErrorAppName(),
+				fieldErrors,
+				ErrorConstants.VALIDATION_FAILED_DESCRIPTION,
+				ErrorConstants.VALIDATION_FAILED_CODE,
+				HttpStatus.BAD_REQUEST.value(),
+				Instant.now(),
+				request.getRequestURI(),
+				locale.getLanguage());
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
+
+	/**
+	 * Resolve locale from Accept-Language header, falling back to context default.
+	 *
+	 * @param request the HTTP request
+	 * @return the resolved locale
+	 */
+	private Locale resolveLocale(HttpServletRequest request) {
+		String acceptLanguage = request.getHeader("Accept-Language");
+		if (acceptLanguage != null && !acceptLanguage.isBlank()) {
+			try {
+				return Locale.forLanguageTag(acceptLanguage.split(",")[0].trim());
+			} catch (Exception e) {
+				// fall through to default
+			}
+		}
+		return LocaleContextHolder.getLocale();
 	}
 
 	/**
 	 * Builds the error response.
 	 *
 	 * @param errorKey the error key
-	 * @param status the status
+	 * @param status   the HTTP status
+	 * @param path     the request path
+	 * @param locale   the resolved locale
 	 * @return the response entity
 	 */
-	private ResponseEntity<ErrorResponse> buildErrorResponse(String errorKey, HttpStatus status) {
-		ErrorResponse errorResponse = new ErrorResponse(errorMessageService.getErrorAppName(),
-				errorMessageService.getErrorMessage(errorKey),
-				errorMessageService.getErrorDescription(errorKey),
+	private ResponseEntity<ErrorResponse> buildErrorResponse(String errorKey, HttpStatus status, String path,
+			Locale locale) {
+		ErrorResponse errorResponse = new ErrorResponse(
+				errorMessageService.getErrorAppName(),
+				errorMessageService.getErrorMessage(errorKey, locale),
+				errorMessageService.getErrorDescription(errorKey, locale),
 				errorMessageService.getInternalCode(errorKey),
-				status.value());
+				status.value(),
+				Instant.now(),
+				path,
+				locale.getLanguage());
 		return new ResponseEntity<>(errorResponse, status);
 	}
 }

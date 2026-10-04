@@ -1,12 +1,11 @@
 package com.rq.manager.authusers.repository;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.rq.manager.authusers.entity.PurchaseHistory;
+import com.rq.manager.authusers.repository.entity.PurchaseHistory;
 
 /**
  * The Interface PurchaseHistoryRepository.
@@ -28,6 +27,6 @@ public interface PurchaseHistoryRepository extends JpaRepository<PurchaseHistory
 	 * @param userId the user id
 	 * @return the list
 	 */
-	List<PurchaseHistory> findByUserId(UUID userId);
+	List<PurchaseHistory> findByUserId(Long userId);
 
 }

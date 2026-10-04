@@ -14,13 +14,13 @@ import com.rq.manager.authusers.bean.Login;
 import com.rq.manager.authusers.bean.Register;
 import com.rq.manager.authusers.bean.UpdateUserInfoRequest;
 import com.rq.manager.authusers.bean.admin.UserResponse;
-import com.rq.manager.authusers.entity.User;
 import com.rq.manager.authusers.enumerations.RolEnum;
 import com.rq.manager.authusers.exceptions.CustomException;
 import com.rq.manager.authusers.exceptions.ErrorConstants;
 import com.rq.manager.authusers.jwt.JwtService;
 import com.rq.manager.authusers.mapper.UserMapper;
 import com.rq.manager.authusers.repository.UserRepository;
+import com.rq.manager.authusers.repository.entity.User;
 
 import lombok.AllArgsConstructor;
 

@@ -1,7 +1,5 @@
 package com.rq.manager.authusers.bean.admin;
 
-import java.util.UUID;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,8 +18,8 @@ import lombok.Setter;
 public class ChallengeResponse {
 
 	/** The id. */
-	@Schema(description = "the id", example = "dfew32fv-23f2-4f23-a2f3-123456789abc")
-	private UUID id;
+	@Schema(description = "the id (TSID as String)", example = "65536000000001234")
+	private String id;
 	
 	/** The title. */
 	@Schema(description = "the title", example = "title")

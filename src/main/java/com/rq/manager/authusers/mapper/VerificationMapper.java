@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.rq.manager.authusers.bean.admin.QuizSubmitResponse;
-import com.rq.manager.authusers.entity.QuizAnswer;
-import com.rq.manager.authusers.entity.QuizQuestion;
-import com.rq.manager.authusers.entity.QuizVerification;
+import com.rq.manager.authusers.repository.entity.QuizAnswer;
+import com.rq.manager.authusers.repository.entity.QuizQuestion;
+import com.rq.manager.authusers.repository.entity.QuizVerification;
 
 /**
  * The Class VerificationMapper.

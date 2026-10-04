@@ -15,8 +15,8 @@ import lombok.Setter;
 public class RewardResponse {
 	
 	/** The id. */
-	@Schema(description = "Reward ID", example = "1")
-	private long id;
+	@Schema(description = "Reward ID (TSID as String)", example = "65536000000001234")
+	private String id;
 	
 	/** The name. */
 	@Schema(description = "Reward name", example = "Reward 1")

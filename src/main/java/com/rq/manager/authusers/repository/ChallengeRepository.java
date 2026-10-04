@@ -1,19 +1,18 @@
 package com.rq.manager.authusers.repository;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.rq.manager.authusers.entity.Challenge;
 import com.rq.manager.authusers.enumerations.ChallengeVerificationType;
+import com.rq.manager.authusers.repository.entity.Challenge;
 
 /**
  * The Interface ChallengeRepository.
  */
-public interface ChallengeRepository extends JpaRepository<Challenge, UUID> {
+public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
 
 	/**
 	 * Devuelve la parte numérica (cinco dígitos) más alta ya registrada
@@ -34,7 +33,7 @@ public interface ChallengeRepository extends JpaRepository<Challenge, UUID> {
      * @return the string
      */
     @Query("SELECT c.verificationId FROM Challenge c WHERE c.verificationType = :typeCode AND c.id = :challengeId")
-    String findVerificationIdByTypeAndChallengeId(@Param("typeCode") ChallengeVerificationType typeCode, @Param("challengeId") UUID challengeId);
+    String findVerificationIdByTypeAndChallengeId(@Param("typeCode") ChallengeVerificationType typeCode, @Param("challengeId") Long challengeId);
 
     /**
      * Find by verification type and verification id.

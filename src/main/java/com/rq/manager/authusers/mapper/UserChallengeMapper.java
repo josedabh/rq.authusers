@@ -1,10 +1,10 @@
 package com.rq.manager.authusers.mapper;
 
 import com.rq.manager.authusers.bean.ChallengeHistoryResponse;
-import com.rq.manager.authusers.entity.UserChallenge;
+import com.rq.manager.authusers.repository.entity.UserChallenge;
 
 public class UserChallengeMapper {
-	
+
 	public UserChallengeMapper() {
 		// Default constructor
 	}
@@ -31,3 +31,4 @@ public class UserChallengeMapper {
 	}
 
 }
+

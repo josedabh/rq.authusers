@@ -5,9 +5,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.rq.manager.authusers.entity.User;
 import com.rq.manager.authusers.enumerations.RolEnum;
 import com.rq.manager.authusers.repository.UserRepository;
+import com.rq.manager.authusers.repository.entity.User;
 
 /**
  * Configuration to initialize an admin user at application startup.

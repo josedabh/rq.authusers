@@ -77,4 +77,13 @@ public class ErrorConstants {
 
     /** The Constant CHALLENGE_CANNOT_BE_STARTED. */
     public static final String CHALLENGE_CANNOT_BE_STARTED = "challenge_cannot_be_started";
+
+    /** The Constant INVALID_DATE_FORMAT. */
+    public static final String INVALID_DATE_FORMAT = "invalid_date_format";
+
+    /** Description shown when bean validation fails (field errors are inlined as message). */
+    public static final String VALIDATION_FAILED_DESCRIPTION = "One or more request fields failed validation.";
+
+    /** Internal code for bean validation failures. */
+    public static final String VALIDATION_FAILED_CODE = "4000";
 }

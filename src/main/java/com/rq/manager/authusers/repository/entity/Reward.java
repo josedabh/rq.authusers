@@ -1,10 +1,11 @@
-package com.rq.manager.authusers.entity;
+package com.rq.manager.authusers.repository.entity;
+
+import com.rq.manager.authusers.util.TsidUtil;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,30 +22,37 @@ import lombok.Setter;
 @Entity
 @Table(name = "REWARD")
 public class Reward {
-	
-	/** The id. */
+
+	/** The id (TSID — time-sorted Long). */
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
-	
+	@Column(name = "ID")
+	private Long id;
+
 	/** The name. */
 	@Column(name = "NAME", length = 80)
 	private String name;
-	
+
 	/** The description. */
 	@Column(name = "DESCRIPTION", length = 200)
 	private String description;
-	
+
 	/** The points. */
 	@Column(name = "POINTS")
 	private int points;
-	
-	/** The active. */
+
+	/** The visible. */
 	@Column(name = "VISIBLE")
 	private boolean visible;
-	
+
 	/** The stock. */
 	@Column(name = "STOCK")
 	private int stock;
 
+	@PrePersist
+	public void generateId() {
+		if (this.id == null) {
+			this.id = TsidUtil.generate();
+		}
+	}
 }
+
